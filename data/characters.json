@@ -26,12 +26,12 @@
   ],
   "characters": [
     {
-      "id": "hedda-grauschleier",
-      "name": "Hedda Grauschleier",
-      "faction": "nebelwacht",
+      "id": "diana-queen-of-the-fae",
+      "name": "Diana, Queen of the Fae",
+      "faction": "dominion",
       "keywords": [
-        "Anführer",
-        "Zauberer"
+        "Faerie",
+        "Wizard"
       ],
       "stats": {
         "leben": 5,
