@@ -5,7 +5,7 @@
 // WICHTIG: Wenn du Dateien änderst (zum Beispiel characters.json),
 // erhöhe die Zahl bei CACHE_NAME, sonst zeigt das Handy noch die alte Version.
 
-const CACHE_NAME = "mondbuch-v1";
+const CACHE_NAME = "stoonmone-v1.1.1";
 const DATEIEN = [
   "./",
   "index.html",
