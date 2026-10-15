@@ -21,7 +21,7 @@
 const RULES = {
   maxModels: 8,               // so viele Modelle gehören in eine Troupe
   allowDuplicates: false,     // darf derselbe Charakter zweimal vorkommen?
-  maxFaction: 1
+  maxFactions: 1,
 };
 
 const STORAGE_KEY = "Stoonmone-troupe-v1";
