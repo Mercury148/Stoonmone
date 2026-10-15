@@ -1,5 +1,5 @@
 {
-  "meta": { "note": "Eingetragen sind bisher nur Namen, Fraktionen und Keywords. Werte und Regeltexte fehlen noch." },
+  "meta": { "note": "Only names, factions and keywords are entered so far. Stats and rules text are still missing." },
   "factions": [
     {"id": "commonwealth", "name": "Commonwealth", "hue": 42},
     {"id": "dominion", "name": "Dominion", "hue": 215},
