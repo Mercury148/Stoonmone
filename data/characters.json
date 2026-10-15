@@ -4,43 +4,43 @@
   },
   "factions": [
     {
-      "id": "gluehmoor",
+      "id": "commonwealth",
       "name": "Commonwealth",
       "hue": 50
     },
     {
-      "id": "nebelwacht",
+      "id": "dominion",
       "name": "Dominion",
       "hue": 240
     },
     {
-      "id": "dornenhof",
+      "id": "leshavult",
       "name": "Leshavult",
       "hue": 120
     },
     {
-      "id": "zinnorden",
+      "id": "shades",
       "name": "Shades of Moonreach",
-      "hue": 220, "sat": 2
+      "hue": 220, "sat": 0
     }
   ],
   "characters": [
     {
       "id": "hedda-grauschleier",
-      "name": "Hedda Grauschleier",
-      "faction": "nebelwacht",
+      "name": "Diana, Queen of the Fae",
+      "faction": "dominion",
       "keywords": [
-        "Flink",
-        "Heiler"
+        "Faerie",
+        "Wizard"
       ],
       "stats": {
-        "leben": 5,
-        "energie": 3,
+        "leben": 6,
+        "energie": 5,
         "bewegung": 2
       },
       "abilities": [
         {
-          "name": "Nebelschritt",
+          "name": "For the Good of the Glade",
           "text": "Einmal pro Runde: Bewege dieses Modell bis zu 2 Felder weit."
         },
         {
@@ -53,7 +53,7 @@
     {
       "id": "torben-laternentraeger",
       "name": "Torben Laternenträger",
-      "faction": "nebelwacht",
+      "faction": "dominion",
       "keywords": [
         "Heiler",
         "Flink"
@@ -78,7 +78,7 @@
     {
       "id": "mirelle-dunstfuchs",
       "name": "Mirelle Dunstfuchs",
-      "faction": "nebelwacht",
+      "faction": "dominion",
       "keywords": [
         "Schütze",
         "Flink"
@@ -99,7 +99,7 @@
     {
       "id": "old-kasimir",
       "name": "Old Kasimir",
-      "faction": "nebelwacht",
+      "faction": "dominion",
       "keywords": [
         "Kämpfer"
       ],
@@ -123,7 +123,7 @@
     {
       "id": "rosalind-dornenkrone",
       "name": "Rosalind Dornenkrone",
-      "faction": "dornenhof",
+      "faction": "leshavult",
       "keywords": [
         "Anführer",
         "Kämpfer"
@@ -148,7 +148,7 @@
     {
       "id": "brombeer-bruno",
       "name": "Brombeer-Bruno",
-      "faction": "dornenhof",
+      "faction": "leshavult",
       "keywords": [
         "Wesen",
         "Kämpfer"
@@ -173,7 +173,7 @@
     {
       "id": "efeu-ida",
       "name": "Efeu-Ida",
-      "faction": "dornenhof",
+      "faction": "leshavult",
       "keywords": [
         "Heiler",
         "Zauberer"
@@ -198,7 +198,7 @@
     {
       "id": "stachelpfeil-jori",
       "name": "Stachelpfeil Jori",
-      "faction": "dornenhof",
+      "faction": "leshavult",
       "keywords": [
         "Schütze"
       ],
@@ -218,7 +218,7 @@
     {
       "id": "wurzelwichtel-pim",
       "name": "Wurzelwichtel Pim",
-      "faction": "dornenhof",
+      "faction": "leshavult",
       "keywords": [
         "Wesen",
         "Flink"
@@ -243,7 +243,7 @@
     {
       "id": "hauptmann-alwin-zinn",
       "name": "Hauptmann Alwin Zinn",
-      "faction": "zinnorden",
+      "faction": "shades",
       "keywords": [
         "Anführer",
         "Kämpfer"
@@ -268,7 +268,7 @@
     {
       "id": "schwester-odile",
       "name": "Schwester Odile",
-      "faction": "zinnorden",
+      "faction": "shades",
       "keywords": [
         "Heiler"
       ],
@@ -292,7 +292,7 @@
     {
       "id": "glockenwaechter-bertram",
       "name": "Glockenwächter Bertram",
-      "faction": "zinnorden",
+      "faction": "shades",
       "keywords": [
         "Kämpfer",
         "Wesen"
@@ -317,7 +317,7 @@
     {
       "id": "lena-armbrust",
       "name": "Lena Armbrust",
-      "faction": "zinnorden",
+      "faction": "shades",
       "keywords": [
         "Schütze"
       ],
@@ -341,7 +341,7 @@
     {
       "id": "irrlicht-mara",
       "name": "Irrlicht-Mara",
-      "faction": "gluehmoor",
+      "faction": "commonwealth",
       "keywords": [
         "Zauberer",
         "Flink"
@@ -366,7 +366,7 @@
     {
       "id": "torfkoenig-gunnar",
       "name": "Torfkönig Gunnar",
-      "faction": "gluehmoor",
+      "faction": "commonwealth",
       "keywords": [
         "Anführer",
         "Wesen"
@@ -391,7 +391,7 @@
     {
       "id": "funkenjunge-piet",
       "name": "Funkenjunge Piet",
-      "faction": "gluehmoor",
+      "faction": "commonwealth",
       "keywords": [
         "Flink",
         "Zauberer"
@@ -416,7 +416,7 @@
     {
       "id": "moorhexe-vesna",
       "name": "Moorhexe Vesna",
-      "faction": "gluehmoor",
+      "faction": "commonwealth",
       "keywords": [
         "Zauberer",
         "Heiler"
@@ -441,7 +441,7 @@
     {
       "id": "glutkaefer-klaus",
       "name": "Glutkäfer Klaus",
-      "faction": "gluehmoor",
+      "faction": "commonwealth",
       "keywords": [
         "Wesen",
         "Kämpfer"
