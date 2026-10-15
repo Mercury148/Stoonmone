@@ -15,7 +15,7 @@
 
    Die App hat drei Ansichten:
    - Kompendium: nur nachschlagen, nichts hinzufügen
-   - Troupes: Übersicht aller gespeicherten Troupes mit "+"
+   - Troupen: Übersicht aller gespeicherten Troupen mit "+"
    - Editor: eine Troupe zusammenstellen (kleine Kacheln)
    ========================================================== */
 
@@ -30,10 +30,10 @@ const RULES = {
   sameFaction: true,          // alle Modelle einer Troupe müssen mindestens eine gemeinsame Fraktion haben
 };
 
-const STORAGE_KEY = "mondbuch-troupes-v2";     // alle gespeicherten Troupes
+const STORAGE_KEY = "mondbuch-troupes-v2";     // alle gespeicherten Troupen
 // Frühere Versionen mit nur einer Troupe (wird übernommen, falls vorhanden)
 const OLD_STORAGE_KEYS = ["Stoonmone-troupe-v1", "mondbuch-troupe-v1"];
-const MAX_TROUPES = 30;                        // so viele Troupes lassen sich speichern
+const MAX_TROUPES = 30;                        // so viele Troupen lassen sich speichern
 
 
 /* ---------- 2. Zustand ---------- */
@@ -42,7 +42,7 @@ let data = { meta: {}, factions: [], characters: [] };
 const characterById = new Map();
 const factionById = new Map();
 
-// Alle gespeicherten Troupes. Jede hat eine ID, einen Namen und eine Liste von Charakter-IDs.
+// Alle gespeicherten Troupen. Jede hat eine ID, einen Namen und eine Liste von Charakter-IDs.
 let troupes = [];
 
 // Die Troupe, die gerade im Editor offen ist (dasselbe Objekt wie in der Liste), sonst null
@@ -217,17 +217,37 @@ function decodeTroupe(code) {
 
 /* ---------- 5. Filter-Bereich ---------- */
 
+// Eigene, einfache Symbole für die Fraktionen (keine offiziellen Logos).
+// Ein eigenes Bild geht so: in der JSON bei der Fraktion "icon": "images/dominion.svg" eintragen.
+const FACTION_ICONS = {
+  commonwealth: '<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
+  dominion: '<path d="M4 18h16l1-10-5 4-4-7-4 7-5-4z"/>',
+  leshavult: '<path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15M5 19l8-8"/>',
+  shades: '<path d="M6 20V11a6 6 0 0112 0v9l-3-2-3 2-3-2z"/><circle cx="10" cy="11" r="1"/><circle cx="14" cy="11" r="1"/>',
+};
+
+function factionIcon(faction) {
+  const box = el("span", { class: "faction-icon", "aria-hidden": "true" });
+  if (faction.icon) {
+    box.append(el("img", { src: faction.icon, alt: "" }));
+  } else if (FACTION_ICONS[faction.id]) {
+    // Die Pfade stammen aus der Konstante oben, nicht aus Nutzereingaben
+    box.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${FACTION_ICONS[faction.id]}</svg>`;
+  } else {
+    box.textContent = initials(faction.name);   // Ersatz: Anfangsbuchstaben
+  }
+  return box;
+}
+
 // Baut Suchfeld, Fraktionsauswahl und Keyword-Box in einen Container.
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 function createFilterPanel(container, onChange) {
-  const state = { query: "", faction: "", keywords: new Set() };
+  const state = { query: "", factions: new Set(), keywords: new Set() };
+  let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
   const search = el("input", { type: "search", placeholder: "Search (name, keyword, ability)", "aria-label": "Search", autocomplete: "off" });
-  const select = el("select", { "aria-label": "Faction" },
-    el("option", { value: "", text: "All factions" }),
-    ...data.factions.map((f) => el("option", { value: f.id, text: f.name }))
-  );
+  const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
   const summary = el("summary", {});
   const chips = el("div", { class: "chips" });
   const box = el("details", { class: "keyword-box" }, summary, chips);
@@ -235,11 +255,34 @@ function createFilterPanel(container, onChange) {
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, search, select, box, meta));
+  container.replaceChildren(el("div", { class: "filters" }, search, box, factionRow, meta));
 
   const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "en"));
 
-  // Die Fraktionsauswahl wird nur einmal gebaut und nie neu aufgebaut, so springt sie nicht zurück.
+  // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
+  function renderFactions() {
+    factionRow.replaceChildren(
+      ...data.factions.map((f) =>
+        el("button", {
+          class: allowed && !allowed.has(f.id) ? "faction-btn blocked" : "faction-btn",
+          type: "button",
+          style: factionStyle(f),
+          title: f.name,
+          "aria-pressed": String(state.factions.has(f.id)),
+          onclick: () => {
+            if (state.factions.has(f.id)) state.factions.delete(f.id);
+            else state.factions.add(f.id);
+            renderFactions();
+            onChange();
+          },
+        },
+          factionIcon(f),
+          el("span", { class: "faction-name", text: f.name })
+        )
+      )
+    );
+  }
+
   function renderKeywords() {
     chips.replaceChildren(
       ...allKeywords.map((keyword) =>
@@ -262,22 +305,23 @@ function createFilterPanel(container, onChange) {
   }
 
   search.addEventListener("input", () => { state.query = search.value; onChange(); });
-  select.addEventListener("change", () => { state.faction = select.value; onChange(); });
   reset.addEventListener("click", () => {
-    state.query = ""; state.faction = ""; state.keywords.clear();
-    search.value = ""; select.value = "";
+    state.query = ""; state.factions.clear(); state.keywords.clear();
+    search.value = "";
     renderKeywords();
+    renderFactions();
     onChange();
   });
 
   renderKeywords();
+  renderFactions();
 
   return {
     // Die gefilterten Charaktere
     list() {
       const query = state.query.trim().toLowerCase();
       return data.characters.filter((c) => {
-        if (state.faction && !c.factions.includes(state.faction)) return false;
+        if (state.factions.size && !c.factions.some((f) => state.factions.has(f))) return false;
         for (const keyword of state.keywords) if (!c.keywords.includes(keyword)) return false;
         if (query) {
           const text = [
@@ -294,14 +338,20 @@ function createFilterPanel(container, onChange) {
     // Zählzeile aktualisieren
     showCount(shown) {
       count.textContent = `${shown} of ${data.characters.length} characters`;
-      reset.hidden = !(state.query || state.faction || state.keywords.size);
+      reset.hidden = !(state.query || state.factions.size || state.keywords.size);
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
-      state.query = ""; state.faction = ""; state.keywords.clear();
-      search.value = ""; select.value = "";
+      state.query = ""; state.factions.clear(); state.keywords.clear();
+      search.value = "";
       renderKeywords();
+      renderFactions();
       box.open = false;
+    },
+    // Fraktionen, die nicht mehr möglich sind, werden abgedunkelt (null = alle möglich)
+    setAllowed(set) {
+      allowed = set;
+      renderFactions();
     },
   };
 }
@@ -368,7 +418,7 @@ function removeMember(index) {
   renderEditor();
 }
 
-function nextTroupesame() {
+function nextTroupeName() {
   const names = new Set(troupes.map((t) => t.name));
   let n = troupes.length + 1;
   while (names.has(`Troupe ${n}`)) n++;
@@ -377,7 +427,7 @@ function nextTroupesame() {
 
 function createTroupe() {
   if (troupes.length >= MAX_TROUPES) return toast(`You can save at most ${MAX_TROUPES} troupes.`);
-  const created = { id: newId(), name: nextTroupesame(), ids: [] };
+  const created = { id: newId(), name: nextTroupeName(), ids: [] };
   troupes.push(created);
   saveTroupes();
   openEditor(created.id);
@@ -445,7 +495,7 @@ function renderCards() {
   );
 }
 
-// --- Troupes-Übersicht ---
+// --- Troupen-Übersicht ---
 function renderTroupes() {
   const max = RULES.maxModels;
   $("#troupes-empty").hidden = troupes.length > 0;
@@ -493,6 +543,7 @@ function renderEditor() {
     const names = [...allowedFactions(current)].map((f) => factionById.get(f).name);
     rule.textContent = `Still possible: ${names.join(", ") || "no faction"}`;
   }
+  editorPanel.setAllowed(RULES.sameFaction && count > 0 ? allowedFactions(current) : null);
   renderTiles();
 }
 

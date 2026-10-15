@@ -133,10 +133,27 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ---------- Filter (Kompendium und Editor) ---------- */
 .filters { display: grid; gap: 0.6rem; margin-bottom: 1.25rem; }
-@media (min-width: 40rem) {
-  .filters { grid-template-columns: 1fr 14rem; }
-  .keyword-box, .filter-meta { grid-column: 1 / -1; }
+
+/* Fraktionssymbole: mehrere gleichzeitig wählbar */
+.faction-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr)); gap: 0.5rem; }
+.faction-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: 64px;
+  padding: 0.45rem 0.1rem;
+  background: var(--surface);
+  color: hsl(var(--h) var(--fac-s) var(--fac-l));
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  font-weight: 500;
 }
+.faction-icon { width: 1.7rem; height: 1.7rem; display: grid; place-items: center; font: 600 0.8rem/1 var(--font-display); }
+.faction-icon svg, .faction-icon img { width: 100%; height: 100%; }
+.faction-name { color: var(--fg); font-size: 0.64rem; line-height: 1.15; text-align: center; overflow-wrap: break-word; }
+.faction-btn[aria-pressed="true"] { border-color: hsl(var(--h) var(--fac-s) var(--fac-l)); background: hsl(var(--h) var(--fac-s) var(--fac-l) / 0.18); }
+.faction-btn.blocked { opacity: 0.4; }
 
 /* Aufklappbares Keyword-Feld */
 .keyword-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
@@ -230,7 +247,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .empty { color: var(--muted); padding: 1rem 0; }
 
-/* ---------- Troupes-Übersicht ---------- */
+/* ---------- Troupen-Übersicht ---------- */
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .page-head h2 { margin: 0; font: 600 1.3rem/1.2 var(--font-display); }
 .add-btn {
@@ -337,6 +354,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
