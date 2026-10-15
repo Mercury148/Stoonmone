@@ -160,13 +160,9 @@ function checkAdd(id) {
     return `Die Troupe ist voll (${RULES.maxModels} Modelle).`;
   }
   if (!RULES.allowDuplicates && troupe.ids.includes(id)) {
-    return `${character.name} ist schon in der Troupe.`;
+    return `${character.name} ist schon in der Troupe.`;  
   }
-  for (const [keyword, max] of Object.entries(RULES.maxPerKeyword)) {
-    if (!character.keywords.includes(keyword)) continue;
-    const count = troupe.ids.filter((i) => characterById.get(i).keywords.includes(keyword)).length;
-    if (count >= max) return `Höchstens ${max} Modell mit „${keyword}“ erlaubt.`;
-  }
+  
   return null;
 }
 
