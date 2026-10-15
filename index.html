@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Stoonmone</title>
   <meta name="theme-color" content="#13151f">
-  <meta name="description" content="Prototyp einer Begleit-App: Kompendium, Filter und Troupe-Liste mit Platzhalterdaten.">
+  <meta name="description" content="Inoffizielle Begleit-App: Kompendium, Filter und Troupen-Verwaltung.">
 
   <!-- Damit die App auf dem iPhone wie eine echte App aussieht (Home-Bildschirm) -->
   <link rel="manifest" href="manifest.webmanifest">
@@ -27,73 +27,70 @@
       </svg>
       Stoonmone
     </h1>
-    <p class="sub">Prototyp mit Platzhalterdaten</p>
+    <p class="sub">Inoffizielle Begleit-App</p>
   </header>
 
   <main>
-    <!-- ===== Ansicht 1: Kompendium ===== -->
+    <!-- ===== Seite 1: Kompendium (nur Nachschlagen) ===== -->
     <section id="view-compendium" aria-label="Kompendium">
       <p id="data-note" class="note" hidden></p>
-
-      <div class="filters">
-        <label class="sr-only" for="search">Suche</label>
-        <input id="search" type="search" placeholder="Name, Keyword oder Regeltext suchen" autocomplete="off">
-
-        <label class="sr-only" for="faction">Fraktion</label>
-        <select id="faction"></select>
-
-        <details class="keyword-box" id="keyword-box">
-  <summary id="keyword-summary">Keywords</summary>
-  <div id="chips" class="chips" role="group" aria-label="Keywords"></div>
-</details>
-
-        <div class="filter-meta">
-          <span id="count" aria-live="polite"></span>
-          <button id="reset" class="link" type="button">Filter zurücksetzen</button>
-        </div>
-      </div>
-
+      <!-- Suche, Fraktion und Keywords werden von app.js hier eingebaut -->
+      <div id="compendium-filters"></div>
       <div id="cards" class="cards"></div>
     </section>
 
-    <!-- ===== Ansicht 2: Troupe ===== -->
-    <section id="view-troupe" aria-label="Troupe" hidden>
-      <label for="troupe-name">Name der Troupe</label>
-      <input id="troupe-name" type="text" maxlength="40" autocomplete="off">
-
-      <div class="slots" id="slots" aria-hidden="true"></div>
-      <p id="troupe-count" class="count-line"></p>
-
-      <ol id="members" class="members"></ol>
-      <p id="troupe-empty" class="empty" hidden>
-        Noch keine Modelle. Wechsle zum Kompendium und tippe bei einem Charakter auf „Hinzufügen“.
-      </p>
-
-      <div class="troupe-actions">
-        <button id="clear" class="ghost" type="button">Troupe leeren</button>
+    <!-- ===== Seite 2: Übersicht über alle Troupen ===== -->
+    <section id="view-troupes" aria-label="Troupen" hidden>
+      <div class="page-head">
+        <h2>Meine Troupen</h2>
+        <button id="new-troupe" class="add-btn" type="button" aria-label="Neue Troupe anlegen">+</button>
       </div>
 
+      <div id="troupe-list" class="troupe-list"></div>
+      <p id="troupes-empty" class="empty" hidden>
+        Noch keine Troupe angelegt. Tippe oben auf das Plus, um eine zu erstellen.
+      </p>
+
       <details class="share">
-        <summary>Teilen und sichern</summary>
-        <p class="hint">Dein Browser kann gespeicherte Daten verlieren. Kopiere den Code und bewahre ihn irgendwo auf, zum Beispiel in einer Notiz. Mit demselben Code lässt sich die Troupe auf einem anderen Gerät laden.</p>
-
-        <label for="export-code">Dein Troupen-Code</label>
-        <textarea id="export-code" rows="3" readonly></textarea>
-        <button id="copy" type="button">Code kopieren</button>
-
+        <summary>Troupe aus Code laden</summary>
+        <p class="hint">Hat dir jemand einen Troupen-Code geschickt, oder hast du einen gesichert? Füge ihn hier ein. Die Troupe wird als neue Troupe angelegt.</p>
         <label for="import-code">Code einfügen</label>
         <textarea id="import-code" rows="3" placeholder="Code hier einfügen"></textarea>
         <button id="import" type="button">Troupe laden</button>
       </details>
     </section>
+
+    <!-- ===== Seite 3: Troupe zusammenstellen (Editor) ===== -->
+    <section id="view-editor" aria-label="Troupe bearbeiten" hidden>
+      <div class="editor-bar">
+        <button id="editor-back" class="ghost back" type="button">Zurück</button>
+        <input id="editor-name" type="text" maxlength="40" autocomplete="off" aria-label="Name der Troupe">
+        <span id="editor-count" class="badge big"></span>
+      </div>
+
+      <div class="slots" id="editor-slots" aria-hidden="true"></div>
+      <div id="editor-members" class="member-chips"></div>
+      <p id="editor-rule" class="hint" hidden></p>
+
+      <details class="share">
+        <summary>Teilen, sichern und löschen</summary>
+        <p class="hint">Dein Browser kann gespeicherte Daten verlieren. Kopiere den Code und bewahre ihn zum Beispiel in einer Notiz auf. Auf der Übersichtsseite lässt er sich wieder laden.</p>
+        <label for="export-code">Code dieser Troupe</label>
+        <textarea id="export-code" rows="3" readonly></textarea>
+        <button id="copy" type="button">Code kopieren</button>
+        <button id="delete-troupe" class="ghost" type="button">Troupe löschen</button>
+      </details>
+
+      <!-- Dieselben Filter wie im Kompendium, aber unabhängig davon -->
+      <div id="editor-filters"></div>
+      <div id="editor-tiles" class="tiles"></div>
+    </section>
   </main>
 
-  <!-- Untere Leiste zum Wechseln der Ansichten -->
+  <!-- Untere Leiste zum Wechseln der Seiten (im Editor ausgeblendet) -->
   <nav class="tabs" role="tablist" aria-label="Bereiche">
     <button role="tab" id="tab-compendium" data-tab="compendium" aria-selected="true" type="button">Kompendium</button>
-    <button role="tab" id="tab-troupe" data-tab="troupe" aria-selected="false" type="button">
-      Troupe <span id="badge" class="badge">0/8</span>
-    </button>
+    <button role="tab" id="tab-troupes" data-tab="troupes" aria-selected="false" type="button">Troupen</button>
   </nav>
 
   <!-- Detailansicht eines Charakters -->

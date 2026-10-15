@@ -8,36 +8,49 @@
    2. Zustand (die Daten, die sich ändern)
    3. Hilfsfunktionen
    4. Speichern und Laden
-   5. Troupe-Logik (hinzufügen, entfernen, prüfen)
-   ---------- allowed-faction helpers
-   6. Anzeige (render...-Funktionen bauen die Oberfläche)
-   7. Start
+   5. Filter-Bereich (wird im Kompendium und im Editor benutzt)
+   6. Troupe-Logik
+   7. Anzeige (render...-Funktionen bauen die Oberfläche)
+   8. Start
+
+   Die App hat drei Ansichten:
+   - Kompendium: nur nachschlagen, nichts hinzufügen
+   - Troupen: Übersicht aller gespeicherten Troupen mit "+"
+   - Editor: eine Troupe zusammenstellen (kleine Kacheln)
    ========================================================== */
 
 
 /* ---------- 1. Einstellungen und Listenregeln ---------- */
 
 // Alle Listenregeln stehen hier an einer Stelle.
-// Passe sie an das Regelbuch an.
 const RULES = {
   maxModels: 8,               // so viele Modelle gehören in eine Troupe
-  allowDuplicates: false,     // darf derselbe Charakter zweimal vorkommen? // 
+  allowDuplicates: false,     // darf derselbe Charakter zweimal in einer Troupe vorkommen?
+  maxPerKeyword: {},          // Beispiel: { "Noble": 1 } = höchstens 1 Modell mit diesem Keyword
+  sameFaction: true,          // alle Modelle einer Troupe müssen mindestens eine gemeinsame Fraktion haben
 };
 
-const STORAGE_KEY = "Stoonmone-troupe-v1";
+const STORAGE_KEY = "mondbuch-troupes-v2";     // alle gespeicherten Troupen
+// Frühere Versionen mit nur einer Troupe (wird übernommen, falls vorhanden)
+const OLD_STORAGE_KEYS = ["Stoonmone-troupe-v1", "mondbuch-troupe-v1"];
+const MAX_TROUPES = 30;                        // so viele Troupen lassen sich speichern
 
 
 /* ---------- 2. Zustand ---------- */
 
 let data = { meta: {}, factions: [], characters: [] };
-const characterById = new Map();   // schneller Zugriff über die ID
+const characterById = new Map();
 const factionById = new Map();
 
-// Was der Nutzer gerade im Filter eingestellt hat
-const filters = { query: "", faction: "", keywords: new Set() };
+// Alle gespeicherten Troupen. Jede hat eine ID, einen Namen und eine Liste von Charakter-IDs.
+let troupes = [];
 
-// Die aktuelle Troupe: ein Name und eine Liste von Charakter-IDs
-let troupe = { name: "Meine Troupe", ids: [] };
+// Die Troupe, die gerade im Editor offen ist (dasselbe Objekt wie in der Liste), sonst null
+let current = null;
+
+// Zwei getrennte Filter-Bereiche: einer im Kompendium, einer im Editor
+let compendiumPanel;
+let editorPanel;
 
 
 /* ---------- 3. Hilfsfunktionen ---------- */
@@ -50,7 +63,7 @@ const $ = (selector) => document.querySelector(selector);
 function el(tag, props = {}, ...children) {
   const node = document.createElement(tag);
   for (const [key, value] of Object.entries(props)) {
-    if (value == null || value === false) continue;   // leere Eigenschaften überspringen
+    if (value == null || value === false) continue;
     if (key === "class") node.className = value;
     else if (key === "text") node.textContent = value;
     else if (key === "style") node.style.cssText = value;
@@ -65,7 +78,6 @@ function initials(name) {
   return name.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 }
 
-// Kleine Meldung unten auf dem Bildschirm
 let toastTimer;
 function toast(message) {
   const box = $("#toast");
@@ -75,20 +87,41 @@ function toast(message) {
   toastTimer = setTimeout(() => (box.hidden = true), 2600);
 }
 
-// Farbe einer Fraktion: Farbton (hue) und optional Sättigung (sat, in Prozent).
-// sat = 0 ergibt Grau. Ohne Angabe bleibt es bei 55.
+// Ein Knopf, der zwei Tipper braucht (erst "Wirklich?", dann die Aktion).
+function twoTap(button, armedText, action) {
+  const idleText = button.textContent;
+  let armed = false;
+  let timer;
+  const reset = () => {
+    armed = false;
+    button.textContent = idleText;
+    button.classList.remove("danger");
+  };
+  button.addEventListener("click", () => {
+    if (!armed) {
+      armed = true;
+      button.textContent = armedText;
+      button.classList.add("danger");
+      timer = setTimeout(reset, 3000);
+      return;
+    }
+    clearTimeout(timer);
+    reset();
+    action();
+  });
+}
+
+// Farbe einer Fraktion: Farbton (hue) und optional Sättigung (sat). sat = 0 ergibt Grau.
 function factionStyle(faction) {
   const sat = faction.sat ?? 55;
   return `--h:${faction.hue}; --fac-s:${sat}%`;
 }
 
-// Ein Charakter kann in mehreren Fraktionen spielbar sein.
-// Für Farben nehmen wir die erste Fraktion in seiner Liste.
+// Für Farben nehmen wir die erste Fraktion eines Charakters.
 function primaryFaction(character) {
   return factionById.get(character.factions[0]);
 }
 
-// Die Zeile mit allen Fraktionen eines Charakters: Farbpunkt und Name je Fraktion
 function factionLine(character) {
   const parts = character.factions.map((id) => {
     const faction = factionById.get(id);
@@ -100,7 +133,7 @@ function factionLine(character) {
   return el("span", { class: "card-faction" }, ...parts);
 }
 
-// Das Porträt: ein Bild, falls der Charakter eines hat, sonst ein Kreis mit Initialen.
+// Porträt: Bild, falls vorhanden, sonst Kreis mit Initialen. extraClass: "big", "small" oder "mini".
 function portrait(character, extraClass = "") {
   const faction = primaryFaction(character);
   const box = el("div", { class: `portrait ${extraClass}`, style: factionStyle(faction), "aria-hidden": "true" });
@@ -109,21 +142,52 @@ function portrait(character, extraClass = "") {
   return box;
 }
 
+function troupeLabel(t) {
+  return t.name.trim() || "Ohne Namen";
+}
+
 
 /* ---------- 4. Speichern und Laden ---------- */
 
-// Alles in try/catch, weil localStorage in manchen Fällen nicht verfügbar ist
-// (zum Beispiel im privaten Modus). Dann läuft die App trotzdem weiter.
+// Alles in try/catch, weil localStorage manchmal nicht verfügbar ist (zum Beispiel im privaten Modus).
 
-function saveTroupe() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(troupe)); } catch { /* ignorieren */ }
+function newId() {
+  return "t" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 
-function loadTroupe() {
+function saveTroupes() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ v: 2, items: troupes }));
+  } catch { /* ignorieren */ }
+}
+
+function loadTroupes() {
+  let saved = null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) troupe = sanitize(JSON.parse(raw));
+    if (raw) {
+      saved = JSON.parse(raw);
+    } else {
+      // Die einzelne Troupe aus der ersten Version übernehmen
+      for (const key of OLD_STORAGE_KEYS) {
+        const old = localStorage.getItem(key);
+        if (old) { saved = { items: [JSON.parse(old)] }; break; }
+      }
+    }
   } catch { /* ignorieren */ }
+
+  const usedIds = new Set();
+  const items = Array.isArray(saved?.items) ? saved.items.slice(0, MAX_TROUPES) : [];
+  troupes = items
+    .filter((item) => item && typeof item === "object")
+    .map((item) => {
+      let id = typeof item.id === "string" && item.id ? item.id : newId();
+      while (usedIds.has(id)) id = newId();
+      usedIds.add(id);
+      return { id, ...sanitize(item) };
+    })
+    // Eine frühere Version hat immer eine leere Standard-Troupe angelegt. Die lassen wir weg.
+    .filter((t, _, all) => t.ids.length > 0 || all.length > 1 || t.name !== "Meine Troupe");
 }
 
 // Gespeicherte oder importierte Daten nie blind glauben: nur bekannte IDs behalten.
@@ -134,8 +198,8 @@ function sanitize(saved) {
 }
 
 // Troupe in einen kurzen Text verwandeln (zum Kopieren) und zurück.
-function encodeTroupe() {
-  const json = JSON.stringify({ v: 1, n: troupe.name, ids: troupe.ids });
+function encodeTroupe(t) {
+  const json = JSON.stringify({ v: 1, n: t.name, ids: t.ids });
   const bytes = new TextEncoder().encode(json);
   let binary = "";
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
@@ -151,201 +215,214 @@ function decodeTroupe(code) {
 }
 
 
-/* ---------- 5. Troupe-Logik ---------- */
+/* ---------- 5. Filter-Bereich ---------- */
 
-// Prüft, ob ein Charakter hinzugefügt werden darf.
+// Baut Suchfeld, Fraktionsauswahl und Keyword-Box in einen Container.
+// Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
+// onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
+function createFilterPanel(container, onChange) {
+  const state = { query: "", faction: "", keywords: new Set() };
+
+  const search = el("input", { type: "search", placeholder: "Suchen (Name, Keyword, Fähigkeit)", "aria-label": "Suchen", autocomplete: "off" });
+  const select = el("select", { "aria-label": "Fraktion" },
+    el("option", { value: "", text: "Alle Fraktionen" }),
+    ...data.factions.map((f) => el("option", { value: f.id, text: f.name }))
+  );
+  const summary = el("summary", {});
+  const chips = el("div", { class: "chips" });
+  const box = el("details", { class: "keyword-box" }, summary, chips);
+  const count = el("span", {});
+  const reset = el("button", { class: "link", type: "button", text: "Filter zurücksetzen" });
+  const meta = el("div", { class: "filter-meta" }, count, reset);
+
+  container.replaceChildren(el("div", { class: "filters" }, search, select, box, meta));
+
+  const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "de"));
+
+  // Die Fraktionsauswahl wird nur einmal gebaut und nie neu aufgebaut, so springt sie nicht zurück.
+  function renderKeywords() {
+    chips.replaceChildren(
+      ...allKeywords.map((keyword) =>
+        el("button", {
+          class: "chip",
+          type: "button",
+          "aria-pressed": String(state.keywords.has(keyword)),
+          text: keyword,
+          onclick: () => {
+            if (state.keywords.has(keyword)) state.keywords.delete(keyword);
+            else state.keywords.add(keyword);
+            renderKeywords();
+            onChange();
+          },
+        })
+      )
+    );
+    summary.textContent = "Keywords";
+    if (state.keywords.size) summary.append(el("span", { class: "keyword-selected", text: [...state.keywords].join(", ") }));
+  }
+
+  search.addEventListener("input", () => { state.query = search.value; onChange(); });
+  select.addEventListener("change", () => { state.faction = select.value; onChange(); });
+  reset.addEventListener("click", () => {
+    state.query = ""; state.faction = ""; state.keywords.clear();
+    search.value = ""; select.value = "";
+    renderKeywords();
+    onChange();
+  });
+
+  renderKeywords();
+
+  return {
+    // Die gefilterten Charaktere
+    list() {
+      const query = state.query.trim().toLowerCase();
+      return data.characters.filter((c) => {
+        if (state.faction && !c.factions.includes(state.faction)) return false;
+        for (const keyword of state.keywords) if (!c.keywords.includes(keyword)) return false;
+        if (query) {
+          const text = [
+            c.name,
+            ...c.keywords,
+            ...c.factions.map((id) => factionById.get(id).name),
+            ...c.abilities.flatMap((a) => [a.name, a.text]),
+          ].join(" ").toLowerCase();
+          if (!text.includes(query)) return false;
+        }
+        return true;
+      });
+    },
+    // Zählzeile aktualisieren
+    showCount(shown) {
+      count.textContent = `${shown} von ${data.characters.length} Charakteren`;
+      reset.hidden = !(state.query || state.faction || state.keywords.size);
+    },
+    // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
+    clear() {
+      state.query = ""; state.faction = ""; state.keywords.clear();
+      search.value = ""; select.value = "";
+      renderKeywords();
+      box.open = false;
+    },
+  };
+}
+
+
+/* ---------- 6. Troupe-Logik ---------- */
+
+// Welche Fraktionen sind für Troupe t noch möglich?
+// Leere Troupe: alle. Sonst die Fraktionen, die ALLE bisherigen Modelle gemeinsam haben.
+function allowedFactions(t) {
+  const all = new Set(data.factions.map((f) => f.id));
+  if (!RULES.sameFaction || t.ids.length === 0) return all;
+  for (const id of t.ids) {
+    const own = characterById.get(id).factions;
+    for (const f of [...all]) if (!own.includes(f)) all.delete(f);
+  }
+  return all;
+}
+
+function fitsFactions(t, character) {
+  const allowed = allowedFactions(t);
+  return character.factions.some((f) => allowed.has(f));
+}
+
+// Prüft, ob ein Charakter zur Troupe t hinzugefügt werden darf.
 // Gibt einen Fehlertext zurück, oder null, wenn alles in Ordnung ist.
-/** Intersection helper for Sets: returns a Set containing values present in all input sets */
-function intersectSets(sets) {
-  if (!sets || sets.length === 0) return new Set(data.factions.map((f) => f.id));
-  const acc = new Set(sets[0]);
-  for (let i = 1; i < sets.length; i++) {
-    const next = sets[i];
-    for (const v of Array.from(acc)) {
-      if (!next.has(v)) acc.delete(v);
-    }
-  }
-  return acc;
-}
-
-/** Compute allowed factions from the current troupe members.
- *  - If troupe is empty, return Set of all faction IDs from data.factions (so UI shows all).
- *  - Otherwise return intersection of members' faction-sets.
- */
-function currentAllowedFactions() {
-  if (!troupe.ids || troupe.ids.length === 0) {
-    return new Set(data.factions.map((f) => f.id));
-  }
-  const memberSets = troupe.ids
-    .map((id) => characterById.get(id))
-    .filter(Boolean)
-    .map((c) => new Set(Array.isArray(c.factions) ? c.factions : [c.faction]));
-  return intersectSets(memberSets);
-}
-
-function checkAdd(id) {
+function checkAdd(t, id) {
   const character = characterById.get(id);
-  if (!character) return "Unbekannter Charakter.";
-
-  if (troupe.ids.length >= RULES.maxModels) {
+  if (t.ids.length >= RULES.maxModels) {
     return `Die Troupe ist voll (${RULES.maxModels} Modelle).`;
   }
-
-  if (!RULES.allowDuplicates && troupe.ids.includes(id)) {
+  if (!RULES.allowDuplicates && t.ids.includes(id)) {
     return `${character.name} ist schon in der Troupe.`;
   }
-
-  // Enforce faction rules: candidate must share at least one faction from the current allowed set.
-  // If troupe is empty currentAllowedFactions() returns all factions, so candidate is allowed.
-  const allowed = currentAllowedFactions();
-  const charFactions = Array.isArray(character.factions) ? character.factions : [character.faction];
-  if (!charFactions.some((f) => allowed.has(f))) {
-    const list = [...allowed].join(", ");
-    return `Dieser Charakter passt nicht zur Troupe: nur ${list} sind noch erlaubt.`;
+  if (!fitsFactions(t, character)) {
+    const names = [...allowedFactions(t)].map((f) => factionById.get(f).name).join(", ");
+    return `${character.name} passt nicht zur Troupe. Noch möglich: ${names}.`;
   }
-
+  for (const [keyword, max] of Object.entries(RULES.maxPerKeyword)) {
+    if (!character.keywords.includes(keyword)) continue;
+    const count = t.ids.filter((i) => characterById.get(i).keywords.includes(keyword)).length;
+    if (count >= max) return `Höchstens ${max} Modell mit „${keyword}“ erlaubt.`;
+  }
   return null;
 }
 
-// ---------- replace visibleCharacters with this (filters by troupe allowed factions when troupe not empty) ----------
-function visibleCharacters() {
-  const query = filters.query.trim().toLowerCase();
-  const allowed = currentAllowedFactions();
-
-  return data.characters.filter((c) => {
-    // If troupe has members, only show characters that share at least one allowed faction
-    if (troupe.ids.length > 0) {
-      const charFactions = Array.isArray(c.factions) ? c.factions : [c.faction];
-      if (!charFactions.some((f) => allowed.has(f))) return false;
-    }
-
-    // UI-selected faction filtering (unchanged behavior)ather do it yourself, paste here the exact snippet you put in app.js and I'
-    if (filters.faction && !((Array.isArray(c.factions) ? c.factions : [c.faction]).includes(filters.faction))) return false;
-
-    // Keywords: all selected keywords must be present
-    for (const keyword of filters.keywords) if (!c.keywords.includes(keyword)) return false;
-
-    // Text search
-    if (query) {
-      const text = [
-        c.name,
-        ...c.keywords,
-        ...((Array.isArray(c.factions) ? c.factions : [c.faction]).map((id) => factionById.get(id).name)),
-        ...c.abilities.flatMap((a) => [a.name, a.text]),
-      ].join(" ").toLowerCase();
-      if (!text.includes(query)) return false;
-    }
-
-    return true;
-  });
+// Tippen auf eine Kachel: ist der Charakter schon dabei, wird er entfernt, sonst hinzugefügt.
+function toggleMember(id) {
+  const index = current.ids.indexOf(id);
+  if (index >= 0) {
+    current.ids.splice(index, 1);
+  } else {
+    const problem = checkAdd(current, id);
+    if (problem) return toast(problem);
+    current.ids.push(id);
+  }
+  saveTroupes();
+  renderEditor();
 }
 
-
-function addToTroupe(id) {
-  const problem = checkAdd(id);
-  if (problem) return toast(problem);
-  troupe.ids.push(id);
-  saveTroupe();
-  renderAll();
-  toast(`${characterById.get(id).name} hinzugefügt.`);
+function removeMember(index) {
+  current.ids.splice(index, 1);
+  saveTroupes();
+  renderEditor();
 }
 
-function removeFromTroupe(index) {
-  troupe.ids.splice(index, 1);
-  saveTroupe();
-  renderAll();
+function nextTroupeName() {
+  const names = new Set(troupes.map((t) => t.name));
+  let n = troupes.length + 1;
+  while (names.has(`Troupe ${n}`)) n++;
+  return `Troupe ${n}`;
 }
 
+function createTroupe() {
+  if (troupes.length >= MAX_TROUPES) return toast(`Es sind höchstens ${MAX_TROUPES} Troupen möglich.`);
+  const created = { id: newId(), name: nextTroupeName(), ids: [] };
+  troupes.push(created);
+  saveTroupes();
+  openEditor(created.id);
+}
+
+function deleteCurrentTroupe() {
+  const name = troupeLabel(current);
+  troupes = troupes.filter((t) => t !== current);
+  saveTroupes();
+  closeEditor();
+  toast(`„${name}“ gelöscht.`);
+}
+
+// Ein eingefügter Code wird als neue Troupe angelegt und überschreibt nichts.
 function importTroupe(code) {
+  if (troupes.length >= MAX_TROUPES) {
+    return toast(`Es sind höchstens ${MAX_TROUPES} Troupen möglich. Lösche zuerst eine.`);
+  }
   let parsed;
   try {
     parsed = decodeTroupe(code);
   } catch {
     return toast("Der Code konnte nicht gelesen werden.");
   }
-  // Modelle der Reihe nach einsetzen und dabei die Regeln prüfen
-  troupe = { name: sanitize({ name: parsed.name, ids: [] }).name, ids: [] };
+  const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, ids: [] };
   let skipped = 0;
   for (const id of Array.isArray(parsed.ids) ? parsed.ids : []) {
-    if (!characterById.has(id) || checkAdd(id)) skipped++;
-    else troupe.ids.push(id);
+    if (!characterById.has(id) || checkAdd(created, id)) skipped++;
+    else created.ids.push(id);
   }
-  saveTroupe();
-  renderAll();
-  toast(skipped ? `Geladen. ${skipped} Eintrag/Einträge passten nicht und wurden übersprungen.` : "Troupe geladen.");
+  troupes.push(created);
+  saveTroupes();
+  renderTroupes();
+  toast(skipped
+    ? `„${troupeLabel(created)}“ geladen. ${skipped} Eintrag/Einträge passten nicht und wurden übersprungen.`
+    : `„${troupeLabel(created)}“ geladen.`);
 }
 
 
-/* ---------- Filtern ---------- */
+/* ---------- 7. Anzeige ---------- */
 
-function visibleCharacters() {
-  const query = filters.query.trim().toLowerCase();
-  return data.characters.filter((c) => {
-    // Ein Charakter erscheint in jeder Fraktion, zu der er gehört
-    if (filters.faction && !c.factions.includes(filters.faction)) return false;
-    // Alle gewählten Keywords müssen zutreffen (UND-Verknüpfung)
-    for (const keyword of filters.keywords) if (!c.keywords.includes(keyword)) return false;
-    if (query) {
-      const text = [
-        c.name,
-        ...c.keywords,
-        ...c.factions.map((id) => factionById.get(id).name),
-        ...c.abilities.flatMap((a) => [a.name, a.text]),
-      ].join(" ").toLowerCase();
-      if (!text.includes(query)) return false;
-    }
-    return true;
-  });
-}
-
-
-/* ---------- 6. Anzeige ---------- */
-
-function renderAll() {
-  renderCards();
-  renderTroupe();
-  $("#badge").textContent = `${troupe.ids.length}/${RULES.maxModels}`;
-}
-
-function renderFilterControls() {
-  const select = $("#faction");
-  select.replaceChildren(
-    el("option", { value: "", text: "Alle Fraktionen" }),
-    ...data.factions.map((f) => el("option", { value: f.id, text: f.name }))
-  );
-  select.value = filters.faction;   // gewählte Fraktion nach dem Neuaufbau wieder anzeigen
-
-  const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "de"));
-  $("#chips").replaceChildren(
-    ...allKeywords.map((keyword) =>
-      el("button", {
-        class: "chip",
-        type: "button",
-        "aria-pressed": String(filters.keywords.has(keyword)),
-        text: keyword,
-        onclick: () => {
-          if (filters.keywords.has(keyword)) filters.keywords.delete(keyword);
-          else filters.keywords.add(keyword);
-          renderFilterControls();
-          renderCards();
-        },
-      })
-    )
-  );
-
- // Die Überschrift des Feldes zeigt, welche Keywords gerade gewählt sind
-
-  const picked = [...filters.keywords];
-  const summary = $("#keyword-summary");
-  summary.textContent = "Keywords";
-  if (picked.length) summary.append(el("span", { class: "keyword-selected", text: picked.join(", ") }));
-}
-
+// --- Kompendium: nur Nachschlagen ---
 function renderCards() {
-  const list = visibleCharacters();
-  $("#count").textContent = `${list.length} von ${data.characters.length} Charakteren`;
-  const active = filters.query || filters.faction || filters.keywords.size;
-  $("#reset").hidden = !active;
+  const list = compendiumPanel.list();
+  compendiumPanel.showCount(list.length);
 
   if (list.length === 0) {
     $("#cards").replaceChildren(el("p", { class: "empty", text: "Kein Charakter passt zu diesen Filtern." }));
@@ -353,9 +430,8 @@ function renderCards() {
   }
 
   $("#cards").replaceChildren(
-    ...list.map((c) => {
-      const inTroupe = troupe.ids.includes(c.id);
-      return el("article", { class: "card" },
+    ...list.map((c) =>
+      el("article", { class: "card" },
         el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: Details öffnen` },
           portrait(c),
           el("div", { class: "card-text" },
@@ -363,75 +439,108 @@ function renderCards() {
             factionLine(c),
             c.keywords.length ? el("span", { class: "card-kw", text: c.keywords.join(" · ") }) : null
           )
-        ),
-        el("button", {
-          class: "card-add",
-          type: "button",
-          "aria-label": `${c.name} zur Troupe hinzufügen`,
-          "aria-disabled": String(inTroupe),
-          text: inTroupe ? "In Troupe" : "Hinzufügen",
-          onclick: () => addToTroupe(c.id),
-        })
-      );
-    })
+        )
+      )
+    )
   );
 }
 
-function renderTroupe() {
+// --- Troupen-Übersicht ---
+function renderTroupes() {
   const max = RULES.maxModels;
-  const count = troupe.ids.length;
+  $("#troupes-empty").hidden = troupes.length > 0;
+  $("#new-troupe").disabled = troupes.length >= MAX_TROUPES;
 
-  $("#troupe-name").value = troupe.name;
-  $("#slots").replaceChildren(
+  $("#troupe-list").replaceChildren(
+    ...troupes.map((t) =>
+      el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
+        el("span", { class: "troupe-name", text: troupeLabel(t) }),
+        el("span", { class: "troupe-meta", text: t.ids.length === max ? `${t.ids.length} von ${max} Modellen, komplett` : `${t.ids.length} von ${max} Modellen` }),
+        el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
+      )
+    )
+  );
+}
+
+// --- Editor ---
+function renderEditor() {
+  const max = RULES.maxModels;
+  const count = current.ids.length;
+
+  $("#editor-count").textContent = `${count}/${max}`;
+  $("#editor-slots").replaceChildren(
     ...Array.from({ length: max }, (_, i) => el("span", { class: i < count ? "slot filled" : "slot" }))
   );
-  $("#troupe-count").textContent = count === max ? `${count} von ${max} Modellen. Die Troupe ist komplett.` : `${count} von ${max} Modellen`;
-  $("#troupe-empty").hidden = count > 0;
-  $("#clear").disabled = count === 0;
 
-  $("#members").replaceChildren(
-    ...troupe.ids.map((id, index) => {
-      const c = characterById.get(id);
-      return el("li", { class: "member" },
-        el("button", { class: "open", type: "button", onclick: () => openDetail(id), "aria-label": `${c.name}: Details öffnen` },
-          portrait(c),
-          el("div", { class: "card-text" },
-            el("span", { class: "card-name", text: c.name }),
-            factionLine(c)
-          )
-        ),
-        el("button", { class: "ghost remove", type: "button", "aria-label": `${c.name} entfernen`, text: "Entfernen", onclick: () => removeFromTroupe(index) })
+  $("#editor-members").replaceChildren(
+    ...(count === 0
+      ? [el("span", { class: "hint", text: "Tippe unten auf Charaktere, um sie hinzuzufügen." })]
+      : current.ids.map((id, index) => {
+          const c = characterById.get(id);
+          return el("span", { class: "member-chip" },
+            el("button", { class: "link", type: "button", text: c.name, onclick: () => openDetail(id), "aria-label": `${c.name}: Details öffnen` }),
+            el("button", { class: "link", type: "button", text: "×", onclick: () => removeMember(index), "aria-label": `${c.name} entfernen` })
+          );
+        }))
+  );
+
+  $("#export-code").value = count ? encodeTroupe(current) : "";
+
+  // Hinweis, welche Fraktionen noch möglich sind
+  const rule = $("#editor-rule");
+  rule.hidden = !(RULES.sameFaction && count > 0);
+  if (!rule.hidden) {
+    const names = [...allowedFactions(current)].map((f) => factionById.get(f).name);
+    rule.textContent = `Noch möglich: ${names.join(", ") || "keine Fraktion"}`;
+  }
+  renderTiles();
+}
+
+// Nur die Kacheln neu zeichnen (beim Filtern bleibt so das Suchfeld unberührt)
+function renderTiles() {
+  // Charaktere, die nicht zu den Fraktionen der Troupe passen, werden ausgeblendet
+  const list = editorPanel.list().filter((c) => current.ids.includes(c.id) || fitsFactions(current, c));
+  editorPanel.showCount(list.length);
+
+  if (list.length === 0) {
+    $("#editor-tiles").replaceChildren(el("p", { class: "empty", text: "Kein Charakter passt zu diesen Filtern." }));
+    return;
+  }
+
+  $("#editor-tiles").replaceChildren(
+    ...list.map((c) => {
+      const selected = current.ids.includes(c.id);
+      const blocked = !selected && checkAdd(current, c.id) !== null;
+      return el("button", {
+        class: blocked ? "tile blocked" : "tile",
+        type: "button",
+        "aria-pressed": String(selected),
+        "aria-label": c.name,
+        onclick: () => toggleMember(c.id),
+      },
+        portrait(c, "small"),
+        el("span", { class: "tile-name", text: c.name }),
+        el("span", { class: "tile-factions" },
+          ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
+        )
       );
     })
   );
-
-  $("#export-code").value = count ? encodeTroupe() : "";
 }
 
-// Detailansicht in einem <dialog>-Fenster
+// Detailansicht in einem <dialog>-Fenster (nur Nachschlagen, ohne Hinzufügen)
 function openDetail(id) {
   const c = characterById.get(id);
-  const problem = checkAdd(id);
-
-  // Die Knöpfe unten sind in beiden Varianten gleich
-  const actions = el("div", { class: "detail-actions" },
-    el("button", {
-      type: "button",
-      text: troupe.ids.includes(id) ? "Schon in der Troupe" : "Zur Troupe hinzufügen",
-      disabled: problem ? "" : null,
-      onclick: () => { addToTroupe(id); $("#detail").close(); },
-    }),
+  const close = el("div", { class: "detail-actions" },
     el("button", { class: "ghost", type: "button", text: "Schließen", onclick: () => $("#detail").close() })
   );
-  const hint = problem && !troupe.ids.includes(id) ? el("p", { class: "hint", text: problem }) : null;
 
   // Variante 1: Der Charakter hat ein Kartenbild, dann zeigen wir nur das Bild
   if (c.card) {
     $("#detail-body").replaceChildren(
       el("div", { class: "detail" },
         el("img", { class: "card-image", src: c.card, alt: `Charakterkarte: ${c.name}` }),
-        actions,
-        hint
+        close
       )
     );
     $("#detail").showModal();
@@ -440,7 +549,6 @@ function openDetail(id) {
 
   // Variante 2: kein Bild, dann Text. Werte und Regeln erscheinen nur, wenn sie eingetragen sind.
   const stat = (label, value) => el("div", {}, el("dt", { text: label }), el("dd", { text: String(value) }));
-  const hasAbilities = c.abilities.length > 0;
 
   $("#detail-body").replaceChildren(
     el("div", { class: "detail" },
@@ -455,65 +563,71 @@ function openDetail(id) {
       c.stats
         ? el("dl", { class: "stats" }, stat("Leben", c.stats.leben), stat("Energie", c.stats.energie), stat("Bewegung", c.stats.bewegung))
         : null,
-      hasAbilities
+      c.abilities.length
         ? el("ul", { class: "abilities" },
             ...c.abilities.map((a) => el("li", {}, el("h3", { text: a.name }), el("p", { text: a.text }))))
         : el("p", { class: "hint", text: "Werte und Regeltexte sind noch nicht eingetragen." }),
-      actions,
-      hint
+      close
     )
   );
   $("#detail").showModal();
 }
 
-function showTab(name) {
-  for (const tab of document.querySelectorAll("[role=tab]")) {
-    tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
-  }
+
+/* ---------- Ansichten wechseln ---------- */
+
+let lastTab = "compendium";
+
+function showView(name) {
   $("#view-compendium").hidden = name !== "compendium";
-  $("#view-troupe").hidden = name !== "troupe";
+  $("#view-troupes").hidden = name !== "troupes";
+  $("#view-editor").hidden = name !== "editor";
+  document.body.classList.toggle("editing", name === "editor");
+  if (name !== "editor") {
+    lastTab = name;
+    for (const tab of document.querySelectorAll("[role=tab]")) {
+      tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
+    }
+  }
   window.scrollTo(0, 0);
 }
 
+function openEditor(id) {
+  current = troupes.find((t) => t.id === id);
+  if (!current) return;
+  editorPanel.clear();
+  $("#editor-name").value = current.name;
+  renderEditor();
+  showView("editor");
+}
 
-/* ---------- 7. Start ---------- */
+function closeEditor() {
+  current = null;
+  renderTroupes();
+  showView("troupes");
+}
+
+
+/* ---------- 8. Start ---------- */
 
 function wireEvents() {
-  $("#search").addEventListener("input", (e) => { filters.query = e.target.value; renderCards(); });
-  $("#faction").addEventListener("change", (e) => { filters.faction = e.target.value; renderCards(); });
-  $("#reset").addEventListener("click", () => {
-    filters.query = ""; filters.faction = ""; filters.keywords.clear();
-    $("#search").value = ""; $("#faction").value = "";
-    renderFilterControls(); renderCards();
-  });
-
   for (const tab of document.querySelectorAll("[role=tab]")) {
-    tab.addEventListener("click", () => showTab(tab.dataset.tab));
+    tab.addEventListener("click", () => {
+      if (tab.dataset.tab === "troupes") renderTroupes();
+      showView(tab.dataset.tab);
+    });
   }
 
-  $("#troupe-name").addEventListener("input", (e) => {
-    troupe.name = e.target.value.slice(0, 40);
-    saveTroupe();
-    $("#export-code").value = troupe.ids.length ? encodeTroupe() : "";
+  $("#new-troupe").addEventListener("click", createTroupe);
+  $("#editor-back").addEventListener("click", closeEditor);
+
+  $("#editor-name").addEventListener("input", (e) => {
+    current.name = e.target.value.slice(0, 40);
+    saveTroupes();
+    $("#export-code").value = current.ids.length ? encodeTroupe(current) : "";
   });
 
-  // "Troupe leeren" braucht zwei Tipper. Das ersetzt confirm(), das nicht überall funktioniert.
-  let clearArmed = false;
-  $("#clear").addEventListener("click", (e) => {
-    if (!clearArmed) {
-      clearArmed = true;
-      e.target.textContent = "Wirklich leeren?";
-      e.target.classList.add("danger");
-      setTimeout(() => { clearArmed = false; e.target.textContent = "Troupe leeren"; e.target.classList.remove("danger"); }, 3000);
-      return;
-    }
-    clearArmed = false;
-    e.target.textContent = "Troupe leeren";
-    e.target.classList.remove("danger");
-    troupe.ids = [];
-    saveTroupe();
-    renderAll();
-  });
+  twoTap($("#delete-troupe"), "Wirklich löschen?", deleteCurrentTroupe);
 
   $("#copy").addEventListener("click", async () => {
     const field = $("#export-code");
@@ -526,6 +640,7 @@ function wireEvents() {
       toast("Bitte den markierten Code manuell kopieren.");
     }
   });
+
   $("#import").addEventListener("click", () => {
     const code = $("#import-code").value;
     if (!code.trim()) return toast("Bitte zuerst einen Code einfügen.");
@@ -538,7 +653,6 @@ function wireEvents() {
 }
 
 // Prüft die Daten und meldet Fehler in verständlichen Sätzen.
-// Gibt eine Liste von Problemen zurück (leer = alles in Ordnung).
 function checkData() {
   const problems = [];
   const seen = new Set();
@@ -575,7 +689,6 @@ async function boot() {
     characterById.set(c.id, c);
   });
 
-  // Fehler in der JSON nicht stumm schlucken, sondern anzeigen
   const problems = checkData();
   if (problems.length) {
     $("#cards").replaceChildren(
@@ -590,9 +703,11 @@ async function boot() {
     $("#data-note").hidden = false;
   }
 
-  loadTroupe();
-  renderFilterControls();
-  renderAll();
+  loadTroupes();
+  compendiumPanel = createFilterPanel($("#compendium-filters"), renderCards);
+  editorPanel = createFilterPanel($("#editor-filters"), renderTiles);
+  renderCards();
+  renderTroupes();
 
   // Offline-Funktion einschalten. Wenn das nicht klappt, läuft die App einfach ohne.
   try {
