@@ -108,7 +108,7 @@
     {"id": "shabbaroon", "name": "Shabbaroon", "factions": ["dominion"], "keywords": ["Wizard", "Goblin"], "stats": null, "abilities": [], "image": null},
     {"id": "silvertongue", "name": "Silvertongue", "factions": ["dominion"], "keywords": ["Faerie", "Rogue"], "stats": null, "abilities": [], "image": null},
     {"id": "sir-guillemot-poppycock", "name": "Sir Guillemot Poppycock", "factions": ["commonwealth"], "keywords": ["Noble", "Human"], "stats": null, "abilities": [], "image": null},
-    {"id": "sir-hogswash", "name": "Sir Hogswash", "factions": ["commonwealth"], "keywords": [], "stats": null, "abilities": [], "image": null},
+    {"id": "sir-hogswash", "name": "Sir Hogswash", "factions": ["commonwealth"], "keywords": ["Animal", "Soldier", "Human"], "stats": null, "abilities": [], "image": null},
     {"id": "skuggi", "name": "Skuggi", "factions": ["leshavult"], "keywords": ["Faun", "Cultist", "Rogue"], "stats": null, "abilities": [], "image": null},
     {"id": "snag", "name": "Snag", "factions": ["leshavult", "shades"], "keywords": ["Spirit", "Treefolk"], "stats": null, "abilities": [], "image": null},
     {"id": "stilts-kim", "name": "Stilts Kim", "factions": ["dominion"], "keywords": ["Goblin"], "stats": null, "abilities": [], "image": null},
@@ -116,7 +116,7 @@
     {"id": "swash", "name": "Swash", "factions": ["dominion"], "keywords": ["Human", "Pirate"], "stats": null, "abilities": [], "image": null},
     {"id": "swiggarty-swooty", "name": "Swiggarty Swooty", "factions": ["dominion"], "keywords": ["Pirate", "Goblin"], "stats": null, "abilities": [], "image": null},
     {"id": "syril-swampfoot", "name": "Syril Swampfoot", "factions": ["dominion"], "keywords": ["Goblin", "Animal", "Wizard"], "stats": null, "abilities": [], "image": null},
-    {"id": "tabby-the-librarian", "name": "Tabby, the Librarian", "factions": ["commonwealth"], "keywords": [], "stats": null, "abilities": [], "image": null},
+    {"id": "tabby-the-librarian", "name": "Tabby, the Librarian", "factions": ["commonwealth"], "keywords": ["Human", "Cleric"], "stats": null, "abilities": [], "image": null},
     {"id": "teetoe", "name": "Teetoe", "factions": ["dominion"], "keywords": ["Faerie"], "stats": null, "abilities": [], "image": null},
     {"id": "the-beast", "name": "The Beast", "factions": ["dominion", "leshavult"], "keywords": ["Noble", "Animal", "Human"], "stats": null, "abilities": [], "image": null},
     {"id": "the-duchess", "name": "The Duchess", "factions": ["dominion"], "keywords": ["Human", "Noble"], "stats": null, "abilities": [], "image": null},
@@ -132,7 +132,7 @@
     {"id": "wasp", "name": "Wasp", "factions": ["dominion"], "keywords": ["Faerie", "Soldier"], "stats": null, "abilities": [], "image": null},
     {"id": "wenda-wetbones", "name": "Wenda Wetbones", "factions": ["dominion"], "keywords": ["Goblin", "Wizard"], "stats": null, "abilities": [], "image": null},
     {"id": "wendigo", "name": "Wendigo", "factions": ["leshavult"], "keywords": ["Spirit", "Faun"], "stats": null, "abilities": [], "image": null},
-    {"id": "young-jack", "name": "Young Jack", "factions": ["commonwealth"], "keywords": [], "stats": null, "abilities": [], "image": null},
+    {"id": "young-jack", "name": "Young Jack", "factions": ["commonwealth"], "keywords": ["Militia", "Gnome", "Noble"], "stats": null, "abilities": [], "image": null},
     {"id": "zorya-dawn-witch", "name": "Zorya, Dawn Witch", "factions": ["leshavult"], "keywords": ["Spirit", "Witch"], "stats": null, "abilities": [], "image": null}
   ]
 }
