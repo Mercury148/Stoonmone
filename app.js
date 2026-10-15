@@ -1,7 +1,7 @@
 "use strict";
 
 /* ==========================================================
-   Mondbuch: die ganze Logik der App in einer Datei.
+   Stoonmone: die ganze Logik der App in einer Datei.
 
    Aufbau:
    1. Einstellungen und Listenregeln
@@ -24,7 +24,7 @@ const RULES = {
   maxPerKeyword: {},          // Beispiel: { "Noble": 1 } = höchstens 1 Modell mit diesem Keyword
 };
 
-const STORAGE_KEY = "mondbuch-troupe-v1";
+const STORAGE_KEY = "Stoonmone-troupe-v1";
 
 
 /* ---------- 2. Zustand ---------- */
