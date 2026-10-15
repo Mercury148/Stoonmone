@@ -230,7 +230,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .empty { color: var(--muted); padding: 1rem 0; }
 
-/* ---------- Troupen-Übersicht ---------- */
+/* ---------- Troupes-Übersicht ---------- */
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .page-head h2 { margin: 0; font: 600 1.3rem/1.2 var(--font-display); }
 .add-btn {

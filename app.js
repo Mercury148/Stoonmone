@@ -15,7 +15,7 @@
 
    Die App hat drei Ansichten:
    - Kompendium: nur nachschlagen, nichts hinzufügen
-   - Troupen: Übersicht aller gespeicherten Troupen mit "+"
+   - Troupes: Übersicht aller gespeicherten Troupes mit "+"
    - Editor: eine Troupe zusammenstellen (kleine Kacheln)
    ========================================================== */
 
@@ -30,10 +30,10 @@ const RULES = {
   sameFaction: true,          // alle Modelle einer Troupe müssen mindestens eine gemeinsame Fraktion haben
 };
 
-const STORAGE_KEY = "mondbuch-troupes-v2";     // alle gespeicherten Troupen
+const STORAGE_KEY = "mondbuch-troupes-v2";     // alle gespeicherten Troupes
 // Frühere Versionen mit nur einer Troupe (wird übernommen, falls vorhanden)
 const OLD_STORAGE_KEYS = ["Stoonmone-troupe-v1", "mondbuch-troupe-v1"];
-const MAX_TROUPES = 30;                        // so viele Troupen lassen sich speichern
+const MAX_TROUPES = 30;                        // so viele Troupes lassen sich speichern
 
 
 /* ---------- 2. Zustand ---------- */
@@ -42,7 +42,7 @@ let data = { meta: {}, factions: [], characters: [] };
 const characterById = new Map();
 const factionById = new Map();
 
-// Alle gespeicherten Troupen. Jede hat eine ID, einen Namen und eine Liste von Charakter-IDs.
+// Alle gespeicherten Troupes. Jede hat eine ID, einen Namen und eine Liste von Charakter-IDs.
 let troupes = [];
 
 // Die Troupe, die gerade im Editor offen ist (dasselbe Objekt wie in der Liste), sonst null
@@ -368,7 +368,7 @@ function removeMember(index) {
   renderEditor();
 }
 
-function nextTroupeName() {
+function nextTroupesame() {
   const names = new Set(troupes.map((t) => t.name));
   let n = troupes.length + 1;
   while (names.has(`Troupe ${n}`)) n++;
@@ -377,7 +377,7 @@ function nextTroupeName() {
 
 function createTroupe() {
   if (troupes.length >= MAX_TROUPES) return toast(`You can save at most ${MAX_TROUPES} troupes.`);
-  const created = { id: newId(), name: nextTroupeName(), ids: [] };
+  const created = { id: newId(), name: nextTroupesame(), ids: [] };
   troupes.push(created);
   saveTroupes();
   openEditor(created.id);
@@ -445,7 +445,7 @@ function renderCards() {
   );
 }
 
-// --- Troupen-Übersicht ---
+// --- Troupes-Übersicht ---
 function renderTroupes() {
   const max = RULES.maxModels;
   $("#troupes-empty").hidden = troupes.length > 0;
