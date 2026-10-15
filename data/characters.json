@@ -14,8 +14,8 @@
       "hue": 240
     },
     {
-      "id": "leshavult",
-      "name": "Leshavult",
+      "id": "dornenhof",
+      "name": "Dornenhof",
       "hue": 120
     },
     {
@@ -26,8 +26,8 @@
   ],
   "characters": [
     {
-      "id": "diana-queen-of-the-fae",
-      "name": "Diana, Queen of the Fae",
+      "id": "hedda-grauschleier",
+      "name": "Hedda Grauschleier",
       "faction": "nebelwacht",
       "keywords": [
         "Flink",
