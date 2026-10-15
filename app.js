@@ -1,7 +1,7 @@
 "use strict";
 
 /* ==========================================================
-   Mondbuch: die ganze Logik der App in einer Datei.
+   Stoonmone: die ganze Logik der App in einer Datei.
 
    Aufbau:
    1. Einstellungen und Listenregeln
@@ -24,7 +24,7 @@ const RULES = {
   maxPerKeyword: { "Anführer": 1 },  // höchstens so viele Modelle mit diesem Keyword
 };
 
-const STORAGE_KEY = "mondbuch-troupe-v1";
+const STORAGE_KEY = "stoonmone-troupe-v1";
 
 
 /* ---------- 2. Zustand ---------- */
@@ -74,6 +74,12 @@ function toast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => (box.hidden = true), 2600);
 }
+
+// Farbe einer Fraktion. sat = Sättigung in Prozent, 0 ergibt Grau.
+   function factionStyle(faction) {
+     const sat = faction.sat ?? 55;   // ohne Angabe bleibt es bei 55
+     return `--h:${faction.hue}; --fac-s:${sat}%`;
+   }
 
 // Das Porträt: ein Bild, falls der Charakter eines hat, sonst ein Kreis mit Initialen.
 function portrait(character, extraClass = "") {

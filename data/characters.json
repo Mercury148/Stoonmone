@@ -5,23 +5,23 @@
   "factions": [
     {
       "id": "gluehmoor",
-      "name": "Glühmoor",
+      "name": "Commonwealth",
       "hue": 50
     },
     {
       "id": "nebelwacht",
-      "name": "Nebelwacht",
+      "name": "Dominion",
       "hue": 240
     },
     {
       "id": "dornenhof",
-      "name": "Dornenhof",
+      "name": "Leshavult",
       "hue": 120
     },
     {
       "id": "zinnorden",
-      "name": "Zinnorden",
-      "hue": 28
+      "name": "Shades of Moonreach",
+      "hue": 220, "sat": 2
     }
   ],
   "characters": [
