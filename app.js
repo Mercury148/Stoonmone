@@ -21,7 +21,7 @@
 const RULES = {
   maxModels: 8,               // so viele Modelle gehören in eine Troupe
   allowDuplicates: false,     // darf derselbe Charakter zweimal vorkommen?
-  maxPerKeyword: {},          // Beispiel: { "Noble": 1 } = höchstens 1 Modell mit diesem Keyword
+  maxFaction: 1
 };
 
 const STORAGE_KEY = "Stoonmone-troupe-v1";
