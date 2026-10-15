@@ -126,8 +126,8 @@
     {"id": "the-mortician", "name": "The Mortician", "factions": ["dominion"], "keywords": ["Wizard", "Goblin"], "stats": null, "abilities": [], "image": null},
     {"id": "the-revenant", "name": "The Revenant", "factions": ["dominion", "leshavult"], "keywords": ["Spirit", "Noble", "Human"], "stats": null, "abilities": [], "image": null},
     {"id": "the-tax-collector", "name": "The Tax Collector", "factions": ["dominion"], "keywords": ["Goblin"], "stats": null, "abilities": [], "image": null},
-    {"id": "vespa", "name": "Vespa", "factions": ["dominion"], "keywords": ["Animal", "Soldier", "Faerie"], "stats": null, "abilities": [], "image": null, "card": "images/Vespa-front.svg",
-"cardBack": "images/Vespa-back.svg"},
+    {"id": "vespa", "name": "Vespa", "factions": ["dominion"], "keywords": ["Animal", "Soldier", "Faerie"], "stats": null, "abilities": [], "image": null, "card": "images/Vespa-front.png",
+"cardBack": "images/Vespa-back.png"}
     {"id": "vicious-syd", "name": "Vicious Syd", "factions": ["dominion"], "keywords": ["Soldier", "Goblin"], "stats": null, "abilities": [], "image": null},
     {"id": "viktor-petty-graverobber", "name": "Viktor Petty, Graverobber", "factions": ["dominion", "shades"], "keywords": ["Human", "Rogue"], "stats": null, "abilities": [], "image": null},
     {"id": "viscount-de-faulte", "name": "Viscount De Faulte", "factions": ["dominion", "shades"], "keywords": ["Risen", "Animal", "Noble"], "stats": null, "abilities": [], "image": null},
