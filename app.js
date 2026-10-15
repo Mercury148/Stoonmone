@@ -412,12 +412,6 @@ function toggleMember(id) {
   renderEditor();
 }
 
-function removeMember(index) {
-  current.ids.splice(index, 1);
-  saveTroupes();
-  renderEditor();
-}
-
 function nextTroupeName() {
   const names = new Set(troupes.map((t) => t.name));
   let n = troupes.length + 1;
@@ -513,35 +507,49 @@ function renderTroupes() {
 }
 
 // --- Editor ---
+
+// Portraitfläche im Hochformat: das Bild des Charakters, sonst eine Silhouette in der Fraktionsfarbe.
+// Die Pfade stammen aus dieser Konstante, nicht aus Nutzereingaben.
+const SILHOUETTE = '<svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><circle cx="50" cy="48" r="22"/><path d="M8 125c0-32 18-46 42-46s42 14 42 46z"/></svg>';
+
+function portraitCard(character) {
+  const box = el("span", { class: "pcard", style: factionStyle(primaryFaction(character)), "aria-hidden": "true" });
+  if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy" }));
+  else box.innerHTML = SILHOUETTE;
+  return box;
+}
+
 function renderEditor() {
   const max = RULES.maxModels;
   const count = current.ids.length;
 
   $("#editor-count").textContent = `${count}/${max}`;
-  $("#editor-slots").replaceChildren(
-    ...Array.from({ length: max }, (_, i) => el("span", { class: i < count ? "slot filled" : "slot" }))
-  );
 
-  $("#editor-members").replaceChildren(
-    ...(count === 0
-      ? [el("span", { class: "hint", text: "Tap characters below to add them." })]
-      : current.ids.map((id, index) => {
-          const c = characterById.get(id);
-          return el("span", { class: "member-chip" },
-            el("button", { class: "link", type: "button", text: c.name, onclick: () => openDetail(id), "aria-label": `${c.name}: open details` }),
-            el("button", { class: "link", type: "button", text: "×", onclick: () => removeMember(index), "aria-label": `remove ${c.name}` })
-          );
-        }))
+  // Die acht Plätze: gewählte Charaktere als Portrait (Tipp = Karte ansehen), freie Plätze gestrichelt
+  $("#editor-slots").replaceChildren(
+    ...Array.from({ length: max }, (_, i) => {
+      const id = current.ids[i];
+      if (!id) return el("span", { class: "slot-empty" });
+      const c = characterById.get(id);
+      return el("button", { class: "slot-portrait", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
+        portraitCard(c)
+      );
+    })
   );
 
   $("#export-code").value = count ? encodeTroupe(current) : "";
 
-  // Hinweis, welche Fraktionen noch möglich sind
+  // Hinweiszeile: leer = Anleitung, sonst die noch möglichen Fraktionen
   const rule = $("#editor-rule");
-  rule.hidden = !(RULES.sameFaction && count > 0);
-  if (!rule.hidden) {
+  if (count === 0) {
+    rule.textContent = "Tap characters below to add them.";
+    rule.hidden = false;
+  } else if (RULES.sameFaction) {
     const names = [...allowedFactions(current)].map((f) => factionById.get(f).name);
     rule.textContent = `Still possible: ${names.join(", ") || "no faction"}`;
+    rule.hidden = false;
+  } else {
+    rule.hidden = true;
   }
   editorPanel.setAllowed(RULES.sameFaction && count > 0 ? allowedFactions(current) : null);
   renderTiles();
@@ -550,8 +558,12 @@ function renderEditor() {
 // Nur die Kacheln neu zeichnen (beim Filtern bleibt so das Suchfeld unberührt)
 function renderTiles() {
   // Charaktere, die nicht zu den Fraktionen der Troupe passen, werden ausgeblendet
-  const list = editorPanel.list().filter((c) => current.ids.includes(c.id) || fitsFactions(current, c));
-  editorPanel.showCount(list.length);
+  const fitting = editorPanel.list().filter((c) => current.ids.includes(c.id) || fitsFactions(current, c));
+  editorPanel.showCount(fitting.length);
+
+  // Gewählte Charaktere wandern nach unten, die noch verfügbaren rutschen nach oben.
+  // Die Reihenfolge innerhalb der beiden Gruppen bleibt unverändert.
+  const list = [...fitting.filter((c) => !current.ids.includes(c.id)), ...fitting.filter((c) => current.ids.includes(c.id))];
 
   if (list.length === 0) {
     $("#editor-tiles").replaceChildren(el("p", { class: "empty", text: "No character matches these filters." }));
@@ -569,11 +581,14 @@ function renderTiles() {
         "aria-label": c.name,
         onclick: () => toggleMember(c.id),
       },
-        portrait(c, "small"),
-        el("span", { class: "tile-name", text: c.name }),
-        el("span", { class: "tile-factions" },
-          ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
-        )
+        portraitCard(c),
+        el("span", { class: "tile-label" },
+          el("span", { class: "tile-name", text: c.name }),
+          el("span", { class: "tile-factions" },
+            ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
+          )
+        ),
+        selected ? el("span", { class: "tile-check", "aria-hidden": "true", text: "✓" }) : null
       );
     })
   );

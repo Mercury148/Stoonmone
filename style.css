@@ -309,67 +309,87 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   transform: rotate(45deg);
 }
 
-.slots { display: flex; gap: 0.4rem; margin-top: 0.25rem; }
-.slot { flex: 1; height: 0.55rem; border-radius: 99px; background: var(--surface-2); }
-.slot.filled { background: var(--accent); }
-
 .badge { font-variant-numeric: tabular-nums; margin-left: 0.25rem; padding: 0.05rem 0.45rem; border-radius: 99px; background: var(--surface-2); color: var(--fg); font-size: 0.8rem; }
 .badge.big { flex: none; margin: 0; padding: 0.2rem 0.65rem; font-size: 0.95rem; font-weight: 600; }
 
-.member-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.75rem 0; min-height: 2.5rem; align-items: center; }
-.member-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 40px;
-  padding: 0.2rem 0.7rem;
-  background: var(--surface);
-  color: var(--fg);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-.member-chip .x { color: var(--muted); font-size: 1.1rem; line-height: 1; }
 
-/* Kleine Kacheln zum Auswählen */
-.tiles { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(6.75rem, 1fr)); }
+/* Portraitfläche (Bild oder Silhouette in der Fraktionsfarbe) */
+.pcard {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: hsl(var(--h) var(--fac-s) 24%);
+}
+.pcard svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pcard svg circle, .pcard svg path { fill: hsl(var(--h) var(--fac-s) 44%); }
+.pcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Die acht Plätze oben: Portraits, Tipp = Karte ansehen */
+.slots { display: flex; gap: 0.4rem; margin: 0.6rem 0 0.5rem; }
+.slot-portrait, .slot-empty {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 3.5rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px dashed var(--line);
+  background: var(--surface);
+}
+.slot-portrait { border: 1px solid var(--accent); }
+
+/* Auswahlkacheln: drei pro Reihe, Portrait mit Namen darunter */
+.tiles { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); }
 .tile {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.35rem;
+  display: block;
+  aspect-ratio: 5 / 6;
   min-height: 0;
-  padding: 0.6rem 0.4rem 0.5rem;
+  padding: 0;
+  overflow: hidden;
   background: var(--surface);
-  color: var(--fg);
+  color: #f1effa;
   border: 2px solid var(--line);
   border-radius: var(--radius);
+  text-align: left;
   font-weight: 400;
-  text-align: center;
+}
+.tile-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: 0.25rem;
+  padding: 1.1rem 0.45rem 0.4rem;
+  background: linear-gradient(to top, rgba(19, 21, 31, 0.92) 70%, rgba(19, 21, 31, 0));
 }
 .tile-name {
-  font: 600 0.82rem/1.2 var(--font-display);
+  font: 600 0.78rem/1.2 var(--font-display);
   overflow-wrap: anywhere;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.tile-factions { display: flex; gap: 0.3rem; min-height: 0.65rem; }
-.tile[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
-.tile[aria-pressed="true"]::after {
-  content: "";
+.tile-factions { display: flex; gap: 0.25rem; min-height: 0.65rem; }
+.tile[aria-pressed="true"] { border-color: var(--accent); }
+.tile-check {
   position: absolute;
-  top: 0.45rem;
-  right: 0.45rem;
-  width: 0.6rem;
-  height: 0.32rem;
-  border-left: 2px solid var(--accent);
-  border-bottom: 2px solid var(--accent);
-  transform: rotate(-45deg);
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-fg);
+  font-weight: 700;
+  font-size: 0.85rem;
 }
 .tile.blocked { opacity: 0.45; }
 
