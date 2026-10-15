@@ -25,443 +25,48 @@
     }
   ],
   "characters": [
-    {
-      "id": "hedda-grauschleier",
-      "name": "Diana, Queen of the Fae",
-      "faction": "dominion",
-      "keywords": [
-        "Faerie",
-        "Wizard"
-      ],
-      "stats": {
-        "leben": 6,
-        "energie": 5,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "For the Good of the Glade",
-          "text": "Einmal pro Runde: Bewege dieses Modell bis zu 2 Felder weit."
-        },
-        {
-          "name": "Dichter Dunst",
-          "text": "Wenn dieses Modell angegriffen wird, erhält es +1 Verteidigung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "torben-laternentraeger",
-      "name": "Torben Laternenträger",
-      "faction": "dominion",
-      "keywords": [
-        "Heiler",
-        "Flink"
-      ],
-      "stats": {
-        "leben": 4,
-        "energie": 3,
-        "bewegung": 3
-      },
-      "abilities": [
-        {
-          "name": "Warmes Licht",
-          "text": "Ein verbündetes Modell in Reichweite 2 heilt 1 Lebenspunkt."
-        },
-        {
-          "name": "Eilig voran",
-          "text": "Einmal pro Runde: Bewege dieses Modell bis zu 2 Felder weit."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "mirelle-dunstfuchs",
-      "name": "Mirelle Dunstfuchs",
-      "faction": "dominion",
-      "keywords": [
-        "Schütze",
-        "Flink"
-      ],
-      "stats": {
-        "leben": 3,
-        "energie": 2,
-        "bewegung": 3
-      },
-      "abilities": [
-        {
-          "name": "Fuchsauge",
-          "text": "Angriff aus Reichweite 3. Ignoriert Deckung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "old-kasimir",
-      "name": "Old Kasimir",
-      "faction": "dominion",
-      "keywords": [
-        "Kämpfer"
-      ],
-      "stats": {
-        "leben": 6,
-        "energie": 1,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Alter Dickschädel",
-          "text": "Dieses Modell kann nicht zurückgedrängt werden."
-        },
-        {
-          "name": "Zähe Haut",
-          "text": "Wenn dieses Modell angegriffen wird, erhält es +1 Verteidigung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "rosalind-dornenkrone",
-      "name": "Rosalind Dornenkrone",
-      "faction": "leshavult",
-      "keywords": [
-        "Anführer",
-        "Kämpfer"
-      ],
-      "stats": {
-        "leben": 6,
-        "energie": 2,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Rosenbann",
-          "text": "Solange dieses Modell unverletzt ist, erhalten Verbündete in Reichweite 1 +1 Bewegung."
-        },
-        {
-          "name": "Dornenmantel",
-          "text": "Wenn dieses Modell besiegt wird, erleidet ein Gegner in Reichweite 1 einen Schaden."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "brombeer-bruno",
-      "name": "Brombeer-Bruno",
-      "faction": "leshavult",
-      "keywords": [
-        "Wesen",
-        "Kämpfer"
-      ],
-      "stats": {
-        "leben": 7,
-        "energie": 1,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Stacheliger Griff",
-          "text": "Wenn dieses Modell besiegt wird, erleidet ein Gegner in Reichweite 1 einen Schaden."
-        },
-        {
-          "name": "Unbeirrbar",
-          "text": "Dieses Modell kann nicht zurückgedrängt werden."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "efeu-ida",
-      "name": "Efeu-Ida",
-      "faction": "leshavult",
-      "keywords": [
-        "Heiler",
-        "Zauberer"
-      ],
-      "stats": {
-        "leben": 4,
-        "energie": 4,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Rankenbalsam",
-          "text": "Ein verbündetes Modell in Reichweite 2 heilt 1 Lebenspunkt."
-        },
-        {
-          "name": "Wurzelruf",
-          "text": "Zahle 1 Energie: Ein Gegner in Reichweite 2 verliert 1 Energie."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "stachelpfeil-jori",
-      "name": "Stachelpfeil Jori",
-      "faction": "leshavult",
-      "keywords": [
-        "Schütze"
-      ],
-      "stats": {
-        "leben": 3,
-        "energie": 2,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Dornenpfeil",
-          "text": "Angriff aus Reichweite 3. Ignoriert Deckung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "wurzelwichtel-pim",
-      "name": "Wurzelwichtel Pim",
-      "faction": "leshavult",
-      "keywords": [
-        "Wesen",
-        "Flink"
-      ],
-      "stats": {
-        "leben": 2,
-        "energie": 2,
-        "bewegung": 4
-      },
-      "abilities": [
-        {
-          "name": "Huschen",
-          "text": "Einmal pro Runde: Bewege dieses Modell bis zu 2 Felder weit."
-        },
-        {
-          "name": "Kleines Ziel",
-          "text": "Wenn dieses Modell angegriffen wird, erhält es +1 Verteidigung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "hauptmann-alwin-zinn",
-      "name": "Hauptmann Alwin Zinn",
-      "faction": "shades",
-      "keywords": [
-        "Anführer",
-        "Kämpfer"
-      ],
-      "stats": {
-        "leben": 6,
-        "energie": 2,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Zu mir!",
-          "text": "Solange dieses Modell unverletzt ist, erhalten Verbündete in Reichweite 1 +1 Bewegung."
-        },
-        {
-          "name": "Schildwall",
-          "text": "Wenn dieses Modell angegriffen wird, erhält es +1 Verteidigung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "schwester-odile",
-      "name": "Schwester Odile",
-      "faction": "shades",
-      "keywords": [
-        "Heiler"
-      ],
-      "stats": {
-        "leben": 4,
-        "energie": 3,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Gebet der Glocke",
-          "text": "Ein verbündetes Modell in Reichweite 2 heilt 1 Lebenspunkt."
-        },
-        {
-          "name": "Ruhige Hand",
-          "text": "Zu Rundenbeginn: Erhalte 1 Energie."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "glockenwaechter-bertram",
-      "name": "Glockenwächter Bertram",
-      "faction": "shades",
-      "keywords": [
-        "Kämpfer",
-        "Wesen"
-      ],
-      "stats": {
-        "leben": 8,
-        "energie": 1,
-        "bewegung": 1
-      },
-      "abilities": [
-        {
-          "name": "Eherne Glieder",
-          "text": "Dieses Modell kann nicht zurückgedrängt werden."
-        },
-        {
-          "name": "Dumpfer Schlag",
-          "text": "Wenn dieses Modell besiegt wird, erleidet ein Gegner in Reichweite 1 einen Schaden."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "lena-armbrust",
-      "name": "Lena Armbrust",
-      "faction": "shades",
-      "keywords": [
-        "Schütze"
-      ],
-      "stats": {
-        "leben": 3,
-        "energie": 2,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Sicherer Bolzen",
-          "text": "Angriff aus Reichweite 3. Ignoriert Deckung."
-        },
-        {
-          "name": "Nachladen",
-          "text": "Zu Rundenbeginn: Erhalte 1 Energie."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "irrlicht-mara",
-      "name": "Irrlicht-Mara",
-      "faction": "commonwealth",
-      "keywords": [
-        "Zauberer",
-        "Flink"
-      ],
-      "stats": {
-        "leben": 3,
-        "energie": 4,
-        "bewegung": 3
-      },
-      "abilities": [
-        {
-          "name": "Täuschlicht",
-          "text": "Zahle 1 Energie: Ein Gegner in Reichweite 2 verliert 1 Energie."
-        },
-        {
-          "name": "Moorsprung",
-          "text": "Einmal pro Runde: Bewege dieses Modell bis zu 2 Felder weit."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "torfkoenig-gunnar",
-      "name": "Torfkönig Gunnar",
-      "faction": "commonwealth",
-      "keywords": [
-        "Anführer",
-        "Wesen"
-      ],
-      "stats": {
-        "leben": 7,
-        "energie": 2,
-        "bewegung": 1
-      },
-      "abilities": [
-        {
-          "name": "Schwerer Tritt",
-          "text": "Wenn dieses Modell besiegt wird, erleidet ein Gegner in Reichweite 1 einen Schaden."
-        },
-        {
-          "name": "Sumpfherrschaft",
-          "text": "Solange dieses Modell unverletzt ist, erhalten Verbündete in Reichweite 1 +1 Bewegung."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "funkenjunge-piet",
-      "name": "Funkenjunge Piet",
-      "faction": "commonwealth",
-      "keywords": [
-        "Flink",
-        "Zauberer"
-      ],
-      "stats": {
-        "leben": 3,
-        "energie": 3,
-        "bewegung": 3
-      },
-      "abilities": [
-        {
-          "name": "Funkenflug",
-          "text": "Angriff aus Reichweite 3. Ignoriert Deckung."
-        },
-        {
-          "name": "Glühender Eifer",
-          "text": "Zu Rundenbeginn: Erhalte 1 Energie."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "moorhexe-vesna",
-      "name": "Moorhexe Vesna",
-      "faction": "commonwealth",
-      "keywords": [
-        "Zauberer",
-        "Heiler"
-      ],
-      "stats": {
-        "leben": 4,
-        "energie": 4,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Kräutersud",
-          "text": "Ein verbündetes Modell in Reichweite 2 heilt 1 Lebenspunkt."
-        },
-        {
-          "name": "Fauler Zauber",
-          "text": "Zahle 1 Energie: Ein Gegner in Reichweite 2 verliert 1 Energie."
-        }
-      ],
-      "image": null
-    },
-    {
-      "id": "glutkaefer-klaus",
-      "name": "Glutkäfer Klaus",
-      "faction": "commonwealth",
-      "keywords": [
-        "Wesen",
-        "Kämpfer"
-      ],
-      "stats": {
-        "leben": 5,
-        "energie": 1,
-        "bewegung": 2
-      },
-      "abilities": [
-        {
-          "name": "Glühender Panzer",
-          "text": "Wenn dieses Modell angegriffen wird, erhält es +1 Verteidigung."
-        },
-        {
-          "name": "Zangenbiss",
-          "text": "Wenn dieses Modell besiegt wird, erleidet ein Gegner in Reichweite 1 einen Schaden."
-        }
-      ],
-      "image": null
-    }
+    {"id": "agatha-tavernfrau", "name": "Agatha Tavernfrau", "faction": "commonwealth", "keywords": ["Human"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "angerboda", "name": "Angerboda", "faction": "commonwealth", "keywords": ["Giant", "Soldier", "Norse", "Risen"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "baron-von-fancy-hat", "name": "Baron Von Fancy Hat", "faction": "commonwealth", "keywords": ["Human", "Noble"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "billy", "name": "Billy", "faction": "commonwealth", "keywords": ["Gnome", "Animal", "Militia"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "bjorn", "name": "Bjorn", "faction": "commonwealth", "keywords": ["Gnome", "Norse", "Mercenary"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "boris-the-bunny-summoner", "name": "Boris, The Bunny Summoner", "faction": "commonwealth", "keywords": ["Faun", "Wizard"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "brother-daniel", "name": "Brother Daniel", "faction": "commonwealth", "keywords": ["Cleric", "Human", "Cultist"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "brunhilde", "name": "Brunhilde", "faction": "commonwealth", "keywords": ["Mercenary", "Giant", "Norse"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "dim-and-dimmer", "name": "Dim & Dimmer", "faction": "commonwealth", "keywords": ["Giant"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "eric-the-squire", "name": "Eric The Squire", "faction": "commonwealth", "keywords": ["Human", "Soldier"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "flinders-memphis", "name": "Flinders Memphis", "faction": "commonwealth", "keywords": ["Gnome", "Machine"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "flintlock", "name": "Flintlock", "faction": "commonwealth", "keywords": ["Human", "Soldier"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "friar-flavious", "name": "Friar Flavious", "faction": "commonwealth", "keywords": ["Human", "Cleric"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "fritz", "name": "Fritz", "faction": "commonwealth", "keywords": ["Mercenary", "Human", "Soldier"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "gertrude-the-faerie-hunter", "name": "Gertrude the Faerie Hunter", "faction": "commonwealth", "keywords": ["Human", "Mercenary"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "gnomish-airship", "name": "Gnomish Airship", "faction": "commonwealth", "keywords": ["Gnome", "Militia", "Machine"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "gotchgut", "name": "Gotchgut", "faction": "commonwealth", "keywords": ["Giant", "Mercenary"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "gradock", "name": "Gradock", "faction": "commonwealth", "keywords": ["Militia", "Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "hoff", "name": "Hoff", "faction": "commonwealth", "keywords": ["Faun", "Soldier"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "jackalope", "name": "Jackalope", "faction": "commonwealth", "keywords": ["Animal"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "jayda", "name": "Jayda", "faction": "commonwealth", "keywords": ["Faun", "Soldier"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "joanna-nordic-princess", "name": "Joanna, Nordic Princess", "faction": "commonwealth", "keywords": ["Gnome", "Norse", "Noble"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "kaufman", "name": "Kaufman", "faction": "commonwealth", "keywords": ["Noble", "Human"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "liv", "name": "Liv", "faction": "commonwealth", "keywords": ["Cleric", "Norse", "Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "loki-nordic-shipwright", "name": "Loki, Nordic Shipwright", "faction": "commonwealth", "keywords": ["Norse", "Gnome", "Rogue"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "loubard", "name": "Loubard", "faction": "commonwealth", "keywords": ["Cultist", "Giant"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "mama-gimble", "name": "Mama Gimble", "faction": "commonwealth", "keywords": ["Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "matilda", "name": "Matilda", "faction": "commonwealth", "keywords": ["Human", "Animal"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "morris", "name": "Morris", "faction": "commonwealth", "keywords": ["Militia", "Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "mr-toodles", "name": "Mr Toodles", "faction": "commonwealth", "keywords": ["Cleric", "Faun"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "muridae", "name": "Muridae", "faction": "commonwealth", "keywords": ["Rogue", "Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "natty-slum-thief", "name": "Natty, Slum Thief", "faction": "commonwealth", "keywords": ["Rogue", "Human"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "old-calders", "name": "Old Calders", "faction": "commonwealth", "keywords": ["Soldier", "Human"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "old-polly", "name": "Old Polly", "faction": "commonwealth", "keywords": ["Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "olim", "name": "Olim", "faction": "commonwealth", "keywords": ["Noble", "Gnome", "Norse", "Animal"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "prof-boffinsworth", "name": "Prof Boffinsworth", "faction": "commonwealth", "keywords": ["Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "quack", "name": "Quack", "faction": "commonwealth", "keywords": ["Human", "Cleric", "Wizard"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "quarrel", "name": "Quarrel", "faction": "commonwealth", "keywords": ["Soldier", "Militia", "Gnome"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "sir-guillemot-poppycock", "name": "Sir Guillemot Poppycock", "faction": "commonwealth", "keywords": ["Noble", "Human"], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "sir-hogswash", "name": "Sir Hogswash", "faction": "commonwealth", "keywords": [], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "streatham", "name": "Streatham", "faction": "commonwealth", "keywords": [], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "tabby-the-librarian", "name": "Tabby, the Librarian", "faction": "commonwealth", "keywords": [], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null},
+    {"id": "young-jack", "name": "Young Jack", "faction": "commonwealth", "keywords": [], "stats": {"leben": 0, "energie": 0, "bewegung": 0}, "abilities": [], "image": null}
   ]
 }
