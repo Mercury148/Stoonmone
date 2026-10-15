@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Stoonmone</title>
   <meta name="theme-color" content="#13151f">
-  <meta name="description" content="Inoffizielle Begleit-App: Kompendium, Filter und Troupen-Verwaltung.">
+  <meta name="description" content="Unofficial companion app: compendium, filters and troupe management.">
 
   <!-- Damit die App auf dem iPhone wie eine echte App aussieht (Home-Bildschirm) -->
   <link rel="manifest" href="manifest.webmanifest">
@@ -27,12 +27,12 @@
       </svg>
       Stoonmone
     </h1>
-    <p class="sub">Inoffizielle Begleit-App</p>
+    <p class="sub">Unofficial companion app</p>
   </header>
 
   <main>
     <!-- ===== Seite 1: Kompendium (nur Nachschlagen) ===== -->
-    <section id="view-compendium" aria-label="Kompendium">
+    <section id="view-compendium" aria-label="Compendium">
       <p id="data-note" class="note" hidden></p>
       <!-- Suche, Fraktion und Keywords werden von app.js hier eingebaut -->
       <div id="compendium-filters"></div>
@@ -40,31 +40,31 @@
     </section>
 
     <!-- ===== Seite 2: Übersicht über alle Troupen ===== -->
-    <section id="view-troupes" aria-label="Troupen" hidden>
+    <section id="view-troupes" aria-label="Troupes" hidden>
       <div class="page-head">
-        <h2>Meine Troupen</h2>
-        <button id="new-troupe" class="add-btn" type="button" aria-label="Neue Troupe anlegen">+</button>
+        <h2>My Troupes</h2>
+        <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe">+</button>
       </div>
 
       <div id="troupe-list" class="troupe-list"></div>
       <p id="troupes-empty" class="empty" hidden>
-        Noch keine Troupe angelegt. Tippe oben auf das Plus, um eine zu erstellen.
+        No troupe yet. Tap the plus above to create one.
       </p>
 
       <details class="share">
-        <summary>Troupe aus Code laden</summary>
-        <p class="hint">Hat dir jemand einen Troupen-Code geschickt, oder hast du einen gesichert? Füge ihn hier ein. Die Troupe wird als neue Troupe angelegt.</p>
-        <label for="import-code">Code einfügen</label>
-        <textarea id="import-code" rows="3" placeholder="Code hier einfügen"></textarea>
-        <button id="import" type="button">Troupe laden</button>
+        <summary>Load troupe from code</summary>
+        <p class="hint">Did someone send you a troupe code, or did you save one? Paste it here. It is added as a new troupe.</p>
+        <label for="import-code">Paste code</label>
+        <textarea id="import-code" rows="3" placeholder="Paste code here"></textarea>
+        <button id="import" type="button">Load troupe</button>
       </details>
     </section>
 
     <!-- ===== Seite 3: Troupe zusammenstellen (Editor) ===== -->
-    <section id="view-editor" aria-label="Troupe bearbeiten" hidden>
+    <section id="view-editor" aria-label="Edit troupe" hidden>
       <div class="editor-bar">
-        <button id="editor-back" class="ghost back" type="button">Zurück</button>
-        <input id="editor-name" type="text" maxlength="40" autocomplete="off" aria-label="Name der Troupe">
+        <button id="editor-back" class="ghost back" type="button">Back</button>
+        <input id="editor-name" type="text" maxlength="40" autocomplete="off" aria-label="Troupe name">
         <span id="editor-count" class="badge big"></span>
       </div>
 
@@ -73,12 +73,12 @@
       <p id="editor-rule" class="hint" hidden></p>
 
       <details class="share">
-        <summary>Teilen, sichern und löschen</summary>
-        <p class="hint">Dein Browser kann gespeicherte Daten verlieren. Kopiere den Code und bewahre ihn zum Beispiel in einer Notiz auf. Auf der Übersichtsseite lässt er sich wieder laden.</p>
-        <label for="export-code">Code dieser Troupe</label>
+        <summary>Share, back up and delete</summary>
+        <p class="hint">Your browser can lose saved data. Copy the code and keep it somewhere safe, for example in a note. You can load it again on the troupes page.</p>
+        <label for="export-code">Code of this troupe</label>
         <textarea id="export-code" rows="3" readonly></textarea>
-        <button id="copy" type="button">Code kopieren</button>
-        <button id="delete-troupe" class="ghost" type="button">Troupe löschen</button>
+        <button id="copy" type="button">Copy code</button>
+        <button id="delete-troupe" class="ghost" type="button">Delete troupe</button>
       </details>
 
       <!-- Dieselben Filter wie im Kompendium, aber unabhängig davon -->
@@ -88,13 +88,13 @@
   </main>
 
   <!-- Untere Leiste zum Wechseln der Seiten (im Editor ausgeblendet) -->
-  <nav class="tabs" role="tablist" aria-label="Bereiche">
-    <button role="tab" id="tab-compendium" data-tab="compendium" aria-selected="true" type="button">Kompendium</button>
-    <button role="tab" id="tab-troupes" data-tab="troupes" aria-selected="false" type="button">Troupen</button>
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-compendium" data-tab="compendium" aria-selected="true" type="button">Compendium</button>
+    <button role="tab" id="tab-troupes" data-tab="troupes" aria-selected="false" type="button">Troupes</button>
   </nav>
 
   <!-- Detailansicht eines Charakters -->
-  <dialog id="detail" aria-label="Charakterdetails">
+  <dialog id="detail" aria-label="Character details">
     <div id="detail-body"></div>
   </dialog>
 

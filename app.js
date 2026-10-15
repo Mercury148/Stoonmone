@@ -143,7 +143,7 @@ function portrait(character, extraClass = "") {
 }
 
 function troupeLabel(t) {
-  return t.name.trim() || "Ohne Namen";
+  return t.name.trim() || "Unnamed";
 }
 
 
@@ -223,21 +223,21 @@ function decodeTroupe(code) {
 function createFilterPanel(container, onChange) {
   const state = { query: "", faction: "", keywords: new Set() };
 
-  const search = el("input", { type: "search", placeholder: "Suchen (Name, Keyword, Fähigkeit)", "aria-label": "Suchen", autocomplete: "off" });
-  const select = el("select", { "aria-label": "Fraktion" },
-    el("option", { value: "", text: "Alle Fraktionen" }),
+  const search = el("input", { type: "search", placeholder: "Search (name, keyword, ability)", "aria-label": "Search", autocomplete: "off" });
+  const select = el("select", { "aria-label": "Faction" },
+    el("option", { value: "", text: "All factions" }),
     ...data.factions.map((f) => el("option", { value: f.id, text: f.name }))
   );
   const summary = el("summary", {});
   const chips = el("div", { class: "chips" });
   const box = el("details", { class: "keyword-box" }, summary, chips);
   const count = el("span", {});
-  const reset = el("button", { class: "link", type: "button", text: "Filter zurücksetzen" });
+  const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
 
   container.replaceChildren(el("div", { class: "filters" }, search, select, box, meta));
 
-  const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "de"));
+  const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "en"));
 
   // Die Fraktionsauswahl wird nur einmal gebaut und nie neu aufgebaut, so springt sie nicht zurück.
   function renderKeywords() {
@@ -293,7 +293,7 @@ function createFilterPanel(container, onChange) {
     },
     // Zählzeile aktualisieren
     showCount(shown) {
-      count.textContent = `${shown} von ${data.characters.length} Charakteren`;
+      count.textContent = `${shown} of ${data.characters.length} characters`;
       reset.hidden = !(state.query || state.faction || state.keywords.size);
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
@@ -331,19 +331,19 @@ function fitsFactions(t, character) {
 function checkAdd(t, id) {
   const character = characterById.get(id);
   if (t.ids.length >= RULES.maxModels) {
-    return `Die Troupe ist voll (${RULES.maxModels} Modelle).`;
+    return `The troupe is full (${RULES.maxModels} models).`;
   }
   if (!RULES.allowDuplicates && t.ids.includes(id)) {
-    return `${character.name} ist schon in der Troupe.`;
+    return `${character.name} is already in the troupe.`;
   }
   if (!fitsFactions(t, character)) {
     const names = [...allowedFactions(t)].map((f) => factionById.get(f).name).join(", ");
-    return `${character.name} passt nicht zur Troupe. Noch möglich: ${names}.`;
+    return `${character.name} does not fit this troupe. Still possible: ${names}.`;
   }
   for (const [keyword, max] of Object.entries(RULES.maxPerKeyword)) {
     if (!character.keywords.includes(keyword)) continue;
     const count = t.ids.filter((i) => characterById.get(i).keywords.includes(keyword)).length;
-    if (count >= max) return `Höchstens ${max} Modell mit „${keyword}“ erlaubt.`;
+    if (count >= max) return `At most ${max} model with "${keyword}" allowed.`;
   }
   return null;
 }
@@ -376,7 +376,7 @@ function nextTroupeName() {
 }
 
 function createTroupe() {
-  if (troupes.length >= MAX_TROUPES) return toast(`Es sind höchstens ${MAX_TROUPES} Troupen möglich.`);
+  if (troupes.length >= MAX_TROUPES) return toast(`You can save at most ${MAX_TROUPES} troupes.`);
   const created = { id: newId(), name: nextTroupeName(), ids: [] };
   troupes.push(created);
   saveTroupes();
@@ -388,19 +388,19 @@ function deleteCurrentTroupe() {
   troupes = troupes.filter((t) => t !== current);
   saveTroupes();
   closeEditor();
-  toast(`„${name}“ gelöscht.`);
+  toast(`"${name}" deleted.`);
 }
 
 // Ein eingefügter Code wird als neue Troupe angelegt und überschreibt nichts.
 function importTroupe(code) {
   if (troupes.length >= MAX_TROUPES) {
-    return toast(`Es sind höchstens ${MAX_TROUPES} Troupen möglich. Lösche zuerst eine.`);
+    return toast(`You can save at most ${MAX_TROUPES} troupes. Delete one first.`);
   }
   let parsed;
   try {
     parsed = decodeTroupe(code);
   } catch {
-    return toast("Der Code konnte nicht gelesen werden.");
+    return toast("The code could not be read.");
   }
   const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, ids: [] };
   let skipped = 0;
@@ -412,8 +412,8 @@ function importTroupe(code) {
   saveTroupes();
   renderTroupes();
   toast(skipped
-    ? `„${troupeLabel(created)}“ geladen. ${skipped} Eintrag/Einträge passten nicht und wurden übersprungen.`
-    : `„${troupeLabel(created)}“ geladen.`);
+    ? `"${troupeLabel(created)}" loaded. ${skipped} entr${skipped === 1 ? "y" : "ies"} did not fit and ${skipped === 1 ? "was" : "were"} skipped.`
+    : `"${troupeLabel(created)}" loaded.`);
 }
 
 
@@ -425,14 +425,14 @@ function renderCards() {
   compendiumPanel.showCount(list.length);
 
   if (list.length === 0) {
-    $("#cards").replaceChildren(el("p", { class: "empty", text: "Kein Charakter passt zu diesen Filtern." }));
+    $("#cards").replaceChildren(el("p", { class: "empty", text: "No character matches these filters." }));
     return;
   }
 
   $("#cards").replaceChildren(
     ...list.map((c) =>
       el("article", { class: "card" },
-        el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: Details öffnen` },
+        el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
           el("div", { class: "card-text" },
             el("span", { class: "card-name", text: c.name }),
@@ -455,7 +455,7 @@ function renderTroupes() {
     ...troupes.map((t) =>
       el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
         el("span", { class: "troupe-name", text: troupeLabel(t) }),
-        el("span", { class: "troupe-meta", text: t.ids.length === max ? `${t.ids.length} von ${max} Modellen, komplett` : `${t.ids.length} von ${max} Modellen` }),
+        el("span", { class: "troupe-meta", text: t.ids.length === max ? `${t.ids.length} of ${max} models, complete` : `${t.ids.length} of ${max} models` }),
         el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       )
     )
@@ -474,12 +474,12 @@ function renderEditor() {
 
   $("#editor-members").replaceChildren(
     ...(count === 0
-      ? [el("span", { class: "hint", text: "Tippe unten auf Charaktere, um sie hinzuzufügen." })]
+      ? [el("span", { class: "hint", text: "Tap characters below to add them." })]
       : current.ids.map((id, index) => {
           const c = characterById.get(id);
           return el("span", { class: "member-chip" },
-            el("button", { class: "link", type: "button", text: c.name, onclick: () => openDetail(id), "aria-label": `${c.name}: Details öffnen` }),
-            el("button", { class: "link", type: "button", text: "×", onclick: () => removeMember(index), "aria-label": `${c.name} entfernen` })
+            el("button", { class: "link", type: "button", text: c.name, onclick: () => openDetail(id), "aria-label": `${c.name}: open details` }),
+            el("button", { class: "link", type: "button", text: "×", onclick: () => removeMember(index), "aria-label": `remove ${c.name}` })
           );
         }))
   );
@@ -491,7 +491,7 @@ function renderEditor() {
   rule.hidden = !(RULES.sameFaction && count > 0);
   if (!rule.hidden) {
     const names = [...allowedFactions(current)].map((f) => factionById.get(f).name);
-    rule.textContent = `Noch möglich: ${names.join(", ") || "keine Fraktion"}`;
+    rule.textContent = `Still possible: ${names.join(", ") || "no faction"}`;
   }
   renderTiles();
 }
@@ -503,7 +503,7 @@ function renderTiles() {
   editorPanel.showCount(list.length);
 
   if (list.length === 0) {
-    $("#editor-tiles").replaceChildren(el("p", { class: "empty", text: "Kein Charakter passt zu diesen Filtern." }));
+    $("#editor-tiles").replaceChildren(el("p", { class: "empty", text: "No character matches these filters." }));
     return;
   }
 
@@ -532,14 +532,14 @@ function renderTiles() {
 function openDetail(id) {
   const c = characterById.get(id);
   const close = el("div", { class: "detail-actions" },
-    el("button", { class: "ghost", type: "button", text: "Schließen", onclick: () => $("#detail").close() })
+    el("button", { class: "ghost", type: "button", text: "Close", onclick: () => $("#detail").close() })
   );
 
   // Variante 1: Der Charakter hat ein Kartenbild, dann zeigen wir nur das Bild
   if (c.card) {
     $("#detail-body").replaceChildren(
       el("div", { class: "detail" },
-        el("img", { class: "card-image", src: c.card, alt: `Charakterkarte: ${c.name}` }),
+        el("img", { class: "card-image", src: c.card, alt: `Character card: ${c.name}` }),
         close
       )
     );
@@ -561,12 +561,12 @@ function openDetail(id) {
       ),
       c.keywords.length ? el("div", { class: "tag-row" }, ...c.keywords.map((k) => el("span", { class: "tag", text: k }))) : null,
       c.stats
-        ? el("dl", { class: "stats" }, stat("Leben", c.stats.leben), stat("Energie", c.stats.energie), stat("Bewegung", c.stats.bewegung))
+        ? el("dl", { class: "stats" }, stat("Health", c.stats.leben), stat("Energy", c.stats.energie), stat("Movement", c.stats.bewegung))
         : null,
       c.abilities.length
         ? el("ul", { class: "abilities" },
             ...c.abilities.map((a) => el("li", {}, el("h3", { text: a.name }), el("p", { text: a.text }))))
-        : el("p", { class: "hint", text: "Werte und Regeltexte sind noch nicht eingetragen." }),
+        : el("p", { class: "hint", text: "Stats and rules text have not been entered yet." }),
       close
     )
   );
@@ -627,23 +627,23 @@ function wireEvents() {
     $("#export-code").value = current.ids.length ? encodeTroupe(current) : "";
   });
 
-  twoTap($("#delete-troupe"), "Wirklich löschen?", deleteCurrentTroupe);
+  twoTap($("#delete-troupe"), "Really delete?", deleteCurrentTroupe);
 
   $("#copy").addEventListener("click", async () => {
     const field = $("#export-code");
-    if (!field.value) return toast("Noch nichts zu kopieren.");
+    if (!field.value) return toast("Nothing to copy yet.");
     try {
       await navigator.clipboard.writeText(field.value);
-      toast("Code kopiert.");
+      toast("Code copied.");
     } catch {
       field.select();
-      toast("Bitte den markierten Code manuell kopieren.");
+      toast("Please copy the selected code manually.");
     }
   });
 
   $("#import").addEventListener("click", () => {
     const code = $("#import-code").value;
-    if (!code.trim()) return toast("Bitte zuerst einen Code einfügen.");
+    if (!code.trim()) return toast("Please paste a code first.");
     importTroupe(code);
     $("#import-code").value = "";
   });
@@ -657,13 +657,13 @@ function checkData() {
   const problems = [];
   const seen = new Set();
   for (const c of data.characters) {
-    if (seen.has(c.id)) problems.push(`Die ID „${c.id}“ kommt mehrfach vor.`);
+    if (seen.has(c.id)) problems.push(`The ID "${c.id}" appears more than once.`);
     seen.add(c.id);
     for (const fid of c.factions) {
-      if (!factionById.has(fid)) problems.push(`${c.name}: unbekannte Fraktion „${fid}“.`);
+      if (!factionById.has(fid)) problems.push(`${c.name}: unknown faction "${fid}".`);
     }
     if (!Array.isArray(c.keywords) || !Array.isArray(c.abilities)) {
-      problems.push(`${c.name}: „keywords“ und „abilities“ müssen Listen sein, notfalls leer [].`);
+      problems.push(`${c.name}: "keywords" and "abilities" must be lists, empty [] if necessary.`);
     }
   }
   return problems;
@@ -678,7 +678,7 @@ async function boot() {
     data = await response.json();
   } catch (err) {
     $("#cards").replaceChildren(el("p", { class: "empty", text:
-      `Die Daten konnten nicht geladen werden (${err.message}). Prüfe, ob data/characters.json im Repository liegt und gültig ist.` }));
+      `The data could not be loaded (${err.message}). Check that data/characters.json is in the repository and valid.` }));
     return;
   }
 
@@ -692,7 +692,7 @@ async function boot() {
   const problems = checkData();
   if (problems.length) {
     $("#cards").replaceChildren(
-      el("p", { class: "empty", text: "In data/characters.json stimmt etwas nicht:" }),
+      el("p", { class: "empty", text: "Something is wrong in data/characters.json:" }),
       el("ul", {}, ...problems.slice(0, 10).map((p) => el("li", { text: p })))
     );
     return;
