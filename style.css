@@ -179,6 +179,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .card-faction { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); }
 .dot { flex: none; width: 0.65rem; height: 0.65rem; border-radius: 50%; background: hsl(var(--h) var(--fac-s) var(--fac-l)); }
 .card-kw { font-size: 0.8rem; color: var(--muted); }
+.card-faction { flex-wrap: wrap; column-gap: 0.75rem; row-gap: 0.1rem; }
+   .faction-tag { display: inline-flex; align-items: center; gap: 0.35rem; }
+   .card-image { display: block; width: 100%; max-height: 65vh; object-fit: contain; border-radius: var(--radius); }
 .card-add {
   flex: none;
   width: 6rem;

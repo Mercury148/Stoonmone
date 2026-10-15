@@ -1,7 +1,7 @@
 "use strict";
 
 /* ==========================================================
-   Stoonmone: die ganze Logik der App in einer Datei.
+   Mondbuch: die ganze Logik der App in einer Datei.
 
    Aufbau:
    1. Einstellungen und Listenregeln
@@ -17,14 +17,14 @@
 /* ---------- 1. Einstellungen und Listenregeln ---------- */
 
 // Alle Listenregeln stehen hier an einer Stelle.
-// Passe sie an das Regelbuch an. Die Regel für "Anführer" ist nur ein Beispiel.
+// Passe sie an das Regelbuch an.
 const RULES = {
   maxModels: 8,               // so viele Modelle gehören in eine Troupe
   allowDuplicates: false,     // darf derselbe Charakter zweimal vorkommen?
-  maxPerKeyword: { "Anführer": 1 },  // höchstens so viele Modelle mit diesem Keyword
+  maxPerKeyword: {},          // Beispiel: { "Noble": 1 } = höchstens 1 Modell mit diesem Keyword
 };
 
-const STORAGE_KEY = "stoonmone-troupe-v1";
+const STORAGE_KEY = "mondbuch-troupe-v1";
 
 
 /* ---------- 2. Zustand ---------- */
@@ -75,16 +75,35 @@ function toast(message) {
   toastTimer = setTimeout(() => (box.hidden = true), 2600);
 }
 
-// Farbe einer Fraktion. sat = Sättigung in Prozent, 0 ergibt Grau.
-   function factionStyle(faction) {
-     const sat = faction.sat ?? 55;   // ohne Angabe bleibt es bei 55
-     return `--h:${faction.hue}; --fac-s:${sat}%`;
-   }
+// Farbe einer Fraktion: Farbton (hue) und optional Sättigung (sat, in Prozent).
+// sat = 0 ergibt Grau. Ohne Angabe bleibt es bei 55.
+function factionStyle(faction) {
+  const sat = faction.sat ?? 55;
+  return `--h:${faction.hue}; --fac-s:${sat}%`;
+}
+
+// Ein Charakter kann in mehreren Fraktionen spielbar sein.
+// Für Farben nehmen wir die erste Fraktion in seiner Liste.
+function primaryFaction(character) {
+  return factionById.get(character.factions[0]);
+}
+
+// Die Zeile mit allen Fraktionen eines Charakters: Farbpunkt und Name je Fraktion
+function factionLine(character) {
+  const parts = character.factions.map((id) => {
+    const faction = factionById.get(id);
+    return el("span", { class: "faction-tag" },
+      el("span", { class: "dot", style: factionStyle(faction) }),
+      faction.name
+    );
+  });
+  return el("span", { class: "card-faction" }, ...parts);
+}
 
 // Das Porträt: ein Bild, falls der Charakter eines hat, sonst ein Kreis mit Initialen.
 function portrait(character, extraClass = "") {
-  const faction = factionById.get(character.faction);
-  const box = el("div", { class: `portrait ${extraClass}`, style: `--h:${faction.hue}`, "aria-hidden": "true" });
+  const faction = primaryFaction(character);
+  const box = el("div", { class: `portrait ${extraClass}`, style: factionStyle(faction), "aria-hidden": "true" });
   if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy" }));
   else box.textContent = initials(character.name);
   return box;
@@ -192,11 +211,17 @@ function importTroupe(code) {
 function visibleCharacters() {
   const query = filters.query.trim().toLowerCase();
   return data.characters.filter((c) => {
-    if (filters.faction && c.faction !== filters.faction) return false;
+    // Ein Charakter erscheint in jeder Fraktion, zu der er gehört
+    if (filters.faction && !c.factions.includes(filters.faction)) return false;
     // Alle gewählten Keywords müssen zutreffen (UND-Verknüpfung)
     for (const keyword of filters.keywords) if (!c.keywords.includes(keyword)) return false;
     if (query) {
-      const text = [c.name, ...c.keywords, ...c.abilities.flatMap((a) => [a.name, a.text])].join(" ").toLowerCase();
+      const text = [
+        c.name,
+        ...c.keywords,
+        ...c.factions.map((id) => factionById.get(id).name),
+        ...c.abilities.flatMap((a) => [a.name, a.text]),
+      ].join(" ").toLowerCase();
       if (!text.includes(query)) return false;
     }
     return true;
@@ -251,15 +276,14 @@ function renderCards() {
 
   $("#cards").replaceChildren(
     ...list.map((c) => {
-      const faction = factionById.get(c.faction);
       const inTroupe = troupe.ids.includes(c.id);
       return el("article", { class: "card" },
         el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: Details öffnen` },
           portrait(c),
           el("div", { class: "card-text" },
             el("span", { class: "card-name", text: c.name }),
-            el("span", { class: "card-faction" }, el("span", { class: "dot", style: `--h:${faction.hue}` }), faction.name),
-            el("span", { class: "card-kw", text: c.keywords.join(" · ") })
+            factionLine(c),
+            c.keywords.length ? el("span", { class: "card-kw", text: c.keywords.join(" · ") }) : null
           )
         ),
         el("button", {
@@ -290,13 +314,12 @@ function renderTroupe() {
   $("#members").replaceChildren(
     ...troupe.ids.map((id, index) => {
       const c = characterById.get(id);
-      const faction = factionById.get(c.faction);
       return el("li", { class: "member" },
         el("button", { class: "open", type: "button", onclick: () => openDetail(id), "aria-label": `${c.name}: Details öffnen` },
           portrait(c),
           el("div", { class: "card-text" },
             el("span", { class: "card-name", text: c.name }),
-            el("span", { class: "card-faction" }, el("span", { class: "dot", style: `--h:${faction.hue}` }), faction.name)
+            factionLine(c)
           )
         ),
         el("button", { class: "ghost remove", type: "button", "aria-label": `${c.name} entfernen`, text: "Entfernen", onclick: () => removeFromTroupe(index) })
@@ -310,10 +333,36 @@ function renderTroupe() {
 // Detailansicht in einem <dialog>-Fenster
 function openDetail(id) {
   const c = characterById.get(id);
-  const faction = factionById.get(c.faction);
   const problem = checkAdd(id);
 
+  // Die Knöpfe unten sind in beiden Varianten gleich
+  const actions = el("div", { class: "detail-actions" },
+    el("button", {
+      type: "button",
+      text: troupe.ids.includes(id) ? "Schon in der Troupe" : "Zur Troupe hinzufügen",
+      disabled: problem ? "" : null,
+      onclick: () => { addToTroupe(id); $("#detail").close(); },
+    }),
+    el("button", { class: "ghost", type: "button", text: "Schließen", onclick: () => $("#detail").close() })
+  );
+  const hint = problem && !troupe.ids.includes(id) ? el("p", { class: "hint", text: problem }) : null;
+
+  // Variante 1: Der Charakter hat ein Kartenbild, dann zeigen wir nur das Bild
+  if (c.card) {
+    $("#detail-body").replaceChildren(
+      el("div", { class: "detail" },
+        el("img", { class: "card-image", src: c.card, alt: `Charakterkarte: ${c.name}` }),
+        actions,
+        hint
+      )
+    );
+    $("#detail").showModal();
+    return;
+  }
+
+  // Variante 2: kein Bild, dann Text. Werte und Regeln erscheinen nur, wenn sie eingetragen sind.
   const stat = (label, value) => el("div", {}, el("dt", { text: label }), el("dd", { text: String(value) }));
+  const hasAbilities = c.abilities.length > 0;
 
   $("#detail-body").replaceChildren(
     el("div", { class: "detail" },
@@ -321,24 +370,19 @@ function openDetail(id) {
         portrait(c, "big"),
         el("div", {},
           el("h2", { text: c.name }),
-          el("span", { class: "card-faction" }, el("span", { class: "dot", style: `--h:${faction.hue}` }), faction.name)
+          factionLine(c)
         )
       ),
-      el("div", { class: "tag-row" }, ...c.keywords.map((k) => el("span", { class: "tag", text: k }))),
-      el("dl", { class: "stats" }, stat("Leben", c.stats.leben), stat("Energie", c.stats.energie), stat("Bewegung", c.stats.bewegung)),
-      el("ul", { class: "abilities" },
-        ...c.abilities.map((a) => el("li", {}, el("h3", { text: a.name }), el("p", { text: a.text })))
-      ),
-      el("div", { class: "detail-actions" },
-        el("button", {
-          type: "button",
-          text: troupe.ids.includes(id) ? "Schon in der Troupe" : "Zur Troupe hinzufügen",
-          disabled: problem ? "" : null,
-          onclick: () => { addToTroupe(id); $("#detail").close(); },
-        }),
-        el("button", { class: "ghost", type: "button", text: "Schließen", onclick: () => $("#detail").close() })
-      ),
-      problem && !troupe.ids.includes(id) ? el("p", { class: "hint", text: problem }) : null
+      c.keywords.length ? el("div", { class: "tag-row" }, ...c.keywords.map((k) => el("span", { class: "tag", text: k }))) : null,
+      c.stats
+        ? el("dl", { class: "stats" }, stat("Leben", c.stats.leben), stat("Energie", c.stats.energie), stat("Bewegung", c.stats.bewegung))
+        : null,
+      hasAbilities
+        ? el("ul", { class: "abilities" },
+            ...c.abilities.map((a) => el("li", {}, el("h3", { text: a.name }), el("p", { text: a.text }))))
+        : el("p", { class: "hint", text: "Werte und Regeltexte sind noch nicht eingetragen." }),
+      actions,
+      hint
     )
   );
   $("#detail").showModal();
@@ -415,6 +459,24 @@ function wireEvents() {
   $("#detail").addEventListener("click", (e) => { if (e.target === $("#detail")) $("#detail").close(); });
 }
 
+// Prüft die Daten und meldet Fehler in verständlichen Sätzen.
+// Gibt eine Liste von Problemen zurück (leer = alles in Ordnung).
+function checkData() {
+  const problems = [];
+  const seen = new Set();
+  for (const c of data.characters) {
+    if (seen.has(c.id)) problems.push(`Die ID „${c.id}“ kommt mehrfach vor.`);
+    seen.add(c.id);
+    for (const fid of c.factions) {
+      if (!factionById.has(fid)) problems.push(`${c.name}: unbekannte Fraktion „${fid}“.`);
+    }
+    if (!Array.isArray(c.keywords) || !Array.isArray(c.abilities)) {
+      problems.push(`${c.name}: „keywords“ und „abilities“ müssen Listen sein, notfalls leer [].`);
+    }
+  }
+  return problems;
+}
+
 async function boot() {
   wireEvents();
 
@@ -422,14 +484,28 @@ async function boot() {
     const response = await fetch("data/characters.json");
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     data = await response.json();
-  } catch {
+  } catch (err) {
     $("#cards").replaceChildren(el("p", { class: "empty", text:
-      "Die Daten konnten nicht geladen werden. Öffne die App über einen kleinen lokalen Server (zum Beispiel VS Code mit „Live Server“) und nicht per Doppelklick auf die Datei." }));
+      `Die Daten konnten nicht geladen werden (${err.message}). Prüfe, ob data/characters.json im Repository liegt und gültig ist.` }));
     return;
   }
 
   data.factions.forEach((f) => factionById.set(f.id, f));
-  data.characters.forEach((c) => characterById.set(c.id, c));
+  // Alte Einträge mit nur einer Fraktion ("faction") funktionieren weiter
+  data.characters.forEach((c) => {
+    if (!c.factions) c.factions = [c.faction];
+    characterById.set(c.id, c);
+  });
+
+  // Fehler in der JSON nicht stumm schlucken, sondern anzeigen
+  const problems = checkData();
+  if (problems.length) {
+    $("#cards").replaceChildren(
+      el("p", { class: "empty", text: "In data/characters.json stimmt etwas nicht:" }),
+      el("ul", {}, ...problems.slice(0, 10).map((p) => el("li", { text: p })))
+    );
+    return;
+  }
 
   if (data.meta && data.meta.note) {
     $("#data-note").textContent = data.meta.note;
