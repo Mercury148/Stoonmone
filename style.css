@@ -255,6 +255,49 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .share button { margin-top: 0.6rem; }
 .hint { color: var(--muted); font-size: 0.9rem; margin: 0.25rem 0 0; }
 
+/* layout for troupe page: side list + panel */
+.troupe-shell {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.troupe-list {
+  min-width: 10rem;
+  max-width: 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.troupe-list .chip {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+.troupe-list .chip.selected {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* Floating + button bottom-right */
+.floating-plus {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border: 0;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  z-index: 20;
+}
+.floating-plus:active { transform: translateY(1px); }
+.ghost.danger { border-color: var(--danger); color: var(--danger); }
+
 /* ---------- Untere Leiste ---------- */
 .tabs {
   position: fixed;

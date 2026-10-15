@@ -56,9 +56,15 @@
       <div id="cards" class="cards"></div>
     </section>
 
-    <!-- ===== Ansicht 2: Troupe ===== -->
-    <section id="view-troupe" aria-label="Troupe" hidden>
-      <label for="troupe-name">Name der Troupe</label>
+    <!-- ===== Ansicht 2: Troupes ===== -->
+<section id="view-troupe" aria-label="Troupes" hidden>
+  <div class="troupe-shell">
+    <aside class="troupe-list" id="troupe-list" aria-label="Saved troupes">
+      <!-- Buttons for each troupe will be injected here -->
+    </aside>
+
+    <div class="troupe-panel">
+      <label for="troupe-name">Name of the troupe</label>
       <input id="troupe-name" type="text" maxlength="40" autocomplete="off">
 
       <div class="slots" id="slots" aria-hidden="true"></div>
@@ -66,27 +72,32 @@
 
       <ol id="members" class="members"></ol>
       <p id="troupe-empty" class="empty" hidden>
-        Noch keine Modelle. Wechsle zum Kompendium und tippe bei einem Charakter auf „Hinzufügen“.
+        No members yet. Switch to the Compendium and select a troupe to add characters.
       </p>
 
       <div class="troupe-actions">
-        <button id="clear" class="ghost" type="button">Troupe leeren</button>
+        <button id="clear" class="ghost" type="button">Clear troupe</button>
+        <button id="duplicate-troupe" class="ghost" type="button">Duplicate</button>
+        <button id="delete-troupe" class="ghost danger" type="button">Delete</button>
       </div>
 
       <details class="share">
-        <summary>Teilen und sichern</summary>
-        <p class="hint">Dein Browser kann gespeicherte Daten verlieren. Kopiere den Code und bewahre ihn irgendwo auf, zum Beispiel in einer Notiz. Mit demselben Code lässt sich die Troupe auf einem anderen Gerät laden.</p>
+        <summary>Share / backup</summary>
 
-        <label for="export-code">Dein Troupen-Code</label>
+        <label for="export-code">Troupe code</label>
         <textarea id="export-code" rows="3" readonly></textarea>
-        <button id="copy" type="button">Code kopieren</button>
+        <button id="copy" type="button">Copy code</button>
 
-        <label for="import-code">Code einfügen</label>
-        <textarea id="import-code" rows="3" placeholder="Code hier einfügen"></textarea>
-        <button id="import" type="button">Troupe laden</button>
+        <label for="import-code">Paste code</label>
+        <textarea id="import-code" rows="3" placeholder="Paste code here"></textarea>
+        <button id="import" type="button">Import troupe</button>
       </details>
-    </section>
-  </main>
+    </div>
+  </div>
+</section>
+
+<!-- floating new-troupe button -->
+<button id="new-troupe" class="floating-plus" aria-label="New Troupe" title="New Troupe">+</button>
 
   <!-- Untere Leiste zum Wechseln der Ansichten -->
   <nav class="tabs" role="tablist" aria-label="Bereiche">
