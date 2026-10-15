@@ -4,13 +4,13 @@
   },
   "factions": [
     {
-      "id": "commonwealth",
-      "name": "Commonwealth",
+      "id": "gluehmoor",
+      "name": "GlÜhmoor",
       "hue": 50
     },
     {
-      "id": "dominion",
-      "name": "Dominion",
+      "id": "nebelwacht",
+      "name": "Nebelwacht",
       "hue": 240
     },
     {
@@ -19,8 +19,8 @@
       "hue": 120
     },
     {
-      "id": "shades",
-      "name": "Shades of Moonreach",
+      "id": "zinnorden",
+      "name": "Zinnorden",
       "hue": 28
     }
   ],
@@ -28,10 +28,10 @@
     {
       "id": "diana-queen-of-the-fae",
       "name": "Diana, Queen of the Fae",
-      "faction": "dominion",
+      "faction": "nebelwacht",
       "keywords": [
-        "Faerie",
-        "Wizard"
+        "Flink",
+        "Heiler"
       ],
       "stats": {
         "leben": 5,
