@@ -23,6 +23,90 @@ const RULES = {
   allowDuplicates: false,     // darf derselbe Charakter zweimal vorkommen? // 
 };
 
+// Core helpers for troupe faction filtering
+const ALL_FACTIONS = ['commonwealth', 'dominion', 'leshavult', 'shades'];
+
+function normalizeFactions(factions) {
+  if (!factions) return [];
+  if (Array.isArray(factions)) return factions.map(f => String(f).toLowerCase()).filter(Boolean);
+  return [String(factions).toLowerCase()];
+}
+
+function toSet(arr) {
+  return new Set(arr);
+}
+
+function intersection(sets) {
+  if (!sets || sets.length === 0) return new Set();
+  const acc = new Set(sets[0]);
+  for (let i = 1; i < sets.length; i++) {
+    for (const v of Array.from(acc)) {
+      if (!sets[i].has(v)) acc.delete(v);
+    }
+  }
+  return acc;
+}
+
+/**
+ * Compute allowed factions given current members.
+ * - If members is empty, returns allFactions (defaults to ALL_FACTIONS).
+ * - Otherwise, returns the intersection of member faction-sets.
+ */
+function computeAllowedFactions(members = [], allFactions = ALL_FACTIONS) {
+  if (!members || members.length === 0) {
+    return new Set(allFactions.map(f => String(f).toLowerCase()));
+  }
+  const sets = members.map(m => toSet(normalizeFactions(m.factions || m.faction)));
+  return intersection(sets);
+}
+
+/** Returns true if character has at least one faction in allowedSet */
+function characterMatchesAllowed(character, allowedSet) {
+  const charSet = toSet(normalizeFactions(character.factions || character.faction));
+  for (const f of charSet) {
+    if (allowedSet.has(f)) return true;
+  }
+  return false;
+}
+
+/**
+ * Attempt to add character to troupe.
+ * Returns { ok: true, troupe, allowedFactions } on success,
+ * or { ok: false, error } on failure.
+ * This does not persist; mutate/persist as your app requires.
+ */
+function addCharacterToTroupe(troupe = {}, character, allFactions = ALL_FACTIONS) {
+  const members = Array.isArray(troupe.members) ? troupe.members : [];
+  const allowed = computeAllowedFactions(members, allFactions);
+  // If troupe was empty, allowed == allFactions, so any character is allowed.
+  if (!characterMatchesAllowed(character, allowed)) {
+    return {
+      ok: false,
+      error: `Character cannot be added; does not match allowed factions: ${[...allowed].join(', ')}`,
+    };
+  }
+  const newMembers = members.concat([character]);
+  const newAllowed = computeAllowedFactions(newMembers, allFactions);
+  return { ok: true, troupe: { ...troupe, members: newMembers }, allowedFactions: newAllowed };
+}
+
+/** Remove a character by id and recompute allowed factions */
+function removeCharacterFromTroupe(troupe = {}, characterId, allFactions = ALL_FACTIONS) {
+  const members = Array.isArray(troupe.members) ? troupe.members : [];
+  const newMembers = members.filter(m => m.id !== characterId);
+  const newAllowed = computeAllowedFactions(newMembers, allFactions);
+  return { troupe: { ...troupe, members: newMembers }, allowedFactions: newAllowed };
+}
+
+module.exports = {
+  ALL_FACTIONS,
+  normalizeFactions,
+  computeAllowedFactions,
+  characterMatchesAllowed,
+  addCharacterToTroupe,
+  removeCharacterFromTroupe,
+};
+
 const STORAGE_KEY = "Stoonmone-troupe-v1";
 
 
@@ -162,7 +246,7 @@ function checkAdd(id) {
   if (!RULES.allowDuplicates && troupe.ids.includes(id)) {
     return `${character.name} ist schon in der Troupe.`;  
   }
-  
+
   return null;
 }
 
