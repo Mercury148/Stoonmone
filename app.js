@@ -579,6 +579,72 @@ function renderTiles() {
   );
 }
 
+// --- Kartenansicht: die Charakterkarte groß, ein Tipp dreht sie um ---
+
+const HINT_KEY = "stoonmone-hint-flip-v1";   // gesetzt, wenn der Tipp nie mehr erscheinen soll
+let hintShownThisSession = false;            // der Tipp erscheint höchstens einmal pro App-Start
+
+function hintDisabled() {
+  try { return localStorage.getItem(HINT_KEY) === "1"; } catch { return false; }
+}
+function disableHint() {
+  try { localStorage.setItem(HINT_KEY, "1"); } catch { /* ignorieren */ }
+}
+
+// Kleiner Tipp auf der Karte mit "Nicht mehr anzeigen"
+function buildFlipHint() {
+  hintShownThisSession = true;
+  const check = el("input", { type: "checkbox", id: "hint-off" });
+  const box = el("div", { class: "card-hint", role: "note" },
+    el("p", { text: "Tap the card to flip it and see the signature move." }),
+    el("label", { class: "hint-check", for: "hint-off" }, check, "Don't show this again"),
+    el("button", { type: "button", text: "Got it", onclick: () => {
+      if (check.checked) disableHint();
+      box.remove();
+    } })
+  );
+  return box;
+}
+
+function openCardView(c) {
+  const hasBack = Boolean(c.cardBack);
+  let hint = hasBack && !hintDisabled() && !hintShownThisSession ? buildFlipHint() : null;
+
+  const side = el("div", { class: "card-side", text: hasBack ? "Front" : "" });
+  const faces = [
+    el("div", { class: "card-face" }, el("img", { src: c.card, alt: `Character card: ${c.name}` })),
+  ];
+  if (hasBack) {
+    faces.push(el("div", { class: "card-face back" }, el("img", { src: c.cardBack, alt: `Back of the card with the signature move: ${c.name}` })));
+  }
+  const inner = el("div", { class: "card-inner" }, ...faces);
+
+  let card;
+  if (hasBack) {
+    card = el("button", { class: "card-flip", type: "button", "aria-label": "Flip card", "aria-pressed": "false" }, inner);
+    card.addEventListener("click", () => {
+      const flipped = card.classList.toggle("flipped");
+      card.setAttribute("aria-pressed", String(flipped));
+      side.textContent = flipped ? "Back" : "Front";
+      // Wer umdreht, hat es verstanden: der Tipp erscheint nicht mehr
+      if (hint) { hint.remove(); hint = null; }
+      disableHint();
+    });
+  } else {
+    card = el("div", { class: "card-flip" }, inner);
+  }
+
+  $("#detail-body").replaceChildren(
+    el("div", { class: "detail card-wrap" },
+      side,
+      el("div", { class: "card-stage" }, card, hint),
+      el("button", { class: "card-close", type: "button", text: "Close", onclick: () => $("#detail").close() })
+    )
+  );
+  $("#detail").classList.add("card-view");
+  $("#detail").showModal();
+}
+
 // Detailansicht in einem <dialog>-Fenster (nur Nachschlagen, ohne Hinzufügen)
 function openDetail(id) {
   const c = characterById.get(id);
@@ -586,17 +652,9 @@ function openDetail(id) {
     el("button", { class: "ghost", type: "button", text: "Close", onclick: () => $("#detail").close() })
   );
 
-  // Variante 1: Der Charakter hat ein Kartenbild, dann zeigen wir nur das Bild
-  if (c.card) {
-    $("#detail-body").replaceChildren(
-      el("div", { class: "detail" },
-        el("img", { class: "card-image", src: c.card, alt: `Character card: ${c.name}` }),
-        close
-      )
-    );
-    $("#detail").showModal();
-    return;
-  }
+  // Variante 1: Der Charakter hat ein Kartenbild, dann zeigen wir die Karte (mit Rückseite zum Umdrehen)
+  if (c.card) return openCardView(c);
+  $("#detail").classList.remove("card-view");
 
   // Variante 2: kein Bild, dann Text. Werte und Regeln erscheinen nur, wenn sie eingetragen sind.
   const stat = (label, value) => el("div", {}, el("dt", { text: label }), el("dd", { text: String(value) }));
@@ -700,7 +758,9 @@ function wireEvents() {
   });
 
   // Klick auf den abgedunkelten Rand schließt das Detailfenster
-  $("#detail").addEventListener("click", (e) => { if (e.target === $("#detail")) $("#detail").close(); });
+  $("#detail").addEventListener("click", (e) => {
+    if (e.target === $("#detail") || e.target.classList.contains("card-wrap")) $("#detail").close();
+  });
 }
 
 // Prüft die Daten und meldet Fehler in verständlichen Sätzen.

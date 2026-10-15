@@ -7,7 +7,8 @@
     {"id": "shades", "name": "Shades of Moonreach", "hue": 265, "sat": 14}
   ],
   "characters": [
-    {"id": "abra-cadaverous", "name": "Abra Cadaverous", "factions": ["shades"], "keywords": ["Spirit"], "stats": null, "abilities": [], "image": null},
+    {"id": "abra-cadaverous", "name": "Abra Cadaverous", "factions": ["shades"], "keywords": ["Spirit"], "stats": null, "abilities": [], "image": null, "card": "images/placeholder-front.svg",
+"cardBack": "images/placeholder-back.svg"},
     {"id": "agatha-tavernfrau", "name": "Agatha Tavernfrau", "factions": ["commonwealth"], "keywords": ["Human"], "stats": null, "abilities": [], "image": null},
     {"id": "angerboda", "name": "Angerboda", "factions": ["commonwealth", "shades"], "keywords": ["Giant", "Soldier", "Norse", "Risen"], "stats": null, "abilities": [], "image": null},
     {"id": "antonia-noonday-witch", "name": "Antonia, Noonday Witch", "factions": ["leshavult"], "keywords": ["Spirit", "Witch"], "stats": null, "abilities": [], "image": null},

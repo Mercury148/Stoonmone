@@ -443,3 +443,68 @@ body.editing .toast { bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
 
 /* Leer-Hinweis über die ganze Breite des Rasters */
 .cards .empty, .tiles .empty, .troupe-list .empty { grid-column: 1 / -1; }
+
+
+/* ---------- Kartenansicht (Karte groß, Tipp = umdrehen) ---------- */
+dialog.card-view {
+  width: min(22rem, calc((100dvh - 10rem) / 1.4), calc(100vw - 2rem));
+  max-height: none;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+}
+dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
+.card-view .detail { padding: 0; gap: 0.75rem; justify-items: center; }
+
+.card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.card-stage { position: relative; width: 100%; }
+
+.card-flip {
+  display: block;
+  width: 100%;
+  aspect-ratio: 5 / 7;
+  min-height: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  border-radius: 14px;
+  perspective: 1400px;
+}
+.card-inner { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 0.55s; }
+.card-flip.flipped .card-inner { transform: rotateY(180deg); }
+.card-face { position: absolute; inset: 0; border-radius: 14px; overflow: hidden; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.card-face.back { transform: rotateY(180deg); }
+.card-face img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
+.card-close {
+  width: 75%;
+  min-height: 56px;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  font-size: 1.1rem;
+}
+
+/* Kleiner Tipp auf der Karte, mit "Nicht mehr anzeigen" */
+.card-hint {
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  font-size: 0.9rem;
+}
+.card-hint p { margin: 0; }
+.card-hint .hint-check { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; margin: 0; color: var(--muted); font-size: 0.85rem; }
+.card-hint .hint-check input { width: 1.25rem; height: 1.25rem; flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-inner { transition: none; }
+}
