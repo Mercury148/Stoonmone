@@ -1,8 +1,8 @@
 {
   "name": "Stoonmone",
   "short_name": "Stoonmone",
-  "description": "Kompendium, Filter und Troupe-Liste (Prototyp mit Platzhalterdaten)",
-  "lang": "de",
+  "description": "Compendium, filters and troupe builder (unofficial companion app)",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
