@@ -155,92 +155,17 @@ function decodeTroupe(code) {
 
 // Prüft, ob ein Charakter hinzugefügt werden darf.
 // Gibt einen Fehlertext zurück, oder null, wenn alles in Ordnung ist.
-/** Intersection helper for Sets: returns a Set containing values present in all input sets */
-function intersectSets(sets) {
-  if (!sets || sets.length === 0) return new Set(data.factions.map((f) => f.id));
-  const acc = new Set(sets[0]);
-  for (let i = 1; i < sets.length; i++) {
-    const next = sets[i];
-    for (const v of Array.from(acc)) {
-      if (!next.has(v)) acc.delete(v);
-    }
-  }
-  return acc;
-}
-
-/** Compute allowed factions from the current troupe members.
- *  - If troupe is empty, return Set of all faction IDs from data.factions (so UI shows all).
- *  - Otherwise return intersection of members' faction-sets.
- */
-function currentAllowedFactions() {
-  if (!troupe.ids || troupe.ids.length === 0) {
-    return new Set(data.factions.map((f) => f.id));
-  }
-  const memberSets = troupe.ids
-    .map((id) => characterById.get(id))
-    .filter(Boolean)
-    .map((c) => new Set(Array.isArray(c.factions) ? c.factions : [c.faction]));
-  return intersectSets(memberSets);
-}
-
-// ---------- replace checkAdd with this (ensures candidate shares at least one allowed faction) ----------
 function checkAdd(id) {
   const character = characterById.get(id);
-  if (!character) return "Unbekannter Charakter.";
-
   if (troupe.ids.length >= RULES.maxModels) {
     return `Die Troupe ist voll (${RULES.maxModels} Modelle).`;
   }
-
   if (!RULES.allowDuplicates && troupe.ids.includes(id)) {
-    return `${character.name} ist schon in der Troupe.`;
-  }
-
-  // Enforce faction rules: candidate must share at least one faction from the current allowed set.
-  // If troupe is empty currentAllowedFactions() returns all factions, so candidate is allowed.
-  const allowed = currentAllowedFactions();
-  const charFactions = Array.isArray(character.factions) ? character.factions : [character.faction];
-  if (!charFactions.some((f) => allowed.has(f))) {
-    const list = [...allowed].join(", ");
-    return `Dieser Charakter passt nicht zur Troupe: nur ${list} sind noch erlaubt.`;
+    return `${character.name} ist schon in der Troupe.`;  
   }
 
   return null;
 }
-
-// ---------- replace visibleCharacters with this (filters by troupe allowed factions when troupe not empty) ----------
-function visibleCharacters() {
-  const query = filters.query.trim().toLowerCase();
-  const allowed = currentAllowedFactions();
-
-  return data.characters.filter((c) => {
-    // If troupe has members, only show characters that share at least one allowed faction
-    if (troupe.ids.length > 0) {
-      const charFactions = Array.isArray(c.factions) ? c.factions : [c.faction];
-      if (!charFactions.some((f) => allowed.has(f))) return false;
-    }
-
-    // UI-selected faction filtering (unchanged behavior)
-    if (filters.faction && !((Array.isArray(c.factions) ? c.factions : [c.faction]).includes(filters.faction))) return false;
-
-    // Keywords: all selected keywords must be present
-    for (const keyword of filters.keywords) if (!c.keywords.includes(keyword)) return false;
-
-    // Text search
-    if (query) {
-      const text = [
-        c.name,
-        ...c.keywords,
-        ...((Array.isArray(c.factions) ? c.factions : [c.faction]).map((id) => factionById.get(id).name)),
-        ...c.abilities.flatMap((a) => [a.name, a.text]),
-      ].join(" ").toLowerCase();
-      if (!text.includes(query)) return false;
-    }
-
-    return true;
-  });
-}
-
 
 function addToTroupe(id) {
   const problem = checkAdd(id);
