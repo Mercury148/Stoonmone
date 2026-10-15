@@ -132,9 +132,33 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .filters { display: grid; gap: 0.6rem; margin-bottom: 1.25rem; }
 @media (min-width: 40rem) {
   .filters { grid-template-columns: 1fr 14rem; }
-  .chips, .filter-meta { grid-column: 1 / -1; }
+  .keyword-box, .filter-meta { grid-column: 1 / -1; }
 }
-
+/* Aufklappbares Keyword-Feld */
+.keyword-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.keyword-box summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+.keyword-box summary::-webkit-details-marker { display: none; }
+.keyword-box summary::before {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg);
+}
+.keyword-box[open] summary::before { transform: rotate(45deg); }
+.keyword-box .chips { padding: 0.25rem 0.75rem 0.75rem; }
+.keyword-selected { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent); font-weight: 500; font-size: 0.9rem; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chip {
   min-height: 40px;

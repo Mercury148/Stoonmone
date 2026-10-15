@@ -261,6 +261,13 @@ function renderFilterControls() {
       })
     )
   );
+
+ // Die Überschrift des Feldes zeigt, welche Keywords gerade gewählt sind
+ 
+  const picked = [...filters.keywords];
+  const summary = $("#keyword-summary");
+  summary.textContent = "Keywords";
+  if (picked.length) summary.append(el("span", { class: "keyword-selected", text: picked.join(", ") }));
 }
 
 function renderCards() {
