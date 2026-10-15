@@ -243,6 +243,7 @@ function renderFilterControls() {
     el("option", { value: "", text: "Alle Fraktionen" }),
     ...data.factions.map((f) => el("option", { value: f.id, text: f.name }))
   );
+  select.value = filters.faction;   // gewählte Fraktion nach dem Neuaufbau wieder anzeigen
 
   const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "de"));
   $("#chips").replaceChildren(
@@ -263,7 +264,7 @@ function renderFilterControls() {
   );
 
  // Die Überschrift des Feldes zeigt, welche Keywords gerade gewählt sind
- 
+
   const picked = [...filters.keywords];
   const summary = $("#keyword-summary");
   summary.textContent = "Keywords";
