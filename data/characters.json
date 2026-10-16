@@ -187,7 +187,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/beijiminy.png",
       "card": "images/Bejiminy_front.png",
       "cardBack": "images/Bejiminy_back.png"
     },
@@ -1319,7 +1319,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/nancy.png",
       "card": "images/Nancy_Priston_front.png",
       "cardBack": "images/Nancy_Priston_back.png"
     },
@@ -1707,7 +1707,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/skaggi.png",
       "card": "images/Skuggi_front.png",
       "cardBack": "images/Skuggi_back.png"
     },
@@ -1739,7 +1739,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/stilts-kim.png",
       "card": "images/Stilts_Kim_front.png",
       "cardBack": "images/Stilts_Kim_back.png"
     },
@@ -1757,7 +1757,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/streatham.png",
       "card": "images/Streatham_front.png",
       "cardBack": "images/Streatham_back.png"
     },
@@ -1806,7 +1806,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/syril.png",
       "card": "images/Syril_Swampfoot_front.png",
       "cardBack": "images/Syril_Swampfoot_back.png"
     },
@@ -2052,7 +2052,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/wenda.png",
       "card": "images/Wenda_Wetbones_front.png",
       "cardBack": "images/Wenda_Wetbones_back.png"
     },
