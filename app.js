@@ -566,7 +566,7 @@ function renderEditor() {
     rule.hidden = false;
   } else if (RULES.sameFaction) {
     const names = [...allowedFactions(current)].map((f) => factionById.get(f).name);
-    rule.textContent = `Still possible: ${names.join(", ") || "no faction"}`;
+    rule.textContent = `: ${names.join(", ") || "no faction"}`;
     rule.hidden = false;
   } else {
     rule.hidden = true;
