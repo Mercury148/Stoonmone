@@ -324,8 +324,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .pcard svg circle, .pcard svg path { fill: hsl(var(--h) var(--fac-s) 44%); }
 .pcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Die acht Plätze oben: Portraits, Tipp = Karte ansehen */
-.slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr)); margin: 0.6rem 0 0.5rem; }
+/* Die acht Plätze oben: Portraits, Tipp = Karte ansehen, 2 Reihen 4 Slots auf Mobile */ 
+.slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(4, minmax(6rem, 1fr)); margin: 0.6rem 0 0.5rem; }
 .slot-portrait, .slot-empty {
   position: relative;
   display: block;
@@ -340,6 +340,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   text-align: left;
   font-weight: 400;
 }
+
+/* 1 Reihe mit 8 Slots auf größeren Displays */
+@media (min-width: 720px) {
+  .slots {
+    grid-template-columns: repeat(8, minmax(6.5rem, 1fr));
+  }
+}
+
 .slot-portrait { border: 2px solid var(--accent); }
 .slot-open {
   position: absolute;
