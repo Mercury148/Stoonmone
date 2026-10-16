@@ -87,7 +87,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/antonia.png",
       "card": "images/Antonia_Noonday_Witch_front.png",
       "cardBack": "images/Antonia_Noonday_Witch_back.png"
     },
@@ -104,7 +104,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/anya.png",
       "card": "images/Anya_Bartol_front.png",
       "cardBack": "images/Anya_Bartol_back.png"
     },
@@ -334,7 +334,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/daniel.png",
       "card": "images/Brother_Daniel_front.png",
       "cardBack": "images/Brother_Daniel_back.png"
     },
@@ -481,7 +481,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/danica.png",
       "card": "images/Danica_Dusk_Witch_front.png",
       "cardBack": "images/Danica_Dusk_Witch_back.png"
     },
@@ -561,7 +561,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/drayner.png",
       "card": "images/Dranyer_front.png",
       "cardBack": "images/Dranyer_back.png"
     },
@@ -611,7 +611,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/eric-enlightened.png",
       "card": "images/Eric_The_Enlightened_front.png",
       "cardBack": "images/Eric_The_Enlightened_back.png"
     },
@@ -889,7 +889,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/gump.png",
       "card": "images/Gump_front.png",
       "cardBack": "images/Gump_back.png"
     },
@@ -1071,7 +1071,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/kalista.png",
       "card": "images/Kalista_Leshavult_Priestess_front.png",
       "cardBack": "images/Kalista_Leshavult_Priestess_back.png"
     },
@@ -1104,7 +1104,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/kavanagh.png",
       "card": "images/Kavanagh_the_Jongler_front.png",
       "cardBack": "images/Kavanagh_the_Jongler_back.png"
     },
@@ -1188,7 +1188,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/loubard.png",
       "card": "images/Loubard_front.png",
       "cardBack": "images/Loubard_back.png"
     },
@@ -1251,7 +1251,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/morag.png",
       "card": "images/Morag_front.png",
       "cardBack": "images/Morag_back.png"
     },
@@ -1577,7 +1577,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/ruwt.png",
       "card": "images/Ruwt_front.png",
       "cardBack": "images/Ruwt_back.png"
     },
@@ -1724,7 +1724,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/snag.png",
       "card": "images/Snag_front.png",
       "cardBack": "images/Snag_back.png"
     },
@@ -1855,7 +1855,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/beast.png",
       "card": "images/The_Beast_front.png",
       "cardBack": "images/The_Beast_back.png"
     },
@@ -1937,7 +1937,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/revenant.png",
       "card": "images/The_Revenant_front.png",
       "cardBack": "images/The_Revenant_back.png"
     },
@@ -2101,7 +2101,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/zorya.png",
       "card": "images/Zorya_Dawn_Witch_front.png",
       "cardBack": "images/Zorya_Dawn_Witch_back.png"
     }
