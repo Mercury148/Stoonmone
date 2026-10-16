@@ -1,6 +1,8 @@
-# Stoonmone (Prototyp)
+# Stoonmone
 
-Kompendium mit Filter und Troupe-Liste. Alle Daten sind erfundene Platzhalter.
+Unofficial fan-made companion app for Moonstone. This project is not affiliated
+with, endorsed by, or sponsored by Goblin King Games. Moonstone, its characters,
+card artwork and rules are the property of Goblin King Games.
 
 ## Dateien
 

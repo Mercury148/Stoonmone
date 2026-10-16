@@ -43,12 +43,11 @@
     <section id="view-troupes" aria-label="Troupes" hidden>
       <div class="page-head">
         <h2>My Troupes</h2>
-        <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe">+</button>
       </div>
 
       <div id="troupe-list" class="troupe-list"></div>
       <p id="troupes-empty" class="empty" hidden>
-        No troupe yet. Tap the plus above to create one.
+        No troupe yet. Tap the plus in the corner to create one.
       </p>
 
       <details class="share">
@@ -58,6 +57,9 @@
         <textarea id="import-code" rows="3" placeholder="Paste code here"></textarea>
         <button id="import" type="button">Load troupe</button>
       </details>
+
+      <!-- Runder Knopf unten rechts in der Ecke -->
+      <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe"><span class="plus" aria-hidden="true"></span></button>
     </section>
 
     <!-- ===== Seite 3: Troupe zusammenstellen (Editor) ===== -->

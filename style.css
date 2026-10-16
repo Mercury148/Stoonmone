@@ -251,17 +251,32 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .page-head h2 { margin: 0; font: 600 1.3rem/1.2 var(--font-display); }
 .add-btn {
-  flex: none;
-  width: 3rem;
-  height: 3rem;
-  min-height: 0;
+  /* fest unten rechts, über der unteren Leiste */
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 4;
+  box-sizing: border-box;
+  width: 3.5rem;
+  height: 3.5rem;
+  min-width: 3.5rem;
+  min-height: 3.5rem;
+  aspect-ratio: 1 / 1;   /* bleibt immer rund */
   padding: 0;
   border-radius: 50%;
-  font-size: 1.9rem;
-  line-height: 1;
-  display: grid;
-  place-items: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
+/* Das Plus wird aus zwei Strichen gezeichnet, so sitzt es immer genau in der Mitte */
+.add-btn .plus { position: absolute; left: 50%; top: 50%; width: 1.4rem; height: 1.4rem; transform: translate(-50%, -50%); }
+.add-btn .plus::before, .add-btn .plus::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+  border-radius: 2px;
+}
+.add-btn .plus::before { left: 0; right: 0; top: calc(50% - 1.5px); height: 3px; }
+.add-btn .plus::after { top: 0; bottom: 0; left: calc(50% - 1.5px); width: 3px; }
+#view-troupes { padding-bottom: 4.5rem; }
 
 .troupe-list { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
 .troupe-card {
@@ -324,12 +339,12 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .pcard svg circle, .pcard svg path { fill: hsl(var(--h) var(--fac-s) 44%); }
 .pcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Die acht Plätze oben: Portraits, Tipp = Karte ansehen, 2 Reihen 4 Slots auf Mobile */ 
-.slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(4, minmax(5rem, 1fr)); margin: 0.6rem 0 0.5rem; }
+/* Die acht Plätze oben: Portraits, Tipp = Karte ansehen */
+.slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); margin: 0.6rem 0 0.5rem; }
 .slot-portrait, .slot-empty {
   position: relative;
   display: block;
-  aspect-ratio: 4.5 / 6;   /* gleiche Größe wie die Kacheln unten */
+  aspect-ratio: 5 / 6;   /* gleiche Größe wie die Kacheln unten */
   min-height: 0;
   padding: 0;
   border-radius: var(--radius);
@@ -340,14 +355,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   text-align: left;
   font-weight: 400;
 }
-
-/* 1 Reihe mit 8 Slots auf größeren Displays */
-@media (min-width: 720px) {
-  .slots {
-    grid-template-columns: repeat(8, minmax(6.5rem, 1fr));
-  }
-}
-
 .slot-portrait { border: 2px solid var(--accent); }
 .slot-open {
   position: absolute;
