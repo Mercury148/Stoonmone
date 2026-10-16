@@ -659,7 +659,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/flinders.png",
       "card": "images/Flinders_Memphis_front.png",
       "cardBack": "images/Flinders_Memphis_back.png"
     },
@@ -824,7 +824,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/gotchgut.png",
       "card": "images/Gotchgut_front.png",
       "cardBack": "images/Gotchgut_back.png"
     },
@@ -1234,7 +1234,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/matilda.png",
       "card": "images/Matilda_front.png",
       "cardBack": "images/Matilda_back.png"
     },
@@ -1398,7 +1398,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/polly.png",
       "card": "images/Old_Polly_front.png",
       "cardBack": "images/Old_Polly_back.png"
     },
@@ -1479,7 +1479,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/boffins.png",
       "card": "images/Prof_Boffinsworth_front.png",
       "cardBack": "images/Prof_Boffinsworth_back.png"
     },
