@@ -532,7 +532,13 @@ function renderEditor() {
       if (!id) return el("span", { class: "slot-empty" });
       const c = characterById.get(id);
       return el("button", { class: "slot-portrait", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
-        portraitCard(c)
+        portraitCard(c),
+        el("span", { class: "tile-label" },
+          el("span", { class: "tile-name", text: c.name }),
+          el("span", { class: "tile-factions" },
+            ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
+          )
+        )
       );
     })
   );
