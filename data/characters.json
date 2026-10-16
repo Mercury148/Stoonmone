@@ -121,7 +121,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/banshee.png",
       "card": "images/Banshee_front.png",
       "cardBack": "images/Banshee_back.png"
     },
@@ -203,7 +203,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/belladonna.png",
       "card": "images/Belladonna_front.png",
       "cardBack": "images/Belladonna_back.png"
     },
@@ -301,7 +301,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/brigid.png",
       "card": "images/Brigid_front.png",
       "cardBack": "images/Brigid_back.png"
     },
@@ -366,7 +366,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/butterfingers.png",
       "card": "images/Butterfingers_front.png",
       "cardBack": "images/Butterfingers_back.png"
     },
@@ -497,7 +497,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/dentia.png",
       "card": "images/Dentia_front.png",
       "cardBack": "images/Dentia_back.png"
     },
@@ -513,7 +513,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/diana.png",
       "card": "images/Diana_Queen_of_the_Fae_front.png",
       "cardBack": "images/Diana_Queen_of_the_Fae_back.png"
     },
@@ -692,7 +692,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/foxglove.png",
       "card": "images/Foxglove_front.png",
       "cardBack": "images/Foxglove_back.png"
     },
@@ -708,7 +708,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/fraya.png",
       "card": "images/Fraya_front.png",
       "cardBack": "images/Fraya_back.png"
     },
@@ -906,7 +906,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/gwendoline.png",
       "card": "images/Gwendoline_Leshavult_Priestess_front.png",
       "cardBack": "images/Gwendoline_Leshavult_Priestess_back.png"
     },
@@ -923,7 +923,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/herbert.png",
       "card": "images/Herbert_Growbottom_front.png",
       "cardBack": "images/Herbert_Growbottom_back.png"
     },
@@ -972,7 +972,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/iris-hellebore.png",
       "card": "images/Iris_Hellebore_front.png",
       "cardBack": "images/Iris_Hellebore_back.png"
     },
@@ -1657,7 +1657,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/silvertongue.png",
       "card": "images/Silvertongue_front.png",
       "cardBack": "images/Silvertongue_back.png"
     },
@@ -1837,7 +1837,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/teetoe.png",
       "card": "images/Teetoe_front.png",
       "cardBack": "images/Teetoe_back.png"
     },
@@ -1887,7 +1887,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/fencer.png",
       "card": "images/The_Fencer_front.png",
       "cardBack": "images/The_Fencer_back.png"
     },
@@ -1969,7 +1969,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": "images/Vespa_front.png",
+      "image": "portraits/vespa.png",
       "card": "images/Vespa_front.png",
       "cardBack": "images/Vespa_back.png"
     },
@@ -2036,7 +2036,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/wasp.png",
       "card": "images/Wasp_front.png",
       "cardBack": "images/Wasp_back.png"
     },
