@@ -412,6 +412,15 @@ function toggleMember(id) {
   renderEditor();
 }
 
+// Charakter über sein Platz-Symbol oben aus der Troupe nehmen
+function removeMember(id) {
+  const index = current.ids.indexOf(id);
+  if (index < 0) return;
+  current.ids.splice(index, 1);
+  saveTroupes();
+  renderEditor();
+}
+
 function nextTroupeName() {
   const names = new Set(troupes.map((t) => t.name));
   let n = troupes.length + 1;
@@ -531,13 +540,18 @@ function renderEditor() {
       const id = current.ids[i];
       if (!id) return el("span", { class: "slot-empty" });
       const c = characterById.get(id);
-      return el("button", { class: "slot-portrait", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
-        portraitCard(c),
-        el("span", { class: "tile-label" },
-          el("span", { class: "tile-name", text: c.name }),
-          el("span", { class: "tile-factions" },
-            ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
+      return el("div", { class: "slot-portrait" },
+        el("button", { class: "slot-open", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
+          portraitCard(c),
+          el("span", { class: "tile-label" },
+            el("span", { class: "tile-name", text: c.name }),
+            el("span", { class: "tile-factions" },
+              ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
+            )
           )
+        ),
+        el("button", { class: "slot-remove", type: "button", "aria-label": `Remove ${c.name} from troupe`, onclick: () => removeMember(id) },
+          el("span", { class: "slot-x", "aria-hidden": "true", text: "×" })
         )
       );
     })
@@ -567,9 +581,7 @@ function renderTiles() {
   const fitting = editorPanel.list().filter((c) => current.ids.includes(c.id) || fitsFactions(current, c));
   editorPanel.showCount(fitting.length);
 
-  // Gewählte Charaktere wandern nach unten, die noch verfügbaren rutschen nach oben.
-  // Die Reihenfolge innerhalb der beiden Gruppen bleibt unverändert.
-  const list = [...fitting.filter((c) => !current.ids.includes(c.id)), ...fitting.filter((c) => current.ids.includes(c.id))];
+  const list = fitting;   // feste Reihenfolge, nichts springt beim Auswählen
 
   if (list.length === 0) {
     $("#editor-tiles").replaceChildren(el("p", { class: "empty", text: "No character matches these filters." }));
