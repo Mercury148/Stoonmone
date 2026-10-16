@@ -171,7 +171,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/beaky.png",
       "card": "images/Beaky_Bobby_front.png",
       "cardBack": "images/Beaky_Bobby_back.png"
     },
@@ -252,7 +252,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/boom.png",
       "card": "images/Boom_Boom_McBoom_front.png",
       "cardBack": "images/Boom_Boom_McBoom_back.png"
     },
@@ -465,7 +465,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/crusty.png",
       "card": "images/Crusty_Balboa_front.png",
       "cardBack": "images/Crusty_Balboa_back.png"
     },
@@ -546,7 +546,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/doug.png",
       "card": "images/Doug_the_Flatulent_front.png",
       "cardBack": "images/Doug_the_Flatulent_back.png"
     },
@@ -594,7 +594,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/cap.png",
       "card": "images/El_Capitano_front.png",
       "cardBack": "images/El_Capitano_back.png"
     },
@@ -643,7 +643,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/firespitter.png",
       "card": "images/Firespitter_front.png",
       "cardBack": "images/Firespitter_back.png"
     },
@@ -807,7 +807,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/goblin-airship.png",
       "card": "images/Goblin_Airship_front.png",
       "cardBack": "images/Goblin_Airship_back.png"
     },
@@ -873,7 +873,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/grub.png",
       "card": "images/Grub_front.png",
       "cardBack": "images/Grub_back.png"
     },
@@ -1054,7 +1054,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/jobie.png",
       "card": "images/Jobie_front.png",
       "cardBack": "images/Jobie_back.png"
     },
@@ -1448,7 +1448,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/portly-pete.png",
       "card": "images/Portly_Pete_front.png",
       "cardBack": "images/Portly_Pete_back.png"
     },
@@ -1593,7 +1593,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/seasick.png",
       "card": "images/Seasick_Stu_front.png",
       "cardBack": "images/Seasick_Stu_back.png"
     },
@@ -1641,7 +1641,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/shabbaroon.png",
       "card": "images/Shabbaroon_front.png",
       "cardBack": "images/Shabbaroon_back.png"
     },
@@ -1789,7 +1789,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/swooty.png",
       "card": "images/Swiggarty_Swooty_front.png",
       "cardBack": "images/Swiggarty_Swooty_back.png"
     },
@@ -1903,7 +1903,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/goblin-king.png",
       "card": "images/The_Goblin_King_front.png",
       "cardBack": "images/The_Goblin_King_back.png"
     },
@@ -1919,7 +1919,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/mortician.png",
       "card": "images/The_Mortician_front.png",
       "cardBack": "images/The_Mortician_back.png"
     },
@@ -1952,7 +1952,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/tax-collector.png",
       "card": "images/The_Tax_Collector_front.png",
       "cardBack": "images/The_Tax_Collector_back.png"
     },
@@ -1985,7 +1985,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/syd.png",
       "card": "images/Vicious_Syd_front.png",
       "cardBack": "images/Vicious_Syd_back.png"
     },
