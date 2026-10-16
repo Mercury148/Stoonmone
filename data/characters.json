@@ -284,7 +284,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/boulder.png",
       "card": "images/Boulder_front.png",
       "cardBack": "images/Boulder_back.png"
     },
@@ -316,7 +316,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/bristlenose.png",
       "card": "images/Bristlenose_front.png",
       "cardBack": "images/Bristlenose_back.png"
     },
@@ -351,7 +351,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/brunhilde.png",
       "card": "images/Brunhilde_front.png",
       "cardBack": "images/Brunhilde_back.png"
     },
@@ -529,7 +529,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/dim-dimmer.png",
       "card": "images/Dim_Dimmer_front.png",
       "cardBack": "images/Dim_Dimmer_back.png"
     },
@@ -1126,7 +1126,7 @@
     },
     {
       "id": "knoll",
-      "name": "Knoll",
+      "name": "Knoll the Troll",
       "factions": [
         "dominion",
         "leshavult"
@@ -1137,7 +1137,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/knoll.png",
       "card": "images/Knoll_front.png",
       "cardBack": "images/Knoll_back.png"
     },
@@ -1546,7 +1546,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/ribald.png",
       "card": "images/Ribald_front.png",
       "cardBack": "images/Ribald_back.png"
     },
