@@ -7,8 +7,8 @@
     {"id": "shades", "name": "Shades of Moonreach", "hue": 265, "sat": 14}
   ],
   "characters": [
-    {"id": "abra-cadaverous", "name": "Abra Cadaverous", "factions": ["shades"], "keywords": ["Spirit"], "stats": null, "abilities": [], "image": null, "card": "images/abra_cadaverous_front.png", "cardBack": "images/abra_cadaverous_back.png"},
-    {"id": "agatha-tavernfrau", "name": "Agatha Tavernfrau", "factions": ["commonwealth"], "keywords": ["Human"], "stats": null, "abilities": [], "image": null, "card": "images/agatha_tavernfrau_front.png", "cardBack": "images/agatha_tavernfrau_back.png"},
+    {"id": "abra-cadaverous", "name": "Abra Cadaverous", "factions": ["shades"], "keywords": ["Spirit"], "stats": null, "abilities": [], "image": null, "card": "images/Abra_cadaverous_front.png", "cardBack": "images/Abra_cadaverous_back.png"},
+    {"id": "agatha-tavernfrau", "name": "Agatha Tavernfrau", "factions": ["commonwealth"], "keywords": ["Human"], "stats": null, "abilities": [], "image": null, "card": "images/Agatha_Tavernfrau_front.png", "cardBack": "images/Agatha_Tavernfrau_back.png"},
     {"id": "angerboda", "name": "Angerboda", "factions": ["commonwealth", "shades"], "keywords": ["Giant", "Soldier", "Norse", "Risen"], "stats": null, "abilities": [], "image": null, "card": "images/angerboda_front.png", "cardBack": "images/angerboda_back.png"},
     {"id": "antonia-noonday-witch", "name": "Antonia, Noonday Witch", "factions": ["leshavult"], "keywords": ["Spirit", "Witch"], "stats": null, "abilities": [], "image": null, "card": "images/antonia_noonday_witch_front.png", "cardBack": "images/antonia_noonday_witch_back.png"},
     {"id": "anya-bartol", "name": "Anya Bartol", "factions": ["dominion", "leshavult"], "keywords": ["Human", "Noble"], "stats": null, "abilities": [], "image": null, "card": "images/anya_bartol_front.png", "cardBack": "images/anya_bartol_back.png"},
