@@ -325,7 +325,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .pcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Die acht Plätze oben: Portraits, Tipp = Karte ansehen */
-.slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr)); margin: 0.6rem 0 0.5rem; }
+.slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr)); margin: 0.6rem 0 0.5rem; }
 .slot-portrait, .slot-empty {
   position: relative;
   display: block;
