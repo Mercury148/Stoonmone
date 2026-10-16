@@ -37,7 +37,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/abra.png",
       "card": "images/Abra_Cadaverous_front.png",
       "cardBack": "images/Abra_Cadaverous_back.png"
     },
@@ -71,7 +71,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/angerboda.png",
       "card": "images/Angerboda_front.png",
       "cardBack": "images/Angerboda_back.png"
     },
@@ -139,7 +139,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/barnakelle.png",
       "card": "images/Barnakelle_front.png",
       "cardBack": "images/Barnakelle_back.png"
     },
@@ -384,7 +384,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/chezapeaky.png",
       "card": "images/Chezapeaky_front.png",
       "cardBack": "images/Chezapeaky_back.png"
     },
@@ -415,7 +415,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/claudia.png",
       "card": "images/Claudia_Duvel_front.png",
       "cardBack": "images/Claudia_Duvel_back.png"
     },
@@ -432,7 +432,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/commodore.png",
       "card": "images/Commodore_Delaheye_front.png",
       "cardBack": "images/Commodore_Delaheye_back.png"
     },
@@ -448,7 +448,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/creep.png",
       "card": "images/Creep_front.png",
       "cardBack": "images/Creep_back.png"
     },
@@ -578,7 +578,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/echo.png",
       "card": "images/Echo_of_the_Forgotten_King_front.png",
       "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
     },
@@ -857,7 +857,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/greymair.png",
       "card": "images/Greymair_front.png",
       "cardBack": "images/Greymair_back.png"
     },
@@ -956,7 +956,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/igor.png",
       "card": "images/Igor_The_Servant_front.png",
       "cardBack": "images/Igor_The_Servant_back.png"
     },
@@ -1020,7 +1020,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/jerry-heir.png",
       "card": "images/Jerry_Heir_front.png",
       "cardBack": "images/Jerry_Heir_back.png"
     },
@@ -1218,7 +1218,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/marley.png",
       "card": "images/Marley_front.png",
       "cardBack": "images/Marley_back.png"
     },
@@ -1334,7 +1334,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/nanny.png",
       "card": "images/Nanny_front.png",
       "cardBack": "images/Nanny_back.png"
     },
@@ -1367,7 +1367,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/negroli.png",
       "card": "images/Negroli_front.png",
       "cardBack": "images/Negroli_back.png"
     },
@@ -1432,7 +1432,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/peggy.png",
       "card": "images/Peggy_front.png",
       "cardBack": "images/Peggy_back.png"
     },
@@ -1464,7 +1464,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/monkey.png",
       "card": "images/Powder_Monkey_front.png",
       "cardBack": "images/Powder_Monkey_back.png"
     },
@@ -1561,7 +1561,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/roary.png",
       "card": "images/Roary_front.png",
       "cardBack": "images/Roary_back.png"
     },
@@ -1599,7 +1599,7 @@
     },
     {
       "id": "senara",
-      "name": "SenAra",
+      "name": "Sen'Ara",
       "factions": [
         "shades"
       ],
@@ -1609,7 +1609,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/sen-ara.png",
       "card": "images/Sen_Ara_front.png",
       "cardBack": "images/Sen_Ara_back.png"
     },
@@ -1625,7 +1625,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/serif.png",
       "card": "images/Serif_front.png",
       "cardBack": "images/Serif_back.png"
     },
@@ -1773,7 +1773,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/swash.png",
       "card": "images/Swash_front.png",
       "cardBack": "images/Swash_back.png"
     },
@@ -1871,7 +1871,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/duchess.png",
       "card": "images/The_Duchess_front.png",
       "cardBack": "images/The_Duchess_back.png"
     },
@@ -2002,7 +2002,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/graverobber.png",
       "card": "images/Viktor_Petty_Graverobber_front.png",
       "cardBack": "images/Viktor_Petty_Graverobber_back.png"
     },
@@ -2020,7 +2020,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/viscont.png",
       "card": "images/Viscount_De_Faulte_front.png",
       "cardBack": "images/Viscount_De_Faulte_back.png"
     },
