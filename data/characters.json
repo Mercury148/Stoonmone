@@ -1530,7 +1530,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/raegan.png",
       "card": "images/Raegan_front.png",
       "cardBack": "images/Raegan_back.png"
     },
