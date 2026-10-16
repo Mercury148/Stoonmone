@@ -52,7 +52,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/agatha.png",
       "card": "images/Agatha_Tavernfrau_front.png",
       "cardBack": "images/Agatha_Tavernfrau_back.png"
     },
@@ -155,7 +155,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/baron.png",
       "card": "images/Baron_Von_Fancy_Hat_front.png",
       "cardBack": "images/Baron_Von_Fancy_Hat_back.png"
     },
@@ -627,7 +627,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/eric.png",
       "card": "images/Eric_The_Squire_front.png",
       "cardBack": "images/Eric_The_Squire_back.png"
     },
@@ -675,7 +675,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/flintlock.png",
       "card": "images/Flintlock_front.png",
       "cardBack": "images/Flintlock_back.png"
     },
@@ -724,7 +724,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/friar.png",
       "card": "images/Friar_Flavious_front.png",
       "cardBack": "images/Friar_Flavious_back.png"
     },
@@ -741,7 +741,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/fritz.png",
       "card": "images/Fritz_front.png",
       "cardBack": "images/Fritz_back.png"
     },
@@ -757,7 +757,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/gertrude.png",
       "card": "images/Gertrude_the_Faerie_Hunter_front.png",
       "cardBack": "images/Gertrude_the_Faerie_Hunter_back.png"
     },
@@ -1076,8 +1076,8 @@
       "cardBack": "images/Kalista_Leshavult_Priestess_back.png"
     },
     {
-      "id": "kaufman",
-      "name": "Kaufman",
+      "id": "kauffman",
+      "name": "Kauffman",
       "factions": [
         "commonwealth"
       ],
@@ -1087,7 +1087,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/kauffman.png",
       "card": "images/Kaufman_front.png",
       "cardBack": "images/Kaufman_back.png"
     },
@@ -1350,7 +1350,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/natty.png",
       "card": "images/Natty_Slum_Thief_front.png",
       "cardBack": "images/Natty_Slum_Thief_back.png"
     },
@@ -1383,7 +1383,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/old_calders.png",
       "card": "images/Old_Calders_front.png",
       "cardBack": "images/Old_Calders_back.png"
     },
@@ -1496,7 +1496,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/quack.png",
       "card": "images/Quack_front.png",
       "cardBack": "images/Quack_back.png"
     },
@@ -1673,7 +1673,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/poppyc.png",
       "card": "images/Sir_Guillemot_Poppycock_front.png",
       "cardBack": "images/Sir_Guillemot_Poppycock_back.png"
     },
@@ -1690,7 +1690,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/hogs.png",
       "card": "images/Sir_Hogswash_front.png",
       "cardBack": "images/Sir_Hogswash_back.png"
     },
@@ -1822,7 +1822,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/tabby.png",
       "card": "images/Tabby_the_Librarian_front.png",
       "cardBack": "images/Tabby_the_Librarian_back.png"
     },
