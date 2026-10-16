@@ -269,7 +269,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/boris.png",
       "card": "images/Boris_The_Bunny_Summoner_front.png",
       "cardBack": "images/Boris_The_Bunny_Summoner_back.png"
     },
@@ -399,7 +399,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/chubs.png",
       "card": "images/Chubs_front.png",
       "cardBack": "images/Chubs_back.png"
     },
@@ -773,7 +773,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/gloom.png",
       "card": "images/Gloom_front.png",
       "cardBack": "images/Gloom_back.png"
     },
@@ -940,7 +940,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/hoff.png",
       "card": "images/Hoff_front.png",
       "cardBack": "images/Hoff_back.png"
     },
@@ -988,7 +988,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/jackalope.png",
       "card": "images/Jackalope_front.png",
       "cardBack": "images/Jackalope_back.png"
     },
@@ -1005,7 +1005,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/jayda.png",
       "card": "images/Jayda_front.png",
       "cardBack": "images/Jayda_back.png"
     },
@@ -1120,7 +1120,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/klaus.png",
       "card": "images/Klaus_front.png",
       "cardBack": "images/Klaus_back.png"
     },
@@ -1284,7 +1284,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/toodles.png",
       "card": "images/Mr_Toodles_front.png",
       "cardBack": "images/Mr_Toodles_back.png"
     },
@@ -2068,7 +2068,7 @@
       ],
       "stats": null,
       "abilities": [],
-      "image": null,
+      "image": "portraits/wendigo.png",
       "card": "images/Wendigo_front.png",
       "cardBack": "images/Wendigo_back.png"
     },
