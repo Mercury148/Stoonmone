@@ -1,6 +1,8 @@
 {
   "meta": {
-    "note": "Only names, factions and keywords are entered so far. Stats and rules text are still missing."
+    "note": "This is an Unofficial fan-made companion app for Moonstone. This project is not affiliated
+with, endorsed by, or sponsored by Goblin King Games. Moonstone, its characters,
+card artwork and rules are the property of Goblin King Games."
   },
   "factions": [
     {
