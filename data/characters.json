@@ -95,6 +95,7 @@
       "stats": null,
       "abilities": [],
       "summonedBy": ["anya-bartol"],
+      "transformsInto": ["anya-bartol"],
       "health": [1,1,0,1,0,0,0],
       "image": "portraits/stryga.png",
       "card": "images/Striga_Anya_front.png",
