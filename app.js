@@ -812,8 +812,11 @@ function energyGenerated(c, wounds) {
 // Verwandlung: "transformsInto" steht bei EINEM der beiden Charaktere, die sich ineinander verwandeln.
 // twinOf liefert den jeweils anderen (egal, bei welchem von beiden das Feld steht).
 function twinOf(c) {
-  if (c.transformsInto) return characterById.get(c.transformsInto) || null;
-  return data.characters.find((o) => o.transformsInto === c.id) || null;
+  // "transformsInto" darf ein Text ("striga-anya") oder eine Liste (["striga-anya"]) sein
+  const targets = (o) => [].concat(o.transformsInto || []);
+  const direct = targets(c).map((id) => characterById.get(id)).find(Boolean);
+  if (direct) return direct;
+  return data.characters.find((o) => targets(o).includes(c.id)) || null;
 }
 
 // Die zweite Zeile: Beschworene, deren Beschwörer im Spiel ist, und der gerade nicht aktive Zwilling
@@ -913,7 +916,8 @@ function gameCell(side, c) {
     );
   }
 
-  if (isSummoned(c) && !m.summoned && !twinOf(c)) {
+  // Auch ein beschworenes Modell, das auf 0 Lebenspunkte fällt, geht zurück in den Zustand "nicht im Spiel" und kann neu beschworen werden
+  if (isSummoned(c) && !twinOf(c) && (!m.summoned || (health && remaining <= 0))) {
     return el("div", { class: "gcell unsummoned" },
       el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) }),
       el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
@@ -964,7 +968,7 @@ function generateEnergy() {
     for (const c of [...game[side].map((id) => characterById.get(id)), ...gameSummons(side)]) {
       const m = gameModel(side, c.id);
       if (twinOf(c) && !game[side].includes(c.id)) continue;   // inaktiver Zwilling: nicht im Spiel
-      if (isSummoned(c) && !m.summoned && !twinOf(c)) continue;   // noch nicht beschworen: nicht im Spiel
+      if (isSummoned(c) && !twinOf(c) && (!m.summoned || (healthOf(c) && m.wounds >= healthOf(c).length))) continue;   // nicht im Spiel
       m.energy = energyGenerated(c, m.wounds) || 0;
     }
   }
