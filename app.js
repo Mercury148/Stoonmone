@@ -764,6 +764,185 @@ function openDetail(id) {
 }
 
 
+
+/* ---------- Gameview: Wunden und Energy im Spiel verfolgen ---------- */
+
+// Im Spiel treten 5 Modelle an (aus den 8 der Troupe). Jedes Modell hat seinen eigenen Energy-Pool.
+// Das Feld "health" in der JSON bildet die Lebensleiste der Karte ab, von links nach rechts:
+// 1 = blauer Punkt (erzeugt Energy), 0 = leerer Punkt. Wunden werden von rechts gestrichen.
+const GAME_KEY = "stoonmone-game-v1";
+const GAME_SIZE = 5;
+let game = null;          // { troupeId, stage, round, own: [ids], foe: [ids], models: { "side:id": { wounds, energy } } }
+let foePanel;
+
+function saveGame() {
+  try { localStorage.setItem(GAME_KEY, JSON.stringify(game)); } catch { /* ignorieren */ }
+}
+
+function loadGame() {
+  try {
+    const g = JSON.parse(localStorage.getItem(GAME_KEY));
+    if (g && typeof g === "object" && Array.isArray(g.own) && Array.isArray(g.foe) && g.models) return g;
+  } catch { /* ignorieren */ }
+  return null;
+}
+
+function newGame(troupeId) {
+  return { troupeId, stage: "setup", round: 1, own: [], foe: [], models: {} };
+}
+
+function gameModel(side, id) {
+  const key = `${side}:${id}`;
+  if (!game.models[key]) game.models[key] = { wounds: 0, energy: 0 };
+  return game.models[key];
+}
+
+// Die Lebensleiste eines Charakters (oder null, wenn in der JSON noch keine steht)
+function healthOf(c) {
+  return Array.isArray(c.health) && c.health.length ? c.health : null;
+}
+
+// Wie viel Energy erzeugt das Modell zu Beginn der Runde, bei den aktuellen Wunden?
+function energyGenerated(c, wounds) {
+  const health = healthOf(c);
+  if (!health) return null;
+  return health.slice(0, Math.max(0, health.length - wounds)).reduce((sum, dot) => sum + (dot ? 1 : 0), 0);
+}
+
+function gameSummons(side) {
+  const active = game[side];
+  return data.characters.filter((c) => isSummoned(c) && c.summonedBy.some((id) => active.includes(id)));
+}
+
+function openGame() {
+  const saved = loadGame();
+  game = saved && saved.troupeId === current.id ? saved : newGame(current.id);
+  // Modelle, die nicht mehr in der Troupe sind oder nicht mehr existieren, fliegen raus
+  game.own = game.own.filter((id) => current.ids.includes(id) && characterById.has(id)).slice(0, GAME_SIZE);
+  game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, GAME_SIZE);
+  if (game.own.length === 0 || game.foe.length === 0) game.stage = "setup";
+  foePanel.clear();
+  renderGame();
+  showView("game");
+}
+
+function toggleGamePick(side, id) {
+  const list = game[side];
+  const i = list.indexOf(id);
+  if (i >= 0) list.splice(i, 1);
+  else if (list.length >= GAME_SIZE) return toast(`Only ${GAME_SIZE} models play in a game.`);
+  else list.push(id);
+  saveGame();
+  renderGame();
+}
+
+function tileFor(c, selected, onclick) {
+  return el("button", { class: "tile", type: "button", "aria-pressed": String(selected), "aria-label": c.name, onclick },
+    portraitCard(c),
+    el("span", { class: "tile-label" },
+      el("span", { class: "tile-name", text: c.name }),
+      el("span", { class: "tile-factions" },
+        ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
+      )
+    ),
+    selected ? el("span", { class: "tile-check", "aria-hidden": "true", text: "✓" }) : null
+  );
+}
+
+// Eine kleine Zeile mit - Wert +
+function stepper(label, value, onMinus, onPlus) {
+  return el("div", { class: "gstep" },
+    el("span", { class: "gstep-label", text: label }),
+    el("div", { class: "gstep-row" },
+      el("button", { class: "ghost", type: "button", "aria-label": `${label}: less`, text: "−", onclick: onMinus }),
+      el("span", { class: "gstep-value", text: String(value) }),
+      el("button", { class: "ghost", type: "button", "aria-label": `${label}: more`, text: "+", onclick: onPlus })
+    )
+  );
+}
+
+function gameCell(side, c) {
+  const m = gameModel(side, c.id);
+  const health = healthOf(c);
+  const total = health ? health.length : null;
+  const remaining = health ? total - m.wounds : null;
+  const generated = energyGenerated(c, m.wounds);
+  const maxWounds = total === null ? 30 : total;
+  const change = (patch) => { Object.assign(m, patch); saveGame(); renderGamePlay(); };
+
+  const boxes = health
+    ? el("div", { class: "hboxes", role: "img", "aria-label": `${remaining} of ${total} health boxes left` },
+        ...health.map((dot, i) => el("span", { class: `hbox${dot ? " blue" : ""}${i >= remaining ? " struck" : ""}` })))
+    : el("div", { class: "hboxes none", text: "no health data" });
+
+  return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}` },
+    el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+    el("div", { class: "gcell-name", text: c.name }),
+    boxes,
+    stepper(health ? `Wounds ${m.wounds}/${total}` : `Wounds`, health ? m.wounds : m.wounds,
+      () => change({ wounds: Math.max(0, m.wounds - 1) }),
+      () => change({ wounds: Math.min(maxWounds, m.wounds + 1) })),
+    stepper(generated === null ? "Energy" : `Energy (+${generated})`, m.energy,
+      () => change({ energy: Math.max(0, m.energy - 1) }),
+      () => change({ energy: m.energy + 1 }))
+  );
+}
+
+function renderGamePlay() {
+  const fill = (side, rowId, summonId, summonWrap) => {
+    $(rowId).replaceChildren(...game[side].map((id) => gameCell(side, characterById.get(id))));
+    const summons = gameSummons(side);
+    $(summonWrap).hidden = summons.length === 0;
+    $(summonId).replaceChildren(...summons.map((c) => gameCell(side, c)));
+  };
+  fill("foe", "#game-foe-row", "#game-foe-summons", "#game-foe-summon-wrap");
+  fill("own", "#game-own-row", "#game-own-summons", "#game-own-summon-wrap");
+  $("#game-round").textContent = `Round ${game.round}`;
+}
+
+// Neue Runde: übrige Energy verfällt, danach erzeugt jedes Modell Energy gemäß seiner verbleibenden Lebenspunkte
+function nextRound() {
+  for (const side of ["own", "foe"]) {
+    for (const c of [...game[side].map((id) => characterById.get(id)), ...gameSummons(side)]) {
+      const m = gameModel(side, c.id);
+      m.energy = energyGenerated(c, m.wounds) || 0;   // übrige Energy verfällt, dann wird neu erzeugt
+    }
+  }
+  game.round += 1;
+  saveGame();
+  renderGamePlay();
+  toast(`Round ${game.round}: old energy expired, new energy generated.`);
+}
+
+function resetGame() {
+  game = newGame(current.id);
+  saveGame();
+  renderGame();
+}
+
+function renderGame() {
+  const setup = game.stage === "setup";
+  $("#game-setup").hidden = !setup;
+  $("#game-play").hidden = setup;
+  $("#game-title").textContent = setup ? "Choose models" : "Game";
+  $("#game-round").hidden = setup;
+
+  if (setup) {
+    $("#game-own-count").textContent = `${game.own.length}/${GAME_SIZE}`;
+    $("#game-foe-count").textContent = `${game.foe.length}/${GAME_SIZE}`;
+    $("#game-own-tiles").replaceChildren(
+      ...current.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, game.own.includes(c.id), () => toggleGamePick("own", c.id)))
+    );
+    $("#game-foe-picked").textContent = game.foe.length ? `Picked: ${game.foe.map((id) => characterById.get(id).name).join(", ")}` : "Pick the opponent's models below.";
+    const list = foePanel.list().filter((c) => !isSummoned(c));
+    foePanel.showCount(list.length, data.characters.filter((c) => !isSummoned(c)).length);
+    $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, game.foe.includes(c.id), () => toggleGamePick("foe", c.id))));
+    $("#game-start").disabled = game.own.length === 0 || game.foe.length === 0;
+  } else {
+    renderGamePlay();
+  }
+}
+
 /* ---------- Ansichten wechseln ---------- */
 
 let lastTab = "compendium";
@@ -772,8 +951,9 @@ function showView(name) {
   $("#view-compendium").hidden = name !== "compendium";
   $("#view-troupes").hidden = name !== "troupes";
   $("#view-editor").hidden = name !== "editor";
-  document.body.classList.toggle("editing", name === "editor");
-  if (name !== "editor") {
+  $("#view-game").hidden = name !== "game";
+  document.body.classList.toggle("editing", name === "editor" || name === "game");
+  if (name !== "editor" && name !== "game") {
     lastTab = name;
     for (const tab of document.querySelectorAll("[role=tab]")) {
       tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
@@ -810,6 +990,16 @@ function wireEvents() {
 
   $("#new-troupe").addEventListener("click", createTroupe);
   $("#editor-back").addEventListener("click", closeEditor);
+
+  $("#start-game").addEventListener("click", () => {
+    if (current.ids.length === 0) return toast("Add some models to the troupe first.");
+    openGame();
+  });
+  $("#game-back").addEventListener("click", () => { renderEditor(); showView("editor"); });
+  $("#game-start").addEventListener("click", () => { game.stage = "play"; saveGame(); renderGame(); window.scrollTo(0, 0); });
+  $("#game-setup-btn").addEventListener("click", () => { game.stage = "setup"; saveGame(); renderGame(); window.scrollTo(0, 0); });
+  $("#game-next-round").addEventListener("click", nextRound);
+  twoTap($("#game-reset"), "Really reset?", resetGame);
 
   $("#editor-name").addEventListener("input", (e) => {
     current.name = e.target.value.slice(0, 40);
@@ -853,6 +1043,9 @@ function checkData() {
     seen.add(c.id);
     for (const fid of c.factions) {
       if (!factionById.has(fid)) problems.push(`${c.name}: unknown faction "${fid}".`);
+    }
+    if (c.health !== undefined && !(Array.isArray(c.health) && c.health.every((d) => d === 0 || d === 1))) {
+      problems.push(`${c.name}: "health" muss eine Liste aus 0 und 1 sein, zum Beispiel [1,0,1,0,0,1,0,0].`);
     }
     for (const sid of c.summonedBy || []) {
       if (!characterById.has(sid)) problems.push(`${c.name}: "summonedBy" nennt die unbekannte ID "${sid}".`);
@@ -901,6 +1094,7 @@ async function boot() {
   loadTroupes();
   compendiumPanel = createFilterPanel($("#compendium-filters"), renderCards);
   editorPanel = createFilterPanel($("#editor-filters"), renderTiles);
+  foePanel = createFilterPanel($("#game-foe-filters"), renderGame);
   renderCards();
   renderTroupes();
 

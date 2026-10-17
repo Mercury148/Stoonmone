@@ -33,6 +33,7 @@
       "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0,0,0,0],
       "image": "portraits/abra.png",
       "card": "images/Abra_Cadaverous_front.png",
       "cardBack": "images/Abra_Cadaverous_back.png"
@@ -44,6 +45,7 @@
       "keywords": ["Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0],
       "image": "portraits/agatha.png",
       "card": "images/Agatha_Tavernfrau_front.png",
       "cardBack": "images/Agatha_Tavernfrau_back.png"
@@ -55,6 +57,7 @@
       "keywords": ["Giant","Soldier","Norse","Risen"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,0,1,0,0,0,0,0],
       "image": "portraits/angerboda.png",
       "card": "images/Angerboda_front.png",
       "cardBack": "images/Angerboda_back.png"
@@ -66,6 +69,7 @@
       "keywords": ["Spirit","Witch"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0,0],
       "image": "portraits/antonia.png",
       "card": "images/Antonia_Noonday_Witch_front.png",
       "cardBack": "images/Antonia_Noonday_Witch_back.png"
@@ -77,6 +81,7 @@
       "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0],
       "image": "portraits/anya.png",
       "card": "images/Anya_Bartol_front.png",
       "cardBack": "images/Anya_Bartol_back.png"
@@ -88,6 +93,7 @@
       "keywords": ["Faerie","Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,1,1],
       "image": "portraits/banshee.png",
       "card": "images/Banshee_front.png",
       "cardBack": "images/Banshee_back.png"
@@ -99,6 +105,7 @@
       "keywords": ["Troll","Spirit","Pirate"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0],
       "image": "portraits/barnakelle.png",
       "card": "images/Barnakelle_front.png",
       "cardBack": "images/Barnakelle_back.png"
@@ -110,6 +117,7 @@
       "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0],
       "image": "portraits/baron.png",
       "card": "images/Baron_Von_Fancy_Hat_front.png",
       "cardBack": "images/Baron_Von_Fancy_Hat_back.png"
@@ -121,6 +129,7 @@
       "keywords": ["Goblin","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1,0],
       "image": "portraits/beaky.png",
       "card": "images/Beaky_Bobby_front.png",
       "cardBack": "images/Beaky_Bobby_back.png"
@@ -132,6 +141,7 @@
       "keywords": ["Animal","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,1,0],
       "image": "portraits/beijiminy.png",
       "card": "images/Bejiminy_front.png",
       "cardBack": "images/Bejiminy_back.png"
@@ -143,6 +153,7 @@
       "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,1,0],
       "image": "portraits/belladonna.png",
       "card": "images/Belladonna_front.png",
       "cardBack": "images/Belladonna_back.png"
@@ -154,6 +165,7 @@
       "keywords": ["Gnome","Animal","Militia"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0,0],
       "image": "portraits/billy.png",
       "card": "images/Billy_front.png",
       "cardBack": "images/Billy_back.png"
@@ -165,6 +177,7 @@
       "keywords": ["Gnome","Norse","Mercenary"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/bjorn.png",
       "card": "images/Bjorn_front.png",
       "cardBack": "images/Bjorn_back.png"
@@ -176,6 +189,7 @@
       "keywords": ["Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1,0],
       "image": "portraits/boom.png",
       "card": "images/Boom_Boom_McBoom_front.png",
       "cardBack": "images/Boom_Boom_McBoom_back.png"
@@ -187,6 +201,7 @@
       "keywords": ["Faun","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,1,0],
       "image": "portraits/boris.png",
       "card": "images/Boris_The_Bunny_Summoner_front.png",
       "cardBack": "images/Boris_The_Bunny_Summoner_back.png"
@@ -198,6 +213,7 @@
       "keywords": ["Troll"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,0,1,0,0,0,0,0],
       "image": "portraits/boulder.png",
       "card": "images/Boulder_front.png",
       "cardBack": "images/Boulder_back.png"
@@ -209,6 +225,7 @@
       "keywords": ["Pirate","Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,1,1],
       "image": "portraits/brigid.png",
       "card": "images/Brigid_front.png",
       "cardBack": "images/Brigid_back.png"
@@ -220,6 +237,7 @@
       "keywords": ["Troll"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0],
       "image": "portraits/bristlenose.png",
       "card": "images/Bristlenose_front.png",
       "cardBack": "images/Bristlenose_back.png"
@@ -231,6 +249,7 @@
       "keywords": ["Cleric","Human","Cultist"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0],
       "image": "portraits/daniel.png",
       "card": "images/Brother_Daniel_front.png",
       "cardBack": "images/Brother_Daniel_back.png"
@@ -242,6 +261,7 @@
       "keywords": ["Mercenary","Giant","Norse"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0,0],
       "image": "portraits/brunhilde.png",
       "card": "images/Brunhilde_front.png",
       "cardBack": "images/Brunhilde_back.png"
@@ -253,6 +273,7 @@
       "keywords": ["Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,1,0],
       "image": "portraits/butterfingers.png",
       "card": "images/Butterfingers_front.png",
       "cardBack": "images/Butterfingers_back.png"
@@ -264,6 +285,7 @@
       "keywords": ["Pirate","Animal","Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0,0],
       "image": "portraits/chezapeaky.png",
       "card": "images/Chezapeaky_front.png",
       "cardBack": "images/Chezapeaky_back.png"
@@ -275,6 +297,7 @@
       "keywords": ["Faun"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,1,0,1],
       "image": "portraits/chubs.png",
       "card": "images/Chubs_front.png",
       "cardBack": "images/Chubs_back.png"
@@ -286,6 +309,7 @@
       "keywords": ["Rogue","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,1,0],
       "image": "portraits/claudia.png",
       "card": "images/Claudia_Duvel_front.png",
       "cardBack": "images/Claudia_Duvel_back.png"
@@ -297,6 +321,7 @@
       "keywords": ["Pirate","Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/commodore.png",
       "card": "images/Commodore_Delaheye_front.png",
       "cardBack": "images/Commodore_Delaheye_back.png"
@@ -308,6 +333,7 @@
       "keywords": ["Rogue","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0],
       "image": "portraits/creep.png",
       "card": "images/Creep_front.png",
       "cardBack": "images/Creep_back.png"
@@ -319,6 +345,7 @@
       "keywords": ["Animal","Pirate","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0,0],
       "image": "portraits/crusty.png",
       "card": "images/Crusty_Balboa_front.png",
       "cardBack": "images/Crusty_Balboa_back.png"
@@ -330,6 +357,7 @@
       "keywords": ["Spirit","Witch"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,0],
       "image": "portraits/danica.png",
       "card": "images/Danica_Dusk_Witch_front.png",
       "cardBack": "images/Danica_Dusk_Witch_back.png"
@@ -341,6 +369,7 @@
       "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,1,1],
       "image": "portraits/dentia.png",
       "card": "images/Dentia_front.png",
       "cardBack": "images/Dentia_back.png"
@@ -352,6 +381,7 @@
       "keywords": ["Noble","Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,1,0],
       "image": "portraits/diana.png",
       "card": "images/Diana_Queen_of_the_Fae_front.png",
       "cardBack": "images/Diana_Queen_of_the_Fae_back.png"
@@ -363,6 +393,7 @@
       "keywords": ["Giant"],
       "stats": null,
       "abilities": [],
+      "health": [0,0,0,0,0,1,0,0,0,0,0,0,0,0],
       "image": "portraits/dim-dimmer.png",
       "card": "images/Dim_Dimmer_front.png",
       "cardBack": "images/Dim_Dimmer_back.png"
@@ -374,6 +405,7 @@
       "keywords": ["Goblin","Animal","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1,0],
       "image": "portraits/doug.png",
       "card": "images/Doug_the_Flatulent_front.png",
       "cardBack": "images/Doug_the_Flatulent_back.png"
@@ -385,6 +417,7 @@
       "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/drayner.png",
       "card": "images/Dranyer_front.png",
       "cardBack": "images/Dranyer_back.png"
@@ -396,6 +429,7 @@
       "keywords": ["Spirit","Noble","Eirich"],
       "stats": null,
       "abilities": [],
+      "health": [0,0,0,0,0,0,0,0,0,0,0],
       "image": "portraits/echo.png",
       "card": "images/Echo_of_the_Forgotten_King_front.png",
       "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
@@ -408,6 +442,7 @@
       "stats": null,
       "abilities": [],
       "summonedBy": ["igor-the-servant"],
+      "health": [0,0,0,0,0,0,0,0,0,0,0],
       "image": "portraits/echo.png",
       "card": "images/Echo_of_the_Forgotten_King_front.png",
       "cardBack": "images/Echo_of_the_Forgotten_King_back.png",
@@ -420,6 +455,7 @@
       "keywords": ["Pirate","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1],
       "image": "portraits/cap.png",
       "card": "images/El_Capitano_front.png",
       "cardBack": "images/El_Capitano_back.png"
@@ -431,6 +467,7 @@
       "keywords": ["Animal","Cultist","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,0,1,0,0],
       "image": "portraits/eric-enlightened.png",
       "card": "images/Eric_The_Enlightened_front.png",
       "cardBack": "images/Eric_The_Enlightened_back.png"
@@ -442,6 +479,7 @@
       "keywords": ["Human","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,1,0,0],
       "image": "portraits/eric.png",
       "card": "images/Eric_The_Squire_front.png",
       "cardBack": "images/Eric_The_Squire_back.png"
@@ -453,6 +491,7 @@
       "keywords": ["Soldier","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/firespitter.png",
       "card": "images/Firespitter_front.png",
       "cardBack": "images/Firespitter_back.png"
@@ -464,6 +503,7 @@
       "keywords": ["Gnome","Machine"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,0,0,0,0],
       "image": "portraits/flinders.png",
       "card": "images/Flinders_Memphis_front.png",
       "cardBack": "images/Flinders_Memphis_back.png"
@@ -475,6 +515,7 @@
       "keywords": ["Human","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,1,0,0,0],
       "image": "portraits/flintlock.png",
       "card": "images/Flintlock_front.png",
       "cardBack": "images/Flintlock_back.png"
@@ -486,6 +527,7 @@
       "keywords": ["Faerie","Wizard","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,1,1],
       "image": "portraits/foxglove.png",
       "card": "images/Foxglove_front.png",
       "cardBack": "images/Foxglove_back.png"
@@ -497,6 +539,7 @@
       "keywords": ["Wizard","Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,1],
       "image": "portraits/fraya.png",
       "card": "images/Fraya_front.png",
       "cardBack": "images/Fraya_back.png"
@@ -508,6 +551,7 @@
       "keywords": ["Human","Cleric"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0,0],
       "image": "portraits/friar.png",
       "card": "images/Friar_Flavious_front.png",
       "cardBack": "images/Friar_Flavious_back.png"
@@ -519,6 +563,7 @@
       "keywords": ["Mercenary","Human","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0,0],
       "image": "portraits/fritz.png",
       "card": "images/Fritz_front.png",
       "cardBack": "images/Fritz_back.png"
@@ -530,6 +575,7 @@
       "keywords": ["Human","Mercenary"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,1,0,0,0],
       "image": "portraits/gertrude.png",
       "card": "images/Gertrude_the_Faerie_Hunter_front.png",
       "cardBack": "images/Gertrude_the_Faerie_Hunter_back.png"
@@ -541,6 +587,7 @@
       "keywords": ["Faun","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,1,0,1,0],
       "image": "portraits/gloom.png",
       "card": "images/Gloom_front.png",
       "cardBack": "images/Gloom_back.png"
@@ -552,6 +599,7 @@
       "keywords": ["Gnome","Militia","Machine"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/gnomish-airship.png",
       "card": "images/Gnomish_Airship_front.png",
       "cardBack": "images/Gnomish_Airship_back.png"
@@ -563,6 +611,7 @@
       "keywords": ["Machine","Goblin","Animal"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0],
       "image": "portraits/Goblin-airship.png",
       "card": "images/Goblin_Airship_front.png",
       "cardBack": "images/Goblin_Airship_back.png"
@@ -574,6 +623,7 @@
       "keywords": ["Giant","Mercenary"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0,0,0],
       "image": "portraits/gotchgut.png",
       "card": "images/Gotchgut_front.png",
       "cardBack": "images/Gotchgut_back.png"
@@ -585,6 +635,7 @@
       "keywords": ["Militia","Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,0,0,0,0],
       "image": "portraits/gradock.png",
       "card": "images/Gradock_front.png",
       "cardBack": "images/Gradock_back.png"
@@ -596,6 +647,7 @@
       "keywords": ["Risen","Cleric","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/greymair.png",
       "card": "images/Greymair_front.png",
       "cardBack": "images/Greymair_back.png"
@@ -607,6 +659,7 @@
       "keywords": ["Goblin","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1,0],
       "image": "portraits/grub.png",
       "card": "images/Grub_front.png",
       "cardBack": "images/Grub_back.png"
@@ -618,6 +671,7 @@
       "keywords": ["Treefolk","Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0],
       "image": "portraits/gump.png",
       "card": "images/Gump_front.png",
       "cardBack": "images/Gump_back.png"
@@ -629,6 +683,7 @@
       "keywords": ["Cultist","Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,1,1],
       "image": "portraits/gwendoline.png",
       "card": "images/Gwendoline_Leshavult_Priestess_front.png",
       "cardBack": "images/Gwendoline_Leshavult_Priestess_back.png"
@@ -640,6 +695,7 @@
       "keywords": ["Goblin","Faerie","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1],
       "image": "portraits/herbert.png",
       "card": "images/Herbert_Growbottom_front.png",
       "cardBack": "images/Herbert_Growbottom_back.png"
@@ -651,6 +707,7 @@
       "keywords": ["Faun","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0,0],
       "image": "portraits/hoff.png",
       "card": "images/Hoff_front.png",
       "cardBack": "images/Hoff_back.png"
@@ -662,6 +719,7 @@
       "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/igor.png",
       "card": "images/Igor_The_Servant_front.png",
       "cardBack": "images/Igor_The_Servant_back.png"
@@ -673,6 +731,7 @@
       "keywords": ["Noble","Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1,0],
       "image": "portraits/iris-hellebore.png",
       "card": "images/Iris_Hellebore_front.png",
       "cardBack": "images/Iris_Hellebore_back.png"
@@ -684,6 +743,7 @@
       "keywords": ["Animal"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0,1,0,0],
       "image": "portraits/jackalope.png",
       "card": "images/Jackalope_front.png",
       "cardBack": "images/Jackalope_back.png"
@@ -696,6 +756,7 @@
       "stats": null,
       "abilities": [],
       "summonedBy": ["boris-the-bunny-summoner"],
+      "health": [1,0,0,1,0,0,0,1,0,0],
       "image": "portraits/jackalope.png",
       "card": "images/Jackalope_front.png",
       "cardBack": "images/Jackalope_back.png",
@@ -708,6 +769,7 @@
       "keywords": ["Faun","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,1,0,1,0],
       "image": "portraits/jayda.png",
       "card": "images/Jayda_front.png",
       "cardBack": "images/Jayda_back.png"
@@ -719,6 +781,7 @@
       "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,1,0,0,1,0],
       "image": "portraits/jerry-heir.png",
       "card": "images/Jerry_Heir_front.png",
       "cardBack": "images/Jerry_Heir_back.png"
@@ -730,6 +793,7 @@
       "keywords": ["Gnome","Norse","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0],
       "image": "portraits/joanna.png",
       "card": "images/Joanna_Nordic_Princess_front.png",
       "cardBack": "images/Joanna_Nordic_Princess_back.png"
@@ -741,6 +805,7 @@
       "keywords": ["Rogue","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1],
       "image": "portraits/jobie.png",
       "card": "images/Jobie_front.png",
       "cardBack": "images/Jobie_back.png"
@@ -752,6 +817,7 @@
       "keywords": ["Cultist","Cleric","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0,0],
       "image": "portraits/kalista.png",
       "card": "images/Kalista_Leshavult_Priestess_front.png",
       "cardBack": "images/Kalista_Leshavult_Priestess_back.png"
@@ -763,6 +829,7 @@
       "keywords": ["Noble","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0,0],
       "image": "portraits/kauffman.png",
       "card": "images/Kaufman_front.png",
       "cardBack": "images/Kaufman_back.png"
@@ -774,6 +841,7 @@
       "keywords": ["Rogue","Gnome","Cultist"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/kavanagh.png",
       "card": "images/Kavanagh_the_Jongler_front.png",
       "cardBack": "images/Kavanagh_the_Jongler_back.png"
@@ -785,6 +853,7 @@
       "keywords": ["Faun","Cultist"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0],
       "image": "portraits/klaus.png",
       "card": "images/Klaus_front.png",
       "cardBack": "images/Klaus_back.png"
@@ -796,6 +865,7 @@
       "keywords": ["Troll","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0],
       "image": "portraits/knoll.png",
       "card": "images/Knoll_front.png",
       "cardBack": "images/Knoll_back.png"
@@ -807,6 +877,7 @@
       "keywords": ["Cleric","Norse","Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/liv.png",
       "card": "images/Liv_front.png",
       "cardBack": "images/Liv_back.png"
@@ -818,6 +889,7 @@
       "keywords": ["Norse","Gnome","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/loci.png",
       "card": "images/Loci_Nordic_Shipwright_front.png",
       "cardBack": "images/Loci_Nordic_Shipwright_back.png"
@@ -829,6 +901,7 @@
       "keywords": ["Cultist","Giant"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,1,0,0,0,0,0,0,0,0],
       "image": "portraits/loubard.png",
       "card": "images/Loubard_front.png",
       "cardBack": "images/Loubard_back.png"
@@ -840,6 +913,7 @@
       "keywords": ["Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0],
       "image": "portraits/mama-gimble.png",
       "card": "images/Mama_Gimble_front.png",
       "cardBack": "images/Mama_Gimble_back.png"
@@ -851,6 +925,7 @@
       "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1,0],
       "image": "portraits/marley.png",
       "card": "images/Marley_front.png",
       "cardBack": "images/Marley_back.png"
@@ -862,6 +937,7 @@
       "keywords": ["Human","Animal"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0,0],
       "image": "portraits/matilda.png",
       "card": "images/Matilda_front.png",
       "cardBack": "images/Matilda_back.png"
@@ -873,6 +949,7 @@
       "keywords": ["Spirit","Faun"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,1],
       "image": "portraits/morag.png",
       "card": "images/Morag_front.png",
       "cardBack": "images/Morag_back.png"
@@ -884,6 +961,7 @@
       "keywords": ["Militia","Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,0,0,0,0],
       "image": "portraits/morris.png",
       "card": "images/Morris_front.png",
       "cardBack": "images/Morris_back.png"
@@ -895,6 +973,7 @@
       "keywords": ["Cleric","Faun"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/toodles.png",
       "card": "images/Mr_Toodles_front.png",
       "cardBack": "images/Mr_Toodles_back.png"
@@ -906,6 +985,7 @@
       "keywords": ["Rogue","Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0,0],
       "image": "portraits/muridae.png",
       "card": "images/Muridae_front.png",
       "cardBack": "images/Muridae_back.png"
@@ -917,6 +997,7 @@
       "keywords": ["Goblin","Rogue","Cultist"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1,0],
       "image": "portraits/nancy.png",
       "card": "images/Nancy_Priston_front.png",
       "cardBack": "images/Nancy_Priston_back.png"
@@ -928,6 +1009,7 @@
       "keywords": ["Risen"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0,0],
       "image": "portraits/nanny.png",
       "card": "images/Nanny_front.png",
       "cardBack": "images/Nanny_back.png"
@@ -939,6 +1021,7 @@
       "keywords": ["Rogue","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,1],
       "image": "portraits/natty.png",
       "card": "images/Natty_Slum_Thief_front.png",
       "cardBack": "images/Natty_Slum_Thief_back.png"
@@ -950,6 +1033,7 @@
       "keywords": ["Noble","Soldier","Risen"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/negroli.png",
       "card": "images/Negroli_front.png",
       "cardBack": "images/Negroli_back.png"
@@ -961,6 +1045,7 @@
       "keywords": ["Soldier","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,1,0],
       "image": "portraits/calders.png",
       "card": "images/Old_Calders_front.png",
       "cardBack": "images/Old_Calders_back.png"
@@ -972,6 +1057,7 @@
       "keywords": ["Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,0,0,0,0],
       "image": "portraits/polly.png",
       "card": "images/Old_Polly_front.png",
       "cardBack": "images/Old_Polly_back.png"
@@ -983,6 +1069,7 @@
       "keywords": ["Noble","Gnome","Norse","Animal"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0,0,0,0],
       "image": "portraits/olim.png",
       "card": "images/Olim_front.png",
       "cardBack": "images/Olim_back.png"
@@ -994,6 +1081,7 @@
       "keywords": ["Pirate","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,1,0],
       "image": "portraits/peggy.png",
       "card": "images/Peggy_front.png",
       "cardBack": "images/Peggy_back.png"
@@ -1005,6 +1093,7 @@
       "keywords": ["Soldier","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0],
       "image": "portraits/portly-pete.png",
       "card": "images/Portly_Pete_front.png",
       "cardBack": "images/Portly_Pete_back.png"
@@ -1016,6 +1105,7 @@
       "keywords": ["Pirate","Animal"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1],
       "image": "portraits/monkey.png",
       "card": "images/Powder_Monkey_front.png",
       "cardBack": "images/Powder_Monkey_back.png"
@@ -1027,6 +1117,7 @@
       "keywords": ["Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/boffins.png",
       "card": "images/Prof_Boffinsworth_front.png",
       "cardBack": "images/Prof_Boffinsworth_back.png"
@@ -1038,6 +1129,7 @@
       "keywords": ["Human","Cleric","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,1,0,0],
       "image": "portraits/quack.png",
       "card": "images/Quack_front.png",
       "cardBack": "images/Quack_back.png"
@@ -1049,6 +1141,7 @@
       "keywords": ["Soldier","Militia","Gnome"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0,0],
       "image": "portraits/quarrel.png",
       "card": "images/Quarrel_front.png",
       "cardBack": "images/Quarrel_back.png"
@@ -1060,6 +1153,7 @@
       "keywords": ["Faun","Cultist","Cleric"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0],
       "image": "portraits/raegan.png",
       "card": "images/Raegan_front.png",
       "cardBack": "images/Raegan_back.png"
@@ -1071,6 +1165,7 @@
       "keywords": ["Troll","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,0,0,0,1,0,0,0,0],
       "image": "portraits/ribald.png",
       "card": "images/Ribald_front.png",
       "cardBack": "images/Ribald_back.png"
@@ -1082,6 +1177,7 @@
       "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/roary.png",
       "card": "images/Roary_front.png",
       "cardBack": "images/Roary_back.png"
@@ -1093,6 +1189,7 @@
       "keywords": ["Treefolk","Spirit"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,1],
       "image": "portraits/ruwt.png",
       "card": "images/Ruwt_front.png",
       "cardBack": "images/Ruwt_back.png"
@@ -1104,6 +1201,7 @@
       "keywords": ["Goblin","Pirate"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1],
       "image": "portraits/seasick.png",
       "card": "images/Seasick_Stu_front.png",
       "cardBack": "images/Seasick_Stu_back.png"
@@ -1115,6 +1213,7 @@
       "keywords": ["Spirit","Merfolk"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,1,0],
       "image": "portraits/sen-ara.png",
       "card": "images/Sen_Ara_front.png",
       "cardBack": "images/Sen_Ara_back.png"
@@ -1126,6 +1225,7 @@
       "keywords": ["Soldier","Risen"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,0],
       "image": "portraits/serif.png",
       "card": "images/Serif_front.png",
       "cardBack": "images/Serif_back.png"
@@ -1137,6 +1237,7 @@
       "keywords": ["Wizard","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,1],
       "image": "portraits/shabbaroon.png",
       "card": "images/Shabbaroon_front.png",
       "cardBack": "images/Shabbaroon_back.png"
@@ -1148,6 +1249,7 @@
       "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,0,1],
       "image": "portraits/silvertongue.png",
       "card": "images/Silvertongue_front.png",
       "cardBack": "images/Silvertongue_back.png"
@@ -1159,6 +1261,7 @@
       "keywords": ["Noble","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0,0,0],
       "image": "portraits/poppyc.png",
       "card": "images/Sir_Guillemot_Poppycock_front.png",
       "cardBack": "images/Sir_Guillemot_Poppycock_back.png"
@@ -1170,6 +1273,7 @@
       "keywords": ["Animal","Soldier","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0,0,0,0],
       "image": "portraits/hogs.png",
       "card": "images/Sir_Hogswash_front.png",
       "cardBack": "images/Sir_Hogswash_back.png"
@@ -1181,6 +1285,7 @@
       "keywords": ["Faun","Cultist","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/skaggi.png",
       "card": "images/Skuggi_front.png",
       "cardBack": "images/Skuggi_back.png"
@@ -1192,6 +1297,7 @@
       "keywords": ["Spirit","Treefolk"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0,0,0,1,0],
       "image": "portraits/snag.png",
       "card": "images/Snag_front.png",
       "cardBack": "images/Snag_back.png"
@@ -1203,6 +1309,7 @@
       "keywords": ["Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1],
       "image": "portraits/stilts-kim.png",
       "card": "images/Stilts_Kim_front.png",
       "cardBack": "images/Stilts_Kim_back.png"
@@ -1214,6 +1321,7 @@
       "keywords": ["Cultist","Rogue","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,0,1,0,0,0],
       "image": "portraits/streatham.png",
       "card": "images/Streatham_front.png",
       "cardBack": "images/Streatham_back.png"
@@ -1225,6 +1333,7 @@
       "keywords": ["Human","Pirate"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,1,0],
       "image": "portraits/swash.png",
       "card": "images/Swash_front.png",
       "cardBack": "images/Swash_back.png"
@@ -1236,6 +1345,7 @@
       "keywords": ["Pirate","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,1,0],
       "image": "portraits/swooty.png",
       "card": "images/Swiggarty_Swooty_front.png",
       "cardBack": "images/Swiggarty_Swooty_back.png"
@@ -1247,6 +1357,7 @@
       "keywords": ["Goblin","Animal","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,1,0],
       "image": "portraits/syril.png",
       "card": "images/Syril_Swampfoot_front.png",
       "cardBack": "images/Syril_Swampfoot_back.png"
@@ -1258,6 +1369,7 @@
       "keywords": ["Human","Cleric"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0,0],
       "image": "portraits/tabby.png",
       "card": "images/Tabby_the_Librarian_front.png",
       "cardBack": "images/Tabby_the_Librarian_back.png"
@@ -1269,6 +1381,7 @@
       "keywords": ["Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,1,1],
       "image": "portraits/teetoe.png",
       "card": "images/Teetoe_front.png",
       "cardBack": "images/Teetoe_back.png"
@@ -1280,6 +1393,7 @@
       "keywords": ["Noble","Animal","Human"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,0,0,0,0,0],
       "image": "portraits/beast.png",
       "card": "images/The_Beast_front.png",
       "cardBack": "images/The_Beast_back.png"
@@ -1291,6 +1405,7 @@
       "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/duchess.png",
       "card": "images/The_Duchess_front.png",
       "cardBack": "images/The_Duchess_back.png"
@@ -1302,6 +1417,7 @@
       "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,0,1],
       "image": "portraits/fencer.png",
       "card": "images/The_Fencer_front.png",
       "cardBack": "images/The_Fencer_back.png"
@@ -1313,6 +1429,7 @@
       "keywords": ["Goblin","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/Goblin-king.png",
       "card": "images/The_Goblin_King_front.png",
       "cardBack": "images/The_Goblin_King_back.png"
@@ -1324,6 +1441,7 @@
       "keywords": ["Wizard","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,0],
       "image": "portraits/mortician.png",
       "card": "images/The_Mortician_front.png",
       "cardBack": "images/The_Mortician_back.png"
@@ -1335,6 +1453,7 @@
       "keywords": ["Spirit","Noble","Human"],
       "stats": null,
       "abilities": [],
+      "health": [0,0,1,0,1,0,1],
       "image": "portraits/revenant.png",
       "card": "images/The_Revenant_front.png",
       "cardBack": "images/The_Revenant_back.png"
@@ -1346,6 +1465,7 @@
       "keywords": ["Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0],
       "image": "portraits/tax-collector.png",
       "card": "images/The_Tax_Collector_front.png",
       "cardBack": "images/The_Tax_Collector_back.png"
@@ -1357,6 +1477,7 @@
       "keywords": ["Animal","Soldier","Faerie"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,1,0],
       "image": "portraits/vespa.png",
       "card": "images/Vespa_front.png",
       "cardBack": "images/Vespa_back.png"
@@ -1368,6 +1489,7 @@
       "keywords": ["Soldier","Goblin"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,0,1,0],
       "image": "portraits/syd.png",
       "card": "images/Vicious_Syd_front.png",
       "cardBack": "images/Vicious_Syd_back.png"
@@ -1379,6 +1501,7 @@
       "keywords": ["Human","Rogue"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,1,0],
       "image": "portraits/graverobber.png",
       "card": "images/Viktor_Petty_Graverobber_front.png",
       "cardBack": "images/Viktor_Petty_Graverobber_back.png"
@@ -1390,6 +1513,7 @@
       "keywords": ["Risen","Animal","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,0,1,0,0,1,0,0,0,0],
       "image": "portraits/viscont.png",
       "card": "images/Viscount_De_Faulte_front.png",
       "cardBack": "images/Viscount_De_Faulte_back.png"
@@ -1401,6 +1525,7 @@
       "keywords": ["Faerie","Soldier"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,1,0,1],
       "image": "portraits/wasp.png",
       "card": "images/Wasp_front.png",
       "cardBack": "images/Wasp_back.png"
@@ -1412,6 +1537,7 @@
       "keywords": ["Goblin","Wizard"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1],
       "image": "portraits/wenda.png",
       "card": "images/Wenda_Wetbones_front.png",
       "cardBack": "images/Wenda_Wetbones_back.png"
@@ -1423,6 +1549,7 @@
       "keywords": ["Spirit","Faun"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,1,0],
       "image": "portraits/wendigo.png",
       "card": "images/Wendigo_front.png",
       "cardBack": "images/Wendigo_back.png"
@@ -1434,6 +1561,7 @@
       "keywords": ["Militia","Gnome","Noble"],
       "stats": null,
       "abilities": [],
+      "health": [1,1,1,0,0,0,0],
       "image": "portraits/young-jack.png",
       "card": "images/Young_Jack_front.png",
       "cardBack": "images/Young_Jack_back.png"
@@ -1445,6 +1573,7 @@
       "keywords": ["Spirit","Witch"],
       "stats": null,
       "abilities": [],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/zorya.png",
       "card": "images/Zorya_Dawn_Witch_front.png",
       "cardBack": "images/Zorya_Dawn_Witch_back.png"
@@ -1457,6 +1586,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["negroli","abra-cadaverous","roary"],
+      "health": [0],
       "image": "portraits/pidge.png",
       "card": "images/Brave_Sir_Pidge_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1469,6 +1599,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["greymair","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/flay.png",
       "card": "images/Flay_Bearer_of_Knowledge_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1481,6 +1612,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["senara","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/jeremy.png",
       "card": "images/Jeremy_Lord_of_the_Deep_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1493,6 +1625,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["greymair","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/lampy.png",
       "card": "images/Lampy_Darkson_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1505,6 +1638,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["jerry-heir","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/teacake.png",
       "card": "images/Teacake_of_Torment_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1517,6 +1651,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["negroli","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/musician.png",
       "card": "images/Terrible_Musician_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1529,6 +1664,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/pookie.png",
       "card": "images/Pookie_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1541,6 +1677,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/sprog.png",
       "card": "images/Sprog_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1553,6 +1690,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
+      "health": [0,0],
       "image": "portraits/urchin.png",
       "card": "images/Urchin_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1565,6 +1703,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy":["boris-the-bunny-summoner"],
+      "health": [0,0,0,0],
       "image": "portraits/bunny1.png",
       "card": "images/Murder_Bunny_1_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1577,6 +1716,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy":["boris-the-bunny-summoner"],
+      "health": [0,0,0,0],
       "image": "portraits/bunny2.png",
       "card": "images/Murder_Bunny_2_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1589,6 +1729,7 @@
       "stats":null,
       "abilities": [],
       "summonedBy":["boris-the-bunny-summoner"],
+      "health": [0,0,0,0],
       "image": "portraits/bunny3.png",
       "card": "images/Murder_Bunny_3_front.png",
       "cardBack": "images/no_signature_back.png"
