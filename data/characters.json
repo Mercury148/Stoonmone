@@ -605,14 +605,14 @@
       "cardBack": "images/Gnomish_Airship_back.png"
     },
     {
-      "id": "Goblin-airship",
+      "id": "goblin-airship",
       "name": "Goblin Airship",
       "factions": ["dominion"],
       "keywords": ["Machine","Goblin","Animal"],
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0],
-      "image": "portraits/Goblin-airship.png",
+      "image": "portraits/goblin-airship.png",
       "card": "images/Goblin_Airship_front.png",
       "cardBack": "images/Goblin_Airship_back.png"
     },
@@ -1423,14 +1423,14 @@
       "cardBack": "images/The_Fencer_back.png"
     },
     {
-      "id": "the-Goblin-king",
+      "id": "the-goblin-king",
       "name": "The Goblin King",
       "factions": ["dominion"],
       "keywords": ["Goblin","Noble"],
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/Goblin-king.png",
+      "image": "portraits/goblin-king.png",
       "card": "images/The_Goblin_King_front.png",
       "cardBack": "images/The_Goblin_King_back.png"
     },
