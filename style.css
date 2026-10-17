@@ -677,3 +677,8 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 #game-foe-chosen:empty { display: none; }
 .transform-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
 .summon-note { display: grid; place-items: center; min-height: 32px; font-size: 0.65rem; color: var(--muted); text-align: center; }
+
+/* Kein Doppeltipp-Zoom: schnelles mehrfaches Tippen (z. B. auf + und -) soll nicht zoomen.
+   Das Zusammenziehen mit zwei Fingern bleibt erlaubt. */
+html, body, button, input, summary { touch-action: manipulation; }
+.gstep-row button, .summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
