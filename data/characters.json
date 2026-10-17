@@ -29,12 +29,8 @@
     {
       "id": "abra-cadaverous",
       "name": "Abra Cadaverous",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Spirit"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/abra.png",
@@ -44,12 +40,8 @@
     {
       "id": "agatha-tavernfrau",
       "name": "Agatha Tavernfrau",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/agatha.png",
