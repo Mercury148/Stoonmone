@@ -604,3 +604,9 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   .slot-portrait .tile-label { padding-inline: 0.45rem; }
   .slot-portrait .tile-name { font-size: 0.78rem; }
 }
+
+/* Fraktion der Troupe in der Hinweiszeile des Editors */
+.rule-faction { font-weight: 600; color: var(--fg); }
+
+/* Hinweiszeile im Editor: die Fraktion der Troupe */
+.rule-faction { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; color: var(--fg); }

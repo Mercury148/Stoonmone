@@ -371,6 +371,13 @@ function allowedFactions(t) {
   return all;
 }
 
+// Die Fraktion einer Troupe: nur wenn genau eine übrig bleibt, sonst null (noch offen)
+function troupeFaction(t) {
+  if (!RULES.sameFaction || t.ids.length === 0) return null;
+  const left = [...allowedFactions(t)];
+  return left.length === 1 ? factionById.get(left[0]) : null;
+}
+
 function fitsFactions(t, character) {
   const allowed = allowedFactions(t);
   return character.factions.some((f) => allowed.has(f));
@@ -559,17 +566,23 @@ function renderEditor() {
 
   $("#export-code").value = count ? encodeTroupe(current) : "";
 
-  // Hinweiszeile: leer = Anleitung, sonst die noch möglichen Fraktionen
+  // Hinweiszeile: leer = Anleitung. Bleibt genau eine Fraktion übrig, ist das die Fraktion der Troupe.
   const rule = $("#editor-rule");
+  const left = [...allowedFactions(current)];
   if (count === 0) {
     rule.textContent = "Tap characters below to add them.";
     rule.hidden = false;
-  } else if (RULES.sameFaction) {
-    const names = [...allowedFactions(current)].map((f) => factionById.get(f).name);
-    rule.textContent = `: ${names.join(", ") || "no faction"}`;
+  } else if (RULES.sameFaction && left.length === 1) {
+    const faction = factionById.get(left[0]);
+    rule.replaceChildren(
+      el("span", { class: "rule-faction" },
+        el("span", { class: "dot", style: factionStyle(faction) }),
+        `Faction: ${faction.name}`
+      )
+    );
     rule.hidden = false;
   } else {
-    rule.hidden = true;
+    rule.hidden = true;   // noch mehrere Fraktionen möglich: nichts anzeigen
   }
   editorPanel.setAllowed(RULES.sameFaction && count > 0 ? allowedFactions(current) : null);
   renderTiles();
