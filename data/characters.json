@@ -396,6 +396,17 @@
       "keywords": ["Spirit","Noble","Eirich"],
       "stats": null,
       "abilities": [],
+      "image": "portraits/echo.png",
+      "card": "images/Echo_of_the_Forgotten_King_front.png",
+      "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
+    },
+    {
+      "id": "echo-of-the-forgotten-king",
+      "name": "Echo of the Forgotten King",
+      "factions": ["shades"],
+      "keywords": ["Spirit","Noble","Eirich"],
+      "stats": null,
+      "abilities": [],
       "summonedBy": ["igor-the-servant"],
       "image": "portraits/echo.png",
       "card": "images/Echo_of_the_Forgotten_King_front.png",
@@ -672,6 +683,18 @@
       "keywords": ["Animal"],
       "stats": null,
       "abilities": [],
+      "image": "portraits/jackalope.png",
+      "card": "images/Jackalope_front.png",
+      "cardBack": "images/Jackalope_back.png"
+    },
+    {
+      "id": "jackalope",
+      "name": "Jackalope",
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Animal"],
+      "stats": null,
+      "abilities": [],
+      "summonedBy": ["boris-the-bunny-summoner"],
       "image": "portraits/jackalope.png",
       "card": "images/Jackalope_front.png",
       "cardBack": "images/Jackalope_back.png"
@@ -1445,7 +1468,7 @@
       "abilities": [],
       "summonedBy": ["greymair","abra-cadaverous","roary"],
       "image": "portraits/flay.png",
-      "card": "images/Flay_Bearer_of_Knowledge_Front.png",
+      "card": "images/Flay_Bearer_of_Knowledge_front.png",
       "cardBack": "images/no_signature_back.png"
     },
     {
@@ -1517,7 +1540,7 @@
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "image": "portraits/sprog.png",
-      "card": "images/Sprog_Front.png",
+      "card": "images/Sprog_front.png",
       "cardBack": "images/no_signature_back.png"
     },
     {
