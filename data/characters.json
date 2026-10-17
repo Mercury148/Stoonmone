@@ -81,6 +81,7 @@
       "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
+      "transformsInto": ["striga-anya"],
       "health": [1,1,0,1,0,0,0],
       "image": "portraits/anya.png",
       "card": "images/Anya_Bartol_front.png",

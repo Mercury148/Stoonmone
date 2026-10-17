@@ -809,16 +809,48 @@ function energyGenerated(c, wounds) {
   return health.slice(0, Math.max(0, health.length - wounds)).reduce((sum, dot) => sum + (dot ? 1 : 0), 0);
 }
 
+// Verwandlung: "transformsInto" steht bei EINEM der beiden Charaktere, die sich ineinander verwandeln.
+// twinOf liefert den jeweils anderen (egal, bei welchem von beiden das Feld steht).
+function twinOf(c) {
+  if (c.transformsInto) return characterById.get(c.transformsInto) || null;
+  return data.characters.find((o) => o.transformsInto === c.id) || null;
+}
+
+// Die zweite Zeile: Beschworene, deren Beschwörer im Spiel ist, und der gerade nicht aktive Zwilling
 function gameSummons(side) {
   const active = game[side];
-  return data.characters.filter((c) => isSummoned(c) && c.summonedBy.some((id) => active.includes(id)));
+  return data.characters.filter((c) => {
+    if (active.includes(c.id)) return false;
+    const twin = twinOf(c);
+    if (twin && active.includes(twin.id)) return true;
+    return isSummoned(c) && c.summonedBy.some((id) => active.includes(id));
+  });
+}
+
+// Verwandeln: Der Zwilling nimmt den Platz ein, Lebenspunkte und Energy bleiben erhalten
+function transformModel(side, c) {
+  const twin = twinOf(c);
+  const i = game[side].indexOf(c.id);
+  if (!twin || i < 0) return;
+  const old = gameModel(side, c.id);
+  const total = healthOf(twin) ? healthOf(twin).length : 30;
+  game.models[`${side}:${twin.id}`] = { wounds: Math.min(old.wounds, total), energy: old.energy, summoned: true };
+  game.models[`${side}:${c.id}`] = { wounds: 0, energy: 0 };
+  game[side][i] = twin.id;
+  saveGame();
+  renderGamePlay();
 }
 
 function openGame() {
   const saved = loadGame();
   game = saved && saved.troupeId === current.id ? saved : newGame(current.id);
   // Modelle, die nicht mehr in der Troupe sind oder nicht mehr existieren, fliegen raus
-  game.own = game.own.filter((id) => current.ids.includes(id) && characterById.has(id)).slice(0, GAME_SIZE);
+  game.own = game.own.filter((id) => {
+    const c = characterById.get(id);
+    if (!c) return false;
+    const twin = twinOf(c);   // ein verwandeltes Modell darf an seinem Platz bleiben
+    return current.ids.includes(id) || (twin && current.ids.includes(twin.id));
+  }).slice(0, GAME_SIZE);
   game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, GAME_SIZE);
   if (game.own.length === 0 || game.foe.length === 0) game.stage = "setup";
   foePanel.clear();
@@ -871,7 +903,17 @@ function gameCell(side, c) {
   const change = (patch) => { Object.assign(m, patch); saveGame(); renderGamePlay(); };
 
   // Beschworene Charaktere starten ausgegraut. Erst "Summon" bringt sie mit vollen Lebenspunkten und ohne Energy ins Spiel.
-  if (isSummoned(c) && !m.summoned) {
+  // Der gerade nicht aktive Zwilling steht ausgegraut in der Beschworenen-Zeile (kein Summon-Knopf)
+  if (twinOf(c) && !game[side].includes(c.id)) {
+    return el("div", { class: "gcell unsummoned" },
+      el("div", { class: "summon-note", text: "Transformed" }),
+      el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+      el("div", { class: "gcell-name", text: c.name }),
+      el("div", { class: "hboxes none", text: "not in play" })
+    );
+  }
+
+  if (isSummoned(c) && !m.summoned && !twinOf(c)) {
     return el("div", { class: "gcell unsummoned" },
       el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) }),
       el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
@@ -886,6 +928,7 @@ function gameCell(side, c) {
     : el("div", { class: "hboxes none", text: "no health data" });
 
   return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}` },
+    twinOf(c) ? el("button", { class: "summon-btn transform-btn", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) }) : null,
     el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
     el("div", { class: "gcell-name", text: c.name }),
     boxes,
@@ -920,7 +963,8 @@ function generateEnergy() {
   for (const side of ["own", "foe"]) {
     for (const c of [...game[side].map((id) => characterById.get(id)), ...gameSummons(side)]) {
       const m = gameModel(side, c.id);
-      if (isSummoned(c) && !m.summoned) continue;   // noch nicht beschworen: nicht im Spiel
+      if (twinOf(c) && !game[side].includes(c.id)) continue;   // inaktiver Zwilling: nicht im Spiel
+      if (isSummoned(c) && !m.summoned && !twinOf(c)) continue;   // noch nicht beschworen: nicht im Spiel
       m.energy = energyGenerated(c, m.wounds) || 0;
     }
   }
