@@ -79,6 +79,8 @@
         <div id="summons-list" class="slots"></div>
       </div>
 
+      <button id="start-game" class="play-btn" type="button">Play with this troupe</button>
+
       <details class="share">
         <summary>Share, back up and delete</summary>
         <p class="hint">Your browser can lose saved data. Copy the code and keep it somewhere safe, for example in a note. You can load it again on the troupes page.</p>
@@ -91,6 +93,54 @@
       <!-- Dieselben Filter wie im Kompendium, aber unabhängig davon -->
       <div id="editor-filters"></div>
       <div id="editor-tiles" class="tiles"></div>
+    </section>
+
+    <!-- ===== Seite 4: Spiel (Wunden und Energy verfolgen) ===== -->
+    <section id="view-game" aria-label="Game" hidden>
+      <div class="editor-bar">
+        <button id="game-back" class="ghost back" type="button">Back</button>
+        <h2 id="game-title" class="game-title">Game</h2>
+        <span id="game-round" class="badge big"></span>
+      </div>
+
+      <!-- Auswahl: 5 Modelle der eigenen Troupe, 5 des Gegners -->
+      <div id="game-setup" hidden>
+        <h3 class="section-label">Your models <span class="badge" id="game-own-count"></span></h3>
+        <p class="hint">Choose the 5 models you play this game.</p>
+        <div id="game-own-tiles" class="tiles"></div>
+
+        <h3 class="section-label">Opponent <span class="badge" id="game-foe-count"></span></h3>
+        <p class="hint" id="game-foe-picked"></p>
+        <div id="game-foe-filters"></div>
+        <div id="game-foe-tiles" class="tiles"></div>
+
+        <div class="game-startbar">
+          <button id="game-start" type="button">Start game</button>
+        </div>
+      </div>
+
+      <!-- Spiel: oben der Gegner, unten du -->
+      <div id="game-play" hidden>
+        <div class="game-tools">
+          <button id="game-next-round" type="button">Next round</button>
+          <button id="game-setup-btn" class="ghost" type="button">Change models</button>
+          <button id="game-reset" class="ghost" type="button">Reset game</button>
+        </div>
+
+        <h3 class="section-label">Opponent</h3>
+        <div id="game-foe-row" class="grow"></div>
+        <div id="game-foe-summon-wrap" hidden>
+          <h3 class="section-label">Opponent, summoned</h3>
+          <div id="game-foe-summons" class="grow"></div>
+        </div>
+
+        <h3 class="section-label">You</h3>
+        <div id="game-own-row" class="grow"></div>
+        <div id="game-own-summon-wrap" hidden>
+          <h3 class="section-label">You, summoned</h3>
+          <div id="game-own-summons" class="grow"></div>
+        </div>
+      </div>
     </section>
   </main>
 
