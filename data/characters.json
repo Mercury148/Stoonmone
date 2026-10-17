@@ -401,8 +401,8 @@
       "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
     },
     {
-      "id": "echo-of-the-forgotten-king",
-      "name": "Echo of the Forgotten King",
+      "id": "echo-of-the-forgotten-king-summon",
+      "name": "Summoned Echo of the Forgotten King",
       "factions": ["shades"],
       "keywords": ["Spirit","Noble","Eirich"],
       "stats": null,
@@ -688,8 +688,8 @@
       "cardBack": "images/Jackalope_back.png"
     },
     {
-      "id": "jackalope",
-      "name": "Jackalope",
+      "id": "jackalope-summon",
+      "name": "Summoned Jackalope",
       "factions": ["commonwealth","leshavult"],
       "keywords": ["Animal"],
       "stats": null,
