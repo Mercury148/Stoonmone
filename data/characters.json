@@ -1424,15 +1424,15 @@
       "cardBack": "images/Zorya_Dawn_Witch_back.png"
     },
     {
-      "id":"",
-      "name":"",
-      "factions":"",
-      "keywords":"",
+      "id":"brave-sir-pidge",
+      "name":"Brave Sir Pidge",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Soldier"],
       "stats":null,
-      "abilities":"",
-      "image": "portraits/.png",
-      "card": "images/.png",
-      "cardBack": "images/.png"
+      "abilities": [],
+      "image": "portraits/pidge.png",
+      "card": "images/Brave_Sir_Pidge.png",
+      "cardBack": "images/no_signature_back.png"
     }
   ]
 }
