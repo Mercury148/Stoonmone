@@ -87,6 +87,19 @@
       "cardBack": "images/Anya_Bartol_back.png"
     },
     {
+      "id": "striga-anya",
+      "name": "Striga Anya",
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Spirit"],
+      "stats": null,
+      "abilities": [],
+      "summonedBy": ["anya-bartol"],
+      "health": [1,1,0,1,0,0,0],
+      "image": "portraits/stryga.png",
+      "card": "images/Striga_Anya_front.png",
+      "cardBack": "images/Striga_Anya_back.png"
+    },
+    {
       "id": "banshee",
       "name": "Banshee",
       "factions": ["dominion","shades"],
