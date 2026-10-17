@@ -51,16 +51,8 @@
     {
       "id": "angerboda",
       "name": "Angerboda",
-      "factions": [
-        "commonwealth",
-        "shades"
-      ],
-      "keywords": [
-        "Giant",
-        "Soldier",
-        "Norse",
-        "Risen"
-      ],
+      "factions": ["commonwealth","shades"],
+      "keywords": ["Giant","Soldier","Norse","Risen"],
       "stats": null,
       "abilities": [],
       "image": "portraits/angerboda.png",
@@ -70,13 +62,8 @@
     {
       "id": "antonia-noonday-witch",
       "name": "Antonia, Noonday Witch",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Spirit",
-        "Witch"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Spirit","Witch"],
       "stats": null,
       "abilities": [],
       "image": "portraits/antonia.png",
@@ -86,14 +73,8 @@
     {
       "id": "anya-bartol",
       "name": "Anya Bartol",
-      "factions": [
-        "dominion",
-        "leshavult"
-      ],
-      "keywords": [
-        "Human",
-        "Noble"
-      ],
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/anya.png",
@@ -103,14 +84,8 @@
     {
       "id": "banshee",
       "name": "Banshee",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Faerie",
-        "Spirit"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Faerie","Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/banshee.png",
@@ -120,15 +95,8 @@
     {
       "id": "barnakelle",
       "name": "Barnakelle",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Troll",
-        "Spirit",
-        "Pirate"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Troll","Spirit","Pirate"],
       "stats": null,
       "abilities": [],
       "image": "portraits/barnakelle.png",
@@ -138,13 +106,8 @@
     {
       "id": "baron-von-fancy-hat",
       "name": "Baron Von Fancy Hat",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Noble"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/baron.png",
@@ -154,13 +117,8 @@
     {
       "id": "beaky-bobby",
       "name": "Beaky Bobby",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Wizard"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/beaky.png",
@@ -170,13 +128,8 @@
     {
       "id": "bejiminy",
       "name": "Bejiminy",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Animal",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Animal","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/beijiminy.png",
@@ -186,13 +139,8 @@
     {
       "id": "belladonna",
       "name": "Belladonna",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie",
-        "Rogue"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/belladonna.png",
@@ -202,14 +150,8 @@
     {
       "id": "billy",
       "name": "Billy",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome",
-        "Animal",
-        "Militia"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome","Animal","Militia"],
       "stats": null,
       "abilities": [],
       "image": "portraits/billy.png",
@@ -219,14 +161,8 @@
     {
       "id": "bjorn",
       "name": "Bjorn",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome",
-        "Norse",
-        "Mercenary"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome","Norse","Mercenary"],
       "stats": null,
       "abilities": [],
       "image": "portraits/bjorn.png",
@@ -236,12 +172,8 @@
     {
       "id": "boom-boom-mcboom",
       "name": "Boom Boom McBoom",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/boom.png",
@@ -251,14 +183,8 @@
     {
       "id": "boris-the-bunny-summoner",
       "name": "Boris, The Bunny Summoner",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Wizard"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Faun","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/boris.png",
@@ -268,12 +194,8 @@
     {
       "id": "boulder",
       "name": "Boulder",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Troll"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Troll"],
       "stats": null,
       "abilities": [],
       "image": "portraits/boulder.png",
@@ -283,14 +205,8 @@
     {
       "id": "brigid",
       "name": "Brigid",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Pirate",
-        "Faerie"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Pirate","Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/brigid.png",
@@ -300,12 +216,8 @@
     {
       "id": "bristlenose",
       "name": "Bristlenose",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Troll"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Troll"],
       "stats": null,
       "abilities": [],
       "image": "portraits/bristlenose.png",
@@ -315,15 +227,8 @@
     {
       "id": "brother-daniel",
       "name": "Brother Daniel",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Cleric",
-        "Human",
-        "Cultist"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Cleric","Human","Cultist"],
       "stats": null,
       "abilities": [],
       "image": "portraits/daniel.png",
@@ -333,14 +238,8 @@
     {
       "id": "brunhilde",
       "name": "Brunhilde",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Mercenary",
-        "Giant",
-        "Norse"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Mercenary","Giant","Norse"],
       "stats": null,
       "abilities": [],
       "image": "portraits/brunhilde.png",
@@ -350,12 +249,8 @@
     {
       "id": "butterfingers",
       "name": "Butterfingers",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/butterfingers.png",
@@ -365,15 +260,8 @@
     {
       "id": "chezapeaky",
       "name": "Chezapeaky",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Pirate",
-        "Animal",
-        "Spirit"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Pirate","Animal","Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/chezapeaky.png",
@@ -383,12 +271,8 @@
     {
       "id": "chubs",
       "name": "Chubs",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Faun"],
       "stats": null,
       "abilities": [],
       "image": "portraits/chubs.png",
@@ -398,13 +282,8 @@
     {
       "id": "claudia-duvel",
       "name": "Claudia Duvel",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Rogue",
-        "Human"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Rogue","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/claudia.png",
@@ -414,14 +293,8 @@
     {
       "id": "commodore-delaheye",
       "name": "Commodore Delaheye",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Pirate",
-        "Spirit"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Pirate","Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/commodore.png",
@@ -431,13 +304,8 @@
     {
       "id": "creep",
       "name": "Creep",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Rogue",
-        "Human"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Rogue","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/creep.png",
@@ -447,14 +315,8 @@
     {
       "id": "crusty-balboa",
       "name": "Crusty Balboa",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Animal",
-        "Pirate",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Animal","Pirate","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/crusty.png",
@@ -464,13 +326,8 @@
     {
       "id": "danica-dusk-witch",
       "name": "Danica, Dusk Witch",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Spirit",
-        "Witch"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Spirit","Witch"],
       "stats": null,
       "abilities": [],
       "image": "portraits/danica.png",
@@ -480,13 +337,8 @@
     {
       "id": "dentia",
       "name": "Dentia",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie",
-        "Rogue"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/dentia.png",
@@ -496,13 +348,8 @@
     {
       "id": "diana-queen-of-the-fae",
       "name": "Diana, Queen of the Fae",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Noble",
-        "Faerie"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Noble","Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/diana.png",
@@ -512,13 +359,8 @@
     {
       "id": "dim-and-dimmer",
       "name": "Dim & Dimmer",
-      "factions": [
-        "commonwealth",
-        "dominion"
-      ],
-      "keywords": [
-        "Giant"
-      ],
+      "factions": ["commonwealth","dominion"],
+      "keywords": ["Giant"],
       "stats": null,
       "abilities": [],
       "image": "portraits/dim-dimmer.png",
@@ -528,14 +370,8 @@
     {
       "id": "doug-the-flatulent",
       "name": "Doug, the Flatulent",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Animal",
-        "Soldier"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Animal","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/doug.png",
@@ -545,12 +381,8 @@
     {
       "id": "dranyer",
       "name": "Dranyer",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Spirit"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/drayner.png",
@@ -560,14 +392,8 @@
     {
       "id": "echo-of-the-forgotten-king",
       "name": "Echo of the Forgotten King",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Spirit",
-        "Noble",
-        "Eirich"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Spirit","Noble","Eirich"],
       "stats": null,
       "abilities": [],
       "image": "portraits/echo.png",
@@ -577,13 +403,8 @@
     {
       "id": "el-capitano",
       "name": "El Capitano",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Pirate",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["pirate","goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/cap.png",
@@ -593,14 +414,8 @@
     {
       "id": "eric-the-enlightened",
       "name": "Eric The Enlightened",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Animal",
-        "Cultist",
-        "Human"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Animal","Cultist","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/eric-enlightened.png",
@@ -610,13 +425,8 @@
     {
       "id": "eric-the-squire",
       "name": "Eric The Squire",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Soldier"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/eric.png",
@@ -626,13 +436,8 @@
     {
       "id": "firespitter",
       "name": "Firespitter",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Soldier",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Soldier","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/firespitter.png",
@@ -642,13 +447,8 @@
     {
       "id": "flinders-memphis",
       "name": "Flinders Memphis",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome",
-        "Machine"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome","Machine"],
       "stats": null,
       "abilities": [],
       "image": "portraits/flinders.png",
@@ -658,13 +458,8 @@
     {
       "id": "flintlock",
       "name": "Flintlock",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Soldier"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/flintlock.png",
@@ -674,14 +469,8 @@
     {
       "id": "foxglove",
       "name": "Foxglove",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie",
-        "Wizard",
-        "Rogue"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie","Wizard","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/foxglove.png",
@@ -691,13 +480,8 @@
     {
       "id": "fraya",
       "name": "Fraya",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Wizard",
-        "Faerie"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Wizard","Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/fraya.png",
@@ -707,13 +491,8 @@
     {
       "id": "friar-flavious",
       "name": "Friar Flavious",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Cleric"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Cleric"],
       "stats": null,
       "abilities": [],
       "image": "portraits/friar.png",
@@ -723,14 +502,8 @@
     {
       "id": "fritz",
       "name": "Fritz",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Mercenary",
-        "Human",
-        "Soldier"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Mercenary","Human","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/fritz.png",
@@ -740,13 +513,8 @@
     {
       "id": "gertrude-the-faerie-hunter",
       "name": "Gertrude the Faerie Hunter",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Mercenary"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Mercenary"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gertrude.png",
@@ -756,13 +524,8 @@
     {
       "id": "gloom",
       "name": "Gloom",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Wizard"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Faun","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gloom.png",
@@ -772,14 +535,8 @@
     {
       "id": "gnomish-airship",
       "name": "Gnomish Airship",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome",
-        "Militia",
-        "Machine"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome","Militia","Machine"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gnomish-airship.png",
@@ -789,14 +546,8 @@
     {
       "id": "goblin-airship",
       "name": "Goblin Airship",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Machine",
-        "Goblin",
-        "Animal"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Machine","Goblin","Animal"],
       "stats": null,
       "abilities": [],
       "image": "portraits/goblin-airship.png",
@@ -806,14 +557,8 @@
     {
       "id": "gotchgut",
       "name": "Gotchgut",
-      "factions": [
-        "commonwealth",
-        "dominion"
-      ],
-      "keywords": [
-        "Giant",
-        "Mercenary"
-      ],
+      "factions": ["commonwealth","dominion"],
+      "keywords": ["Giant","Mercenary"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gotchgut.png",
@@ -823,13 +568,8 @@
     {
       "id": "gradock",
       "name": "Gradock",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Militia",
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Militia","Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gradock.png",
@@ -839,14 +579,8 @@
     {
       "id": "greymair",
       "name": "Greymair",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Risen",
-        "Cleric",
-        "Soldier"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Risen","Cleric","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/greymair.png",
@@ -856,13 +590,8 @@
     {
       "id": "grub",
       "name": "Grub",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Wizard"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/grub.png",
@@ -872,13 +601,8 @@
     {
       "id": "gump",
       "name": "Gump",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Treefolk",
-        "Spirit"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Treefolk","Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gump.png",
@@ -888,14 +612,8 @@
     {
       "id": "gwendoline-leshavult-priestess",
       "name": "Gwendoline, Leshavult Priestess",
-      "factions": [
-        "dominion",
-        "leshavult"
-      ],
-      "keywords": [
-        "Cultist",
-        "Faerie"
-      ],
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Cultist","Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/gwendoline.png",
@@ -905,14 +623,8 @@
     {
       "id": "herbert-growbottom",
       "name": "Herbert Growbottom",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Faerie",
-        "Wizard"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Faerie","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/herbert.png",
@@ -922,14 +634,8 @@
     {
       "id": "hoff",
       "name": "Hoff",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Soldier"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Faun","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/hoff.png",
@@ -939,13 +645,8 @@
     {
       "id": "igor-the-servant",
       "name": "Igor The Servant",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Spirit"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/igor.png",
@@ -955,13 +656,8 @@
     {
       "id": "iris-and-hellebore",
       "name": "Iris & Hellebore",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Noble",
-        "Faerie"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Noble","Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/iris-hellebore.png",
@@ -971,13 +667,8 @@
     {
       "id": "jackalope",
       "name": "Jackalope",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Animal"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Animal"],
       "stats": null,
       "abilities": [],
       "image": "portraits/jackalope.png",
@@ -987,14 +678,8 @@
     {
       "id": "jayda",
       "name": "Jayda",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Soldier"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Faun","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/jayda.png",
@@ -1004,12 +689,8 @@
     {
       "id": "jerry-heir",
       "name": "Jerry Heir",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Spirit"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/jerry-heir.png",
@@ -1019,14 +700,8 @@
     {
       "id": "joanna-nordic-princess",
       "name": "Joanna, Nordic Princess",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome",
-        "Norse",
-        "Noble"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome","Norse","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/joanna.png",
@@ -1036,14 +711,8 @@
     {
       "id": "jobie",
       "name": "Jobie",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Rogue",
-        "Goblin"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Rogue","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/jobie.png",
@@ -1053,14 +722,8 @@
     {
       "id": "kalista-leshavult-priestess",
       "name": "Kalista, Leshavult Priestess",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Cultist",
-        "Cleric",
-        "Human"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Cultist","Cleric","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/kalista.png",
@@ -1070,13 +733,8 @@
     {
       "id": "kauffman",
       "name": "Kauffman",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Noble",
-        "Human"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Noble","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/kauffman.png",
@@ -1086,14 +744,8 @@
     {
       "id": "kavanagh-the-jongler",
       "name": "Kavanagh, the Jongler",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Rogue",
-        "Gnome",
-        "Cultist"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Rogue","Gnome","Cultist"],
       "stats": null,
       "abilities": [],
       "image": "portraits/kavanagh.png",
@@ -1103,13 +755,8 @@
     {
       "id": "klaus",
       "name": "Klaus",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Cultist"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Faun","Cultist"],
       "stats": null,
       "abilities": [],
       "image": "portraits/klaus.png",
@@ -1119,14 +766,8 @@
     {
       "id": "knoll",
       "name": "Knoll the Troll",
-      "factions": [
-        "dominion",
-        "leshavult"
-      ],
-      "keywords": [
-        "Troll",
-        "Wizard"
-      ],
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Troll","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/knoll.png",
@@ -1136,14 +777,8 @@
     {
       "id": "liv",
       "name": "Liv",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Cleric",
-        "Norse",
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Cleric","Norse","Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/liv.png",
@@ -1153,14 +788,8 @@
     {
       "id": "loci-nordic-shipwright",
       "name": "Loci, Nordic Shipwright",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Norse",
-        "Gnome",
-        "Rogue"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Norse","Gnome","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/loci.png",
@@ -1170,14 +799,8 @@
     {
       "id": "loubard",
       "name": "Loubard",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Cultist",
-        "Giant"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Cultist","Giant"],
       "stats": null,
       "abilities": [],
       "image": "portraits/loubard.png",
@@ -1187,12 +810,8 @@
     {
       "id": "mama-gimble",
       "name": "Mama Gimble",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/mama-gimble.png",
@@ -1202,12 +821,8 @@
     {
       "id": "marley",
       "name": "Marley",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Spirit"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/marley.png",
@@ -1217,13 +832,8 @@
     {
       "id": "matilda",
       "name": "Matilda",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Animal"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Animal"],
       "stats": null,
       "abilities": [],
       "image": "portraits/matilda.png",
@@ -1233,14 +843,8 @@
     {
       "id": "morag",
       "name": "Morag",
-      "factions": [
-        "leshavult",
-        "shades"
-      ],
-      "keywords": [
-        "Spirit",
-        "Faun"
-      ],
+      "factions": ["leshavult","shades"],
+      "keywords": ["Spirit","Faun"],
       "stats": null,
       "abilities": [],
       "image": "portraits/morag.png",
@@ -1250,13 +854,8 @@
     {
       "id": "morris",
       "name": "Morris",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Militia",
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Militia","Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/morris.png",
@@ -1266,14 +865,8 @@
     {
       "id": "mr-toodles",
       "name": "Mr Toodles",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Cleric",
-        "Faun"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Cleric","Faun"],
       "stats": null,
       "abilities": [],
       "image": "portraits/toodles.png",
@@ -1283,14 +876,8 @@
     {
       "id": "muridae",
       "name": "Muridae",
-      "factions": [
-        "commonwealth",
-        "dominion"
-      ],
-      "keywords": [
-        "Rogue",
-        "Gnome"
-      ],
+      "factions": ["commonwealth","dominion"],
+      "keywords": ["Rogue","Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/muridae.png",
@@ -1300,15 +887,8 @@
     {
       "id": "nancy-priston",
       "name": "Nancy Priston",
-      "factions": [
-        "dominion",
-        "leshavult"
-      ],
-      "keywords": [
-        "Goblin",
-        "Rogue",
-        "Cultist"
-      ],
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Goblin","Rogue","Cultist"],
       "stats": null,
       "abilities": [],
       "image": "portraits/nancy.png",
@@ -1318,12 +898,8 @@
     {
       "id": "nanny",
       "name": "Nanny",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Risen"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Risen"],
       "stats": null,
       "abilities": [],
       "image": "portraits/nanny.png",
@@ -1333,13 +909,8 @@
     {
       "id": "natty-slum-thief",
       "name": "Natty, Slum Thief",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Rogue",
-        "Human"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Rogue","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/natty.png",
@@ -1349,14 +920,8 @@
     {
       "id": "negroli",
       "name": "Negroli",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Noble",
-        "Soldier",
-        "Risen"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Noble","Soldier","Risen"],
       "stats": null,
       "abilities": [],
       "image": "portraits/negroli.png",
@@ -1366,13 +931,8 @@
     {
       "id": "old-calders",
       "name": "Old Calders",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Soldier",
-        "Human"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Soldier","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/calders.png",
@@ -1382,12 +942,8 @@
     {
       "id": "old-polly",
       "name": "Old Polly",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/polly.png",
@@ -1397,15 +953,8 @@
     {
       "id": "olim",
       "name": "Olim",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Noble",
-        "Gnome",
-        "Norse",
-        "Animal"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Noble","Gnome","Norse","Animal"],
       "stats": null,
       "abilities": [],
       "image": "portraits/olim.png",
@@ -1415,13 +964,8 @@
     {
       "id": "peggy",
       "name": "Peggy",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Pirate",
-        "Human"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Pirate","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/peggy.png",
@@ -1431,13 +975,8 @@
     {
       "id": "portly-pete",
       "name": "Portly Pete",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Soldier",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Soldier","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/portly-pete.png",
@@ -1447,13 +986,8 @@
     {
       "id": "powder-monkey",
       "name": "Powder Monkey",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Pirate",
-        "Animal"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Pirate","Animal"],
       "stats": null,
       "abilities": [],
       "image": "portraits/monkey.png",
@@ -1463,12 +997,8 @@
     {
       "id": "prof-boffinsworth",
       "name": "Prof Boffinsworth",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/boffins.png",
@@ -1478,14 +1008,8 @@
     {
       "id": "quack",
       "name": "Quack",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Cleric",
-        "Wizard"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Cleric","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/quack.png",
@@ -1495,14 +1019,8 @@
     {
       "id": "quarrel",
       "name": "Quarrel",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Soldier",
-        "Militia",
-        "Gnome"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Soldier","Militia","Gnome"],
       "stats": null,
       "abilities": [],
       "image": "portraits/quarrel.png",
@@ -1512,14 +1030,8 @@
     {
       "id": "raegan",
       "name": "Raegan",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Cultist",
-        "Cleric"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Faun","Cultist","Cleric"],
       "stats": null,
       "abilities": [],
       "image": "portraits/raegan.png",
@@ -1529,13 +1041,8 @@
     {
       "id": "ribald",
       "name": "Ribald",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Troll",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Troll","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/ribald.png",
@@ -1545,12 +1052,8 @@
     {
       "id": "roary",
       "name": "Roary",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Spirit"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/roary.png",
@@ -1560,13 +1063,8 @@
     {
       "id": "ruwt",
       "name": "Ruwt",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Treefolk",
-        "Spirit"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Treefolk","Spirit"],
       "stats": null,
       "abilities": [],
       "image": "portraits/ruwt.png",
@@ -1576,13 +1074,8 @@
     {
       "id": "seasick-stu",
       "name": "Seasick Stu",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Pirate"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Pirate"],
       "stats": null,
       "abilities": [],
       "image": "portraits/seasick.png",
@@ -1592,13 +1085,8 @@
     {
       "id": "senara",
       "name": "Sen'Ara",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Spirit",
-        "Merfolk"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Spirit","Merfolk"],
       "stats": null,
       "abilities": [],
       "image": "portraits/sen-ara.png",
@@ -1608,13 +1096,8 @@
     {
       "id": "serif",
       "name": "Serif",
-      "factions": [
-        "shades"
-      ],
-      "keywords": [
-        "Soldier",
-        "Risen"
-      ],
+      "factions": ["shades"],
+      "keywords": ["Soldier","Risen"],
       "stats": null,
       "abilities": [],
       "image": "portraits/serif.png",
@@ -1624,13 +1107,8 @@
     {
       "id": "shabbaroon",
       "name": "Shabbaroon",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Wizard",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Wizard","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/shabbaroon.png",
@@ -1640,13 +1118,8 @@
     {
       "id": "silvertongue",
       "name": "Silvertongue",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie",
-        "Rogue"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/silvertongue.png",
@@ -1656,13 +1129,8 @@
     {
       "id": "sir-guillemot-poppycock",
       "name": "Sir Guillemot Poppycock",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Noble",
-        "Human"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Noble","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/poppyc.png",
@@ -1672,14 +1140,8 @@
     {
       "id": "sir-hogswash",
       "name": "Sir Hogswash",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Animal",
-        "Soldier",
-        "Human"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Animal","Soldier","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/hogs.png",
@@ -1689,14 +1151,8 @@
     {
       "id": "skuggi",
       "name": "Skuggi",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Faun",
-        "Cultist",
-        "Rogue"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Faun","Cultist","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/skaggi.png",
@@ -1706,14 +1162,8 @@
     {
       "id": "snag",
       "name": "Snag",
-      "factions": [
-        "leshavult",
-        "shades"
-      ],
-      "keywords": [
-        "Spirit",
-        "Treefolk"
-      ],
+      "factions": ["leshavult","shades"],
+      "keywords": ["spirit","treefolk"],
       "stats": null,
       "abilities": [],
       "image": "portraits/snag.png",
@@ -1723,12 +1173,8 @@
     {
       "id": "stilts-kim",
       "name": "Stilts Kim",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/stilts-kim.png",
@@ -1738,15 +1184,8 @@
     {
       "id": "streatham",
       "name": "Streatham",
-      "factions": [
-        "commonwealth",
-        "leshavult"
-      ],
-      "keywords": [
-        "Cultist",
-        "Rogue",
-        "Human"
-      ],
+      "factions": ["commonwealth","leshavult"],
+      "keywords": ["Cultist","Rogue","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/streatham.png",
@@ -1756,13 +1195,8 @@
     {
       "id": "swash",
       "name": "Swash",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Human",
-        "Pirate"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["human","pirate"],
       "stats": null,
       "abilities": [],
       "image": "portraits/swash.png",
@@ -1772,13 +1206,8 @@
     {
       "id": "swiggarty-swooty",
       "name": "Swiggarty Swooty",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Pirate",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["pirate","goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/swooty.png",
@@ -1788,14 +1217,8 @@
     {
       "id": "syril-swampfoot",
       "name": "Syril Swampfoot",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Animal",
-        "Wizard"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Animal","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/syril.png",
@@ -1805,13 +1228,8 @@
     {
       "id": "tabby-the-librarian",
       "name": "Tabby, the Librarian",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Human",
-        "Cleric"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Human","Cleric"],
       "stats": null,
       "abilities": [],
       "image": "portraits/tabby.png",
@@ -1821,12 +1239,8 @@
     {
       "id": "teetoe",
       "name": "Teetoe",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/teetoe.png",
@@ -1836,15 +1250,8 @@
     {
       "id": "the-beast",
       "name": "The Beast",
-      "factions": [
-        "dominion",
-        "leshavult"
-      ],
-      "keywords": [
-        "Noble",
-        "Animal",
-        "Human"
-      ],
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Noble","Animal","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/beast.png",
@@ -1854,13 +1261,8 @@
     {
       "id": "the-duchess",
       "name": "The Duchess",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Human",
-        "Noble"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Human","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/duchess.png",
@@ -1870,13 +1272,8 @@
     {
       "id": "the-fencer",
       "name": "The Fencer",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie",
-        "Rogue"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/fencer.png",
@@ -1886,13 +1283,8 @@
     {
       "id": "the-goblin-king",
       "name": "The Goblin King",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Noble"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/goblin-king.png",
@@ -1902,13 +1294,8 @@
     {
       "id": "the-mortician",
       "name": "The Mortician",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Wizard",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Wizard","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/mortician.png",
@@ -1918,15 +1305,8 @@
     {
       "id": "the-revenant",
       "name": "The Revenant",
-      "factions": [
-        "dominion",
-        "leshavult"
-      ],
-      "keywords": [
-        "Spirit",
-        "Noble",
-        "Human"
-      ],
+      "factions": ["dominion","leshavult"],
+      "keywords": ["Spirit","Noble","Human"],
       "stats": null,
       "abilities": [],
       "image": "portraits/revenant.png",
@@ -1936,12 +1316,8 @@
     {
       "id": "the-tax-collector",
       "name": "The Tax Collector",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/tax-collector.png",
@@ -1951,14 +1327,8 @@
     {
       "id": "vespa",
       "name": "Vespa",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Animal",
-        "Soldier",
-        "Faerie"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Animal","Soldier","Faerie"],
       "stats": null,
       "abilities": [],
       "image": "portraits/vespa.png",
@@ -1968,13 +1338,8 @@
     {
       "id": "vicious-syd",
       "name": "Vicious Syd",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Soldier",
-        "Goblin"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Soldier","Goblin"],
       "stats": null,
       "abilities": [],
       "image": "portraits/syd.png",
@@ -1984,14 +1349,8 @@
     {
       "id": "viktor-petty-graverobber",
       "name": "Viktor Petty, Graverobber",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Human",
-        "Rogue"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Human","Rogue"],
       "stats": null,
       "abilities": [],
       "image": "portraits/graverobber.png",
@@ -2001,15 +1360,8 @@
     {
       "id": "viscount-de-faulte",
       "name": "Viscount De Faulte",
-      "factions": [
-        "dominion",
-        "shades"
-      ],
-      "keywords": [
-        "Risen",
-        "Animal",
-        "Noble"
-      ],
+      "factions": ["dominion","shades"],
+      "keywords": ["Risen","Animal","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/viscont.png",
@@ -2019,13 +1371,8 @@
     {
       "id": "wasp",
       "name": "Wasp",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Faerie",
-        "Soldier"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Faerie","Soldier"],
       "stats": null,
       "abilities": [],
       "image": "portraits/wasp.png",
@@ -2035,13 +1382,8 @@
     {
       "id": "wenda-wetbones",
       "name": "Wenda Wetbones",
-      "factions": [
-        "dominion"
-      ],
-      "keywords": [
-        "Goblin",
-        "Wizard"
-      ],
+      "factions": ["dominion"],
+      "keywords": ["Goblin","Wizard"],
       "stats": null,
       "abilities": [],
       "image": "portraits/wenda.png",
@@ -2051,13 +1393,8 @@
     {
       "id": "wendigo",
       "name": "Wendigo",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Spirit",
-        "Faun"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Spirit","Faun"],
       "stats": null,
       "abilities": [],
       "image": "portraits/wendigo.png",
@@ -2067,14 +1404,8 @@
     {
       "id": "young-jack",
       "name": "Young Jack",
-      "factions": [
-        "commonwealth"
-      ],
-      "keywords": [
-        "Militia",
-        "Gnome",
-        "Noble"
-      ],
+      "factions": ["commonwealth"],
+      "keywords": ["Militia","Gnome","Noble"],
       "stats": null,
       "abilities": [],
       "image": "portraits/young-jack.png",
@@ -2084,13 +1415,8 @@
     {
       "id": "zorya-dawn-witch",
       "name": "Zorya, Dawn Witch",
-      "factions": [
-        "leshavult"
-      ],
-      "keywords": [
-        "Spirit",
-        "Witch"
-      ],
+      "factions": ["leshavult"],
+      "keywords": ["Spirit","Witch"],
       "stats": null,
       "abilities": [],
       "image": "portraits/zorya.png",
