@@ -333,7 +333,8 @@ function createFilterPanel(container, onChange) {
       const query = state.query.trim().toLowerCase();
       return data.characters.filter((c) => {
         if (state.factions.size && !c.factions.some((f) => state.factions.has(f))) return false;
-        for (const keyword of state.keywords) if (!c.keywords.includes(keyword)) return false;
+        // Mehrere Keywords: es genügt eines davon (Human, Noble = Human oder Noble oder beides)
+        if (state.keywords.size && !c.keywords.some((k) => state.keywords.has(k))) return false;
         if (query) {
           const text = [
             c.name,
