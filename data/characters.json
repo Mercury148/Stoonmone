@@ -1422,6 +1422,17 @@
       "image": "portraits/zorya.png",
       "card": "images/Zorya_Dawn_Witch_front.png",
       "cardBack": "images/Zorya_Dawn_Witch_back.png"
+    },
+    {
+      "id":"",
+      "name":"",
+      "factions":[""],
+      "keywords":[""],
+      "stats":null,
+      "abilities":[""],
+      "image": "portraits/.png",
+      "card": "images/.png",
+      "cardBack": "images/.png"
     }
   ]
 }
