@@ -649,12 +649,12 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 }
 .gcell-name { font: 600 0.6rem/1.15 var(--font-display); text-align: center; overflow-wrap: anywhere; min-height: 3.5em; }
 
-/* Lebensleiste: blaue Punkte erzeugen Energy, gestrichene Punkte sind durchgestrichen */
+/* Lebensleiste: blaue Punkte erzeugen Energy, verlorene Lebenspunkte sind rot */
 .hboxes { min-height: 1.35rem; align-content: flex-start; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
 .hboxes.none { font-size: 0.55rem; color: var(--muted); text-align: center; }
 .hbox { width: 0.55rem; height: 0.55rem; border-radius: 50%; border: 1.5px solid var(--muted); box-sizing: border-box; }
 .hbox.blue { background: #3d7fe0; border-color: #3d7fe0; }
-.hbox.struck { opacity: 0.25; background: repeating-linear-gradient(45deg, transparent 0 2px, var(--muted) 2px 3px); border-color: var(--muted); }
+.hbox.struck { background: #d94141; border-color: #d94141; opacity: 1; }
 
 .gstep { display: flex; flex-direction: column; align-items: stretch; }
 .gstep-label { font-size: 0.5rem; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
