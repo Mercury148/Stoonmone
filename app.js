@@ -492,8 +492,9 @@ function importTroupe(code) {
 
 // --- Kompendium: nur Nachschlagen ---
 function renderCards() {
-  const list = compendiumPanel.list();
-  compendiumPanel.showCount(list.length);
+  // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
+  const list = compendiumPanel.list().filter((c) => c.compendium !== false);
+  compendiumPanel.showCount(list.length, data.characters.filter((c) => c.compendium !== false).length);
 
   if (list.length === 0) {
     $("#cards").replaceChildren(el("p", { class: "empty", text: "No character matches these filters." }));

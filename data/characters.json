@@ -410,7 +410,8 @@
       "summonedBy": ["igor-the-servant"],
       "image": "portraits/echo.png",
       "card": "images/Echo_of_the_Forgotten_King_front.png",
-      "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
+      "cardBack": "images/Echo_of_the_Forgotten_King_back.png",
+      "compendium": false
     },
     {
       "id": "el-capitano",
@@ -697,7 +698,8 @@
       "summonedBy": ["boris-the-bunny-summoner"],
       "image": "portraits/jackalope.png",
       "card": "images/Jackalope_front.png",
-      "cardBack": "images/Jackalope_back.png"
+      "cardBack": "images/Jackalope_back.png",
+      "compendium": false
     },
     {
       "id": "jayda",
