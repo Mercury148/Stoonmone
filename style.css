@@ -610,3 +610,9 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 
 /* Hinweiszeile im Editor: die Fraktion der Troupe */
 .rule-faction { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; color: var(--fg); }
+
+/* Beschworene Charaktere: eigene Zeile unter den Plätzen */
+.section-label { margin: 0.75rem 0 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.hint-inline { font-weight: 400; letter-spacing: 0; text-transform: none; }
+#editor-summons .slots { margin-top: 0.4rem; }
+.slot-portrait.summoned { border: 2px dashed var(--accent); }

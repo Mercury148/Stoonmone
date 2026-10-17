@@ -142,6 +142,17 @@ function portrait(character, extraClass = "") {
   return box;
 }
 
+// Beschworene Charaktere haben in der JSON das Feld "summonedBy": eine Liste mit den IDs der Modelle,
+// die sie beschwören können. Sie erscheinen nicht zur Auswahl im Troupen-Editor, sondern automatisch
+// in einer eigenen Zeile, sobald eines dieser Modelle in der Troupe ist. Sie zählen nicht zu den 8 Modellen.
+function isSummoned(character) {
+  return Array.isArray(character.summonedBy) && character.summonedBy.length > 0;
+}
+
+function summonsFor(t) {
+  return data.characters.filter((c) => isSummoned(c) && c.summonedBy.some((id) => t.ids.includes(id)));
+}
+
 function troupeLabel(t) {
   return t.name.trim() || "Unnamed";
 }
@@ -192,7 +203,7 @@ function loadTroupes() {
 
 // Gespeicherte oder importierte Daten nie blind glauben: nur bekannte IDs behalten.
 function sanitize(saved) {
-  const ids = Array.isArray(saved.ids) ? saved.ids.filter((id) => characterById.has(id)) : [];
+  const ids = Array.isArray(saved.ids) ? saved.ids.filter((id) => characterById.has(id) && !isSummoned(characterById.get(id))) : [];
   const name = typeof saved.name === "string" && saved.name.trim() ? saved.name.slice(0, 40) : "Meine Troupe";
   return { name, ids: ids.slice(0, RULES.maxModels) };
 }
@@ -336,8 +347,8 @@ function createFilterPanel(container, onChange) {
       });
     },
     // Zählzeile aktualisieren
-    showCount(shown) {
-      count.textContent = `${shown} of ${data.characters.length} characters`;
+    showCount(shown, total = data.characters.length) {
+      count.textContent = `${shown} of ${total} characters`;
       reset.hidden = !(state.query || state.factions.size || state.keywords.size);
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
@@ -465,7 +476,7 @@ function importTroupe(code) {
   const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, ids: [] };
   let skipped = 0;
   for (const id of Array.isArray(parsed.ids) ? parsed.ids : []) {
-    if (!characterById.has(id) || checkAdd(created, id)) skipped++;
+    if (!characterById.has(id) || isSummoned(characterById.get(id)) || checkAdd(created, id)) skipped++;
     else created.ids.push(id);
   }
   troupes.push(created);
@@ -584,15 +595,38 @@ function renderEditor() {
   } else {
     rule.hidden = true;   // noch mehrere Fraktionen möglich: nichts anzeigen
   }
+  renderSummons();
   editorPanel.setAllowed(RULES.sameFaction && count > 0 ? allowedFactions(current) : null);
   renderTiles();
+}
+
+// Die Zeile mit den beschworenen Charakteren: automatisch, nicht entfernbar, ohne Limit
+function renderSummons() {
+  const list = summonsFor(current);
+  $("#editor-summons").hidden = list.length === 0;
+  $("#summons-list").replaceChildren(
+    ...list.map((c) =>
+      el("div", { class: "slot-portrait summoned" },
+        el("button", { class: "slot-open", type: "button", "aria-label": `${c.name} (summoned): open details`, onclick: () => openDetail(c.id) },
+          portraitCard(c),
+          el("span", { class: "tile-label" },
+            el("span", { class: "tile-name", text: c.name }),
+            el("span", { class: "tile-factions" },
+              ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
+            )
+          )
+        )
+      )
+    )
+  );
 }
 
 // Nur die Kacheln neu zeichnen (beim Filtern bleibt so das Suchfeld unberührt)
 function renderTiles() {
   // Charaktere, die nicht zu den Fraktionen der Troupe passen, werden ausgeblendet
-  const fitting = editorPanel.list().filter((c) => current.ids.includes(c.id) || fitsFactions(current, c));
-  editorPanel.showCount(fitting.length);
+  // Beschworene Charaktere stehen nicht zur Auswahl, sie erscheinen automatisch in ihrer eigenen Zeile
+  const fitting = editorPanel.list().filter((c) => !isSummoned(c) && (current.ids.includes(c.id) || fitsFactions(current, c)));
+  editorPanel.showCount(fitting.length, data.characters.filter((c) => !isSummoned(c)).length);
 
   const list = fitting;   // feste Reihenfolge, nichts springt beim Auswählen
 
@@ -818,6 +852,9 @@ function checkData() {
     seen.add(c.id);
     for (const fid of c.factions) {
       if (!factionById.has(fid)) problems.push(`${c.name}: unknown faction "${fid}".`);
+    }
+    for (const sid of c.summonedBy || []) {
+      if (!characterById.has(sid)) problems.push(`${c.name}: "summonedBy" nennt die unbekannte ID "${sid}".`);
     }
     if (!Array.isArray(c.keywords) || !Array.isArray(c.abilities)) {
       problems.push(`${c.name}: "keywords" and "abilities" must be lists, empty [] if necessary.`);
