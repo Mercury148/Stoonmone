@@ -396,6 +396,7 @@
       "keywords": ["Spirit","Noble","Eirich"],
       "stats": null,
       "abilities": [],
+      "summonedBy": ["igor-the-servant"],
       "image": "portraits/echo.png",
       "card": "images/Echo_of_the_Forgotten_King_front.png",
       "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
@@ -1430,6 +1431,7 @@
       "keywords":["Psychopomp","Animal","Soldier"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["negroli","abra-cadaverous","roary"],
       "image": "portraits/pidge.png",
       "card": "images/Brave_Sir_Pidge_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1441,6 +1443,7 @@
       "keywords":["Psychopomp","Familiar"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["greymair","abra-cadaverous","roary"],
       "image": "portraits/flay.png",
       "card": "images/Flay_Bearer_of_Knowledge_Front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1449,9 +1452,10 @@
       "id":"jeremy",
       "name":"Jeremy, Lord of the Deep",
       "factions":["shades"],
-      "keywords":["Psychopomp","Animal"],
+      "keywords":["Psychopomp","Animal","Aquatic"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["senara","abra-cadaverous","roary"],
       "image": "portraits/jeremy.png",
       "card": "images/Jeremy_Lord_of_the_Deep_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1463,6 +1467,7 @@
       "keywords":["Psychopomp","Familiar"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["greymair","abra-cadaverous","roary"],
       "image": "portraits/lampy.png",
       "card": "images/Lampy_Darkson_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1474,6 +1479,7 @@
       "keywords":["Psychopomp","Food"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["jerry-heir","abra-cadaverous","roary"],
       "image": "portraits/teacake.png",
       "card": "images/Teacake_of_Torment_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1485,6 +1491,7 @@
       "keywords":["Psychopomp","Soldier","Musician"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["negroli","abra-cadaverous","roary"],
       "image": "portraits/musician.png",
       "card": "images/Terrible_Musician_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1496,6 +1503,7 @@
       "keywords":["Psychopomp","Babeling"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "image": "portraits/pookie.png",
       "card": "images/Pookie_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1507,6 +1515,7 @@
       "keywords":["Psychopomp","Babeling"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "image": "portraits/sprog.png",
       "card": "images/Sprog_Front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1518,6 +1527,7 @@
       "keywords":["Psychopomp","Babeling"],
       "stats":null,
       "abilities": [],
+      "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "image": "portraits/urchin.png",
       "card": "images/Urchin_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1529,6 +1539,7 @@
       "keywords":["Animal"],
       "stats":null,
       "abilities": [],
+      "summonedBy":["boris-the-bunny-summoner"],
       "image": "portraits/bunny1.png",
       "card": "images/Murder_Bunny_1_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1540,6 +1551,7 @@
       "keywords":["Animal"],
       "stats":null,
       "abilities": [],
+      "summonedBy":["boris-the-bunny-summoner"],
       "image": "portraits/bunny2.png",
       "card": "images/Murder_Bunny_2_front.png",
       "cardBack": "images/no_signature_back.png"
@@ -1551,6 +1563,7 @@
       "keywords":["Animal"],
       "stats":null,
       "abilities": [],
+      "summonedBy":["boris-the-bunny-summoner"],
       "image": "portraits/bunny3.png",
       "card": "images/Murder_Bunny_3_front.png",
       "cardBack": "images/no_signature_back.png"
