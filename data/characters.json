@@ -1427,11 +1427,132 @@
       "id":"brave-sir-pidge",
       "name":"Brave Sir Pidge",
       "factions":["shades"],
-      "keywords":["Psychopomp","Soldier"],
+      "keywords":["Psychopomp","Animal","Soldier"],
       "stats":null,
       "abilities": [],
       "image": "portraits/pidge.png",
       "card": "images/Brave_Sir_Pidge_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"flay",
+      "name":"Flay, Bearer of Knowledge",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Familiar"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/flay.png",
+      "card": "images/Flay_Bearer_of_Knowledge_Front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"jeremy",
+      "name":"Jeremy, Lord of the Deep",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Animal"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/jeremy.png",
+      "card": "images/Jeremy_Lord_of_the_Deep_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"lampy-darkson",
+      "name":"Lampy Darkson",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Familiar"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/lampy.png",
+      "card": "images/Lampy_Darkson_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"teacake",
+      "name":"Teacake of Torment",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Food"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/teacake.png",
+      "card": "images/Teacake_of_Torment_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"musician",
+      "name":"Terrible Musician",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Soldier","Musician"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/musician.png",
+      "card": "images/Terrible_Musician_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"pookie",
+      "name":"Pookie",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Babeling"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/pookie.png",
+      "card": "images/Pookie_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"sprog",
+      "name":"Sprog",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Babeling"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/sprog.png",
+      "card": "images/Sprog_Front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"urchin",
+      "name":"Urchin",
+      "factions":["shades"],
+      "keywords":["Psychopomp","Babeling"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/urchin.png",
+      "card": "images/Urchin_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"bunny1",
+      "name":"Murder Bunny",
+      "factions":["leshavult"],
+      "keywords":["Animal"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/bunny1.png",
+      "card": "images/Bunny_1_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"bunny2",
+      "name":"Murder Bunny",
+      "factions":["leshavult"],
+      "keywords":["Animal"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/bunny2.png",
+      "card": "images/Bunny_2_front.png",
+      "cardBack": "images/no_signature_back.png"
+    },
+    {
+      "id":"bunny3",
+      "name":"Murder Bunny",
+      "factions":["leshavult"],
+      "keywords":["Animal"],
+      "stats":null,
+      "abilities": [],
+      "image": "portraits/bunny3.png",
+      "card": "images/Bunny_3_front.png",
       "cardBack": "images/no_signature_back.png"
     }
   ]
