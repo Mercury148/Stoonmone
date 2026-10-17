@@ -1426,10 +1426,10 @@
     {
       "id":"",
       "name":"",
-      "factions":[""],
-      "keywords":[""],
+      "factions":"",
+      "keywords":"",
       "stats":null,
-      "abilities":[""],
+      "abilities":"",
       "image": "portraits/.png",
       "card": "images/.png",
       "cardBack": "images/.png"
