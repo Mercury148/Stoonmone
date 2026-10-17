@@ -812,8 +812,11 @@ function energyGenerated(c, wounds) {
 // Verwandlung: "transformsInto" steht bei EINEM der beiden Charaktere, die sich ineinander verwandeln.
 // twinOf liefert den jeweils anderen (egal, bei welchem von beiden das Feld steht).
 function twinOf(c) {
-  if (c.transformsInto) return characterById.get(c.transformsInto) || null;
-  return data.characters.find((o) => o.transformsInto === c.id) || null;
+  // "transformsInto" darf ein Text ("striga-anya") oder eine Liste (["striga-anya"]) sein
+  const targets = (o) => [].concat(o.transformsInto || []);
+  const direct = targets(c).map((id) => characterById.get(id)).find(Boolean);
+  if (direct) return direct;
+  return data.characters.find((o) => targets(o).includes(c.id)) || null;
 }
 
 // Die zweite Zeile: Beschworene, deren Beschwörer im Spiel ist, und der gerade nicht aktive Zwilling
