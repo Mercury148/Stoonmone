@@ -1530,7 +1530,7 @@
       "stats":null,
       "abilities": [],
       "image": "portraits/bunny1.png",
-      "card": "images/Bunny_1_front.png",
+      "card": "images/Murder_Bunny_1_front.png",
       "cardBack": "images/no_signature_back.png"
     },
     {
@@ -1541,7 +1541,7 @@
       "stats":null,
       "abilities": [],
       "image": "portraits/bunny2.png",
-      "card": "images/Bunny_2_front.png",
+      "card": "images/Murder_Bunny_2_front.png",
       "cardBack": "images/no_signature_back.png"
     },
     {
@@ -1552,7 +1552,7 @@
       "stats":null,
       "abilities": [],
       "image": "portraits/bunny3.png",
-      "card": "images/Bunny_3_front.png",
+      "card": "images/Murder_Bunny_3_front.png",
       "cardBack": "images/no_signature_back.png"
     }
   ]
