@@ -879,9 +879,14 @@ function gameCell(side, c) {
     el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
     el("div", { class: "gcell-name", text: c.name }),
     boxes,
-    stepper(health ? `Wounds ${m.wounds}/${total}` : `Wounds`, health ? m.wounds : m.wounds,
-      () => change({ wounds: Math.max(0, m.wounds - 1) }),
-      () => change({ wounds: Math.min(maxWounds, m.wounds + 1) })),
+    health
+      // HP = verbleibende Lebenspunkte: "−" streicht ein Kästchen von rechts (eine Wunde), "+" gibt eines zurück
+      ? stepper(`HP ${remaining}/${total}`, remaining,
+          () => change({ wounds: Math.min(total, m.wounds + 1) }),
+          () => change({ wounds: Math.max(0, m.wounds - 1) }))
+      : stepper("Wounds", m.wounds,
+          () => change({ wounds: Math.max(0, m.wounds - 1) }),
+          () => change({ wounds: Math.min(maxWounds, m.wounds + 1) })),
     stepper(generated === null ? "Energy" : `Energy (+${generated})`, m.energy,
       () => change({ energy: Math.max(0, m.energy - 1) }),
       () => change({ energy: m.energy + 1 }))
@@ -900,14 +905,29 @@ function renderGamePlay() {
   $("#game-round").textContent = `Round ${game.round}`;
 }
 
-// Neue Runde: übrige Energy verfällt, danach erzeugt jedes Modell Energy gemäß seiner verbleibenden Lebenspunkte
-function nextRound() {
+// Jedes Modell bekommt die Energy, die es laut Lebensleiste erzeugt. Übrige Energy verfällt dabei.
+function generateEnergy() {
   for (const side of ["own", "foe"]) {
     for (const c of [...game[side].map((id) => characterById.get(id)), ...gameSummons(side)]) {
       const m = gameModel(side, c.id);
-      m.energy = energyGenerated(c, m.wounds) || 0;   // übrige Energy verfällt, dann wird neu erzeugt
+      m.energy = energyGenerated(c, m.wounds) || 0;
     }
   }
+}
+
+// Spielstart: Runde 1 beginnt schon mit der erzeugten Energy
+function startGame() {
+  generateEnergy();
+  game.round = 1;
+  game.stage = "play";
+  saveGame();
+  renderGame();
+  window.scrollTo(0, 0);
+}
+
+// Neue Runde: übrige Energy verfällt, danach erzeugt jedes Modell Energy gemäß seiner verbleibenden Lebenspunkte
+function nextRound() {
+  generateEnergy();
   game.round += 1;
   saveGame();
   renderGamePlay();
@@ -996,8 +1016,7 @@ function wireEvents() {
     openGame();
   });
   $("#game-back").addEventListener("click", () => { renderEditor(); showView("editor"); });
-  $("#game-start").addEventListener("click", () => { game.stage = "play"; saveGame(); renderGame(); window.scrollTo(0, 0); });
-  $("#game-setup-btn").addEventListener("click", () => { game.stage = "setup"; saveGame(); renderGame(); window.scrollTo(0, 0); });
+  $("#game-start").addEventListener("click", startGame);
   $("#game-next-round").addEventListener("click", nextRound);
   twoTap($("#game-reset"), "Really reset?", resetGame);
 

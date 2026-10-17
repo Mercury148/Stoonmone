@@ -620,7 +620,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 /* ---------- Gameview ---------- */
 .play-btn { width: 100%; margin-top: 0.75rem; }
 .game-title { flex: 1; margin: 0; font: 600 1.15rem/1.2 var(--font-display); }
-.game-tools { display: grid; grid-template-columns: 1.1fr 1.4fr 1fr; gap: 0.4rem; margin-top: 0.5rem; }
+.game-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.5rem; }
 .game-tools button { padding-inline: 0.4rem; font-size: 0.85rem; }
 .game-startbar {
   position: sticky;
