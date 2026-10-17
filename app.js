@@ -870,6 +870,16 @@ function gameCell(side, c) {
   const maxWounds = total === null ? 30 : total;
   const change = (patch) => { Object.assign(m, patch); saveGame(); renderGamePlay(); };
 
+  // Beschworene Charaktere starten ausgegraut. Erst "Summon" bringt sie mit vollen Lebenspunkten und ohne Energy ins Spiel.
+  if (isSummoned(c) && !m.summoned) {
+    return el("div", { class: "gcell unsummoned" },
+      el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) }),
+      el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+      el("div", { class: "gcell-name", text: c.name }),
+      el("div", { class: "hboxes none", text: "not in play" })
+    );
+  }
+
   const boxes = health
     ? el("div", { class: "hboxes", role: "img", "aria-label": `${remaining} of ${total} health boxes left` },
         ...health.map((dot, i) => el("span", { class: `hbox${dot ? " blue" : ""}${i >= remaining ? " struck" : ""}` })))
@@ -910,6 +920,7 @@ function generateEnergy() {
   for (const side of ["own", "foe"]) {
     for (const c of [...game[side].map((id) => characterById.get(id)), ...gameSummons(side)]) {
       const m = gameModel(side, c.id);
+      if (isSummoned(c) && !m.summoned) continue;   // noch nicht beschworen: nicht im Spiel
       m.energy = energyGenerated(c, m.wounds) || 0;
     }
   }
@@ -953,7 +964,10 @@ function renderGame() {
     $("#game-own-tiles").replaceChildren(
       ...current.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, game.own.includes(c.id), () => toggleGamePick("own", c.id)))
     );
-    $("#game-foe-picked").textContent = game.foe.length ? `Picked: ${game.foe.map((id) => characterById.get(id).name).join(", ")}` : "Pick the opponent's models below.";
+    $("#game-foe-picked").hidden = game.foe.length > 0;
+    $("#game-foe-chosen").replaceChildren(
+      ...game.foe.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick("foe", c.id)))
+    );
     const list = foePanel.list().filter((c) => !isSummoned(c));
     foePanel.showCount(list.length, data.characters.filter((c) => !isSummoned(c)).length);
     $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, game.foe.includes(c.id), () => toggleGamePick("foe", c.id))));

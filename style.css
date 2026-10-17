@@ -668,3 +668,10 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   .gstep-label { font-size: 0.65rem; }
   .gstep-value { font-size: 1rem; }
 }
+
+/* Beschworene Modelle, die noch nicht im Spiel sind */
+.gcell.unsummoned .gcell-portrait { filter: grayscale(1); opacity: 0.45; }
+.gcell.unsummoned .gcell-name { opacity: 0.6; }
+.summon-btn { min-height: 32px; padding: 0 0.2rem; border-radius: 6px; font-size: 0.7rem; }
+#game-foe-chosen { margin-bottom: 0.75rem; }
+#game-foe-chosen:empty { display: none; }
