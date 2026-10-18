@@ -541,6 +541,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   text-align: left;
   font-weight: 400;
 }
+.tile-empty { aspect-ratio: 5 / 6; border: 2px dashed var(--line); border-radius: var(--radius); opacity: 0.7; }
 .tile-label {
   position: absolute;
   left: 0;
@@ -781,7 +782,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   #view-editor { padding-bottom: 9rem; }   /* damit die Knöpfe keine Kacheln verdecken */
 }
 .game-title { flex: 1; margin: 0; font: 600 1.15rem/1.2 var(--font-display); }
-.game-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.5rem; }
+.game-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 1rem; }   /* Abstand, damit das Ausblenden der Kopfzeile die Knöpfe nicht überdeckt */
 .game-tools button { padding-inline: 0.4rem; font-size: 0.85rem; }
 .game-startbar {
   position: sticky;
@@ -794,7 +795,8 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 
 /* 5 Modelle nebeneinander */
 .grow { display: grid; grid-template-columns: repeat(var(--gcols, 5), minmax(0, 1fr)); gap: 0.3rem; align-items: start; }
-.gcell { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+/* leicht durchscheinender, gräulicher Hintergrund hinter jedem Modell: bessere Lesbarkeit von Leben und Energy */
+.gcell { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; padding: 3px; border-radius: 10px; background: rgba(170, 175, 195, 0.13); }
 .gcell.dead { opacity: 0.5; }
 .gcell-portrait {
   position: relative;
@@ -834,7 +836,6 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 .gcell.unsummoned .gcell-portrait { filter: grayscale(1); opacity: 0.45; }
 .gcell.unsummoned .gcell-name { opacity: 0.6; }
 #game-foe-chosen { margin-bottom: 0.75rem; }
-#game-foe-chosen:empty { display: none; }
 .gcell-media { position: relative; }
 .transform-btn, .summon-btn {
   position: absolute;
@@ -930,13 +931,84 @@ select, summary, label[for] { cursor: pointer; }
 html { scrollbar-width: none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 
-/* Spielansicht: Kopfzeile wie ein Nachthimmel, der von Runde zu Runde roter wird (Sonnenaufgang in Runde 5) */
-#view-game .editor-bar[data-round] { color: #fff; transition: background-color 0.6s ease; }
+/* Spielansicht: Der Hintergrund ist die Farbe von Runde 1 (Nacht). Von Runde zu Runde kriecht eine rötere Farbe
+   vom oberen Rand herunter und blendet nach unten aus. In Runde 5 geht die Sonne auf. */
+body.in-game { background-color: #13151f; }   /* dieselbe Farbe wie die Kopfzeile bei "Choose models" */
+body.in-game[data-round="1"] { --sky: #13151f; --sky-h: 20vh; }
+body.in-game[data-round="2"] { --sky: hsl(262 36% 24%); --sky-h: 38vh; }
+body.in-game[data-round="3"] { --sky: hsl(318 38% 30%); --sky-h: 55vh; }
+body.in-game[data-round="4"] { --sky: hsl(348 55% 34%); --sky-h: 75vh; }
+body.in-game[data-round="5"] { --sky: hsl(13 68% 36%); --sky-h: 100vh; }
+body.in-game[data-round]::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--sky-h);
+  background-color: var(--sky);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 100%);
+  z-index: -1;
+  pointer-events: none;
+  transition: height 0.8s ease, background-color 0.8s ease;
+}
+/* Kopfzeile in der Farbe des Himmels oben, Schrift weiß */
+#view-game .editor-bar[data-round] { color: #fff; }
 #view-game .editor-bar[data-round] .game-title { color: #fff; }
 #view-game .editor-bar[data-round] .back { color: #fff; border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.08); }
 #view-game .editor-bar[data-round] .badge { background: rgba(255, 255, 255, 0.2); color: #fff; }
-#view-game .editor-bar[data-round="1"] { background: hsl(228 38% 14%); }
-#view-game .editor-bar[data-round="2"] { background: hsl(262 32% 21%); }
-#view-game .editor-bar[data-round="3"] { background: hsl(318 34% 27%); }
-#view-game .editor-bar[data-round="4"] { background: hsl(348 52% 32%); }
-#view-game .editor-bar[data-round="5"] { background: hsl(14 82% 42%); }
+
+/* Weicher Rand unter der Kopfzeile der Spielansicht: Inhalt blendet beim Scrollen sanft unter ihr aus */
+#view-game .editor-bar { --bar-bg: var(--bg); }
+#view-game .editor-bar[data-round] { --bar-bg: var(--sky); }
+#view-game .editor-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 1.25rem;
+  background: linear-gradient(to bottom, var(--bar-bg), transparent);
+  pointer-events: none;
+}
+
+/* Kopfzeile in der Spielansicht: Rand läuft unten und an den Seiten weich aus statt mit harter Kante.
+   Der Hintergrund liegt dafür auf einem eigenen Element (::before) mit Maske. */
+#view-game .editor-bar { --bar-bg: var(--bg); background: none; --fade-x: linear-gradient(to right, transparent 0, #000 1.5rem, #000 calc(100% - 1.5rem), transparent 100%); }
+#view-game .editor-bar[data-round] { --bar-bg: var(--sky); }
+#view-game .editor-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--bar-bg);
+  -webkit-mask-image: var(--fade-x);
+  mask-image: var(--fade-x);
+  transition: background-color 0.8s ease;
+}
+#view-game .editor-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 1rem;
+  z-index: -1;
+  background: linear-gradient(to bottom, var(--bar-bg), transparent);
+  -webkit-mask-image: var(--fade-x);
+  mask-image: var(--fade-x);
+  pointer-events: none;
+}
+
+/* Die lange Liste der Gegner-Modelle scrollt in einem eigenen Bereich, damit "Your models" darunter gut erreichbar bleibt */
+#game-foe-tiles.foe-pick { max-height: 55vh; overflow-y: auto; overscroll-behavior: contain; padding: 2px; margin-bottom: 0.5rem; }
+
+/* Next round / Reset: kein Aufblitzen von Rahmen oder Übergang beim Antippen */
+.game-tools button { outline: none; transition: none; -webkit-tap-highlight-color: transparent; }
+
+/* Zwei Knöpfe teilen sich die Zeile, ein einzelner füllt sie ganz */
+.foe-actions { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+.foe-actions button { flex: 1 1 0; min-width: 0; padding-inline: 0.4rem; font-size: 0.9rem; }
+.foe-actions:not(:has(button:not([hidden]))) { display: none; }
+#game-foe-summons-panel { margin-bottom: 0.75rem; }

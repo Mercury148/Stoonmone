@@ -96,15 +96,26 @@
 
       <!-- Auswahl: 5 Modelle der eigenen Troupe, 5 des Gegners -->
       <div id="game-setup" hidden>
+        <!-- Zuerst der Gegner (wird beim Aufstellen laufend angeklickt), darunter die eigenen Modelle -->
+        <h3 class="section-label">Opponent <span class="badge" id="game-foe-count"></span></h3>
+        <div id="game-foe-chosen" class="tiles"></div>
+        <div class="foe-actions">
+          <button id="game-foe-toggle" class="ghost" type="button" hidden></button>
+          <button id="game-foe-summons-toggle" class="ghost" type="button"></button>
+        </div>
+        <div id="game-foe-summons-panel" hidden>
+          <p id="game-foe-summons-none" class="note" hidden>No enemy summons.. YET</p>
+          <p id="game-foe-summons-hint" class="hint">Possible summons of the chosen models. Tap one to see its card.</p>
+          <div id="game-foe-summons-list" class="tiles"></div>
+        </div>
+        <div id="game-foe-picker">
+          <div id="game-foe-filters"></div>
+          <div id="game-foe-tiles" class="tiles foe-pick"></div>
+        </div>
+
         <h3 class="section-label">Your models <span class="badge" id="game-own-count"></span></h3>
         <p class="hint" id="game-own-hint"></p>
         <div id="game-own-tiles" class="tiles"></div>
-
-        <h3 class="section-label">Opponent <span class="badge" id="game-foe-count"></span></h3>
-        <p class="hint" id="game-foe-picked">Pick the opponent's models below.</p>
-        <div id="game-foe-chosen" class="tiles"></div>
-        <div id="game-foe-filters"></div>
-        <div id="game-foe-tiles" class="tiles"></div>
 
         <div class="game-startbar">
           <button id="game-start" type="button">Start game</button>

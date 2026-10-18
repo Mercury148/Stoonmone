@@ -951,9 +951,14 @@ function openGame() {
   game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, gameSize());
   if (game.own.length === 0 || game.foe.length === 0) game.stage = "setup";
   foePanel.clear();
+  foeExpanded = false;
+  foeSummonsOpen = false;
   renderGame();
   showView("game");
 }
+
+let foeSummonsOpen = false;   // Liste der möglichen Beschwörungen des Gegners aufgeklappt?
+let foeExpanded = false;   // Liste der Gegner-Modelle von Hand wieder aufgeklappt?
 
 function toggleGamePick(side, id) {
   const list = game[side];
@@ -961,6 +966,8 @@ function toggleGamePick(side, id) {
   if (i >= 0) list.splice(i, 1);
   else if (list.length >= gameSize()) return toast(`Only ${gameSize()} models play in this format.`);
   else list.push(id);
+  // Sind alle Gegner-Modelle gewählt, klappt die Liste wieder ein
+  if (side === "foe" && Number.isFinite(gameSize()) && list.length >= gameSize()) foeExpanded = false;
   saveGame();
   renderGame();
 }
@@ -1055,7 +1062,18 @@ function gameCell(side, c) {
 function renderGamePlay() {
   const fill = (side, rowId, summonId, summonWrap) => {
     $(rowId).replaceChildren(...game[side].map((id) => gameCell(side, characterById.get(id))));
-    const summons = gameSummons(side);
+    // Reihenfolge: aktuell beschworene Modelle zuerst, dann die übrigen in der normalen Reihenfolge,
+    // Zwillinge (z. B. Striga Anya, wird nie aktiv beschworen) ganz am Ende
+    const rank = (c) => {
+      if (twinOf(c)) return 2;
+      const m = gameModel(side, c.id);
+      const h = healthOf(c);
+      return m.summoned && !(h && m.wounds >= h.length) ? 0 : 1;
+    };
+    const summons = gameSummons(side)
+      .map((c, i) => ({ c, i, r: rank(c) }))
+      .sort((a, b) => a.r - b.r || a.i - b.i)
+      .map((x) => x.c);
     $(summonWrap).hidden = summons.length === 0;
     $(summonId).replaceChildren(...summons.map((c) => gameCell(side, c)));
   };
@@ -1065,6 +1083,7 @@ function renderGamePlay() {
   $("#game-round").textContent = last ? "Sudden Death" : `Round ${game.round}`;
   // Die Kopfzeile wird von Runde zu Runde röter: die Nacht geht zu Ende, in Runde 5 geht die Sonne auf
   $("#view-game .editor-bar").dataset.round = String(game.round);
+  document.body.dataset.round = String(game.round);
   const next = $("#game-next-round");
   next.disabled = last;
   next.textContent = last ? "Last round" : "Next round";
@@ -1120,7 +1139,7 @@ function renderGame() {
   $("#game-play").hidden = setup;
   $("#game-title").textContent = setup ? "Choose models" : "Game";
   $("#game-round").hidden = setup;
-  if (setup) delete $("#view-game .editor-bar").dataset.round;
+  if (setup) { delete $("#view-game .editor-bar").dataset.round; delete document.body.dataset.round; }
 
   if (setup) {
     const size = gameSize();
@@ -1131,13 +1150,30 @@ function renderGame() {
     $("#game-own-tiles").replaceChildren(
       ...current.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, game.own.includes(c.id), () => toggleGamePick("own", c.id)))
     );
-    $("#game-foe-picked").hidden = game.foe.length > 0;
-    $("#game-foe-chosen").replaceChildren(
-      ...game.foe.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick("foe", c.id)))
-    );
+    // Gewählte Gegner-Modelle stehen oben in leeren Plätzen, damit beim Auswählen nichts springt
+    const chosen = game.foe.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick("foe", c.id)));
+    const slots = Number.isFinite(size) ? Math.max(0, size - chosen.length) : 1;   // voll: kein leerer Platz mehr
+    $("#game-foe-chosen").replaceChildren(...chosen, ...Array.from({ length: slots }, () => el("div", { class: "tile-empty", "aria-hidden": "true" })));
     const list = foePanel.list().filter((c) => !isSummoned(c));
     foePanel.showCount(list.length, data.characters.filter((c) => !isSummoned(c)).length);
     $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, game.foe.includes(c.id), () => toggleGamePick("foe", c.id))));
+    // Alle Gegner-Modelle gewählt: Liste einklappen, per Knopf wieder aufklappbar
+    const foeFull = Number.isFinite(size) && game.foe.length >= size;
+    const collapsed = foeFull && !foeExpanded;
+    $("#game-foe-picker").hidden = collapsed;
+    const toggle = $("#game-foe-toggle");
+    toggle.hidden = !foeFull;
+    toggle.textContent = collapsed ? "Change opponent models" : "Hide list";
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    // Mögliche Beschwörungen der gewählten Gegner-Modelle (nur zum Anschauen, Tippen öffnet die Karte)
+    const possible = gameSummons("foe");
+    const sumToggle = $("#game-foe-summons-toggle");
+    sumToggle.textContent = foeSummonsOpen ? "Hide summons" : "Show summons";
+    sumToggle.setAttribute("aria-expanded", String(foeSummonsOpen));
+    $("#game-foe-summons-panel").hidden = !foeSummonsOpen;
+    $("#game-foe-summons-none").hidden = possible.length > 0;
+    $("#game-foe-summons-hint").hidden = possible.length === 0;
+    $("#game-foe-summons-list").replaceChildren(...possible.map((c) => tileFor(c, false, () => openDetail(c.id))));
     $("#game-start").disabled = game.own.length === 0 || game.foe.length === 0;
   } else {
     renderGamePlay();
@@ -1154,6 +1190,11 @@ function showView(name) {
   $("#view-editor").hidden = name !== "editor";
   $("#view-game").hidden = name !== "game";
   document.body.classList.toggle("editing", name === "editor" || name === "game");
+  // Spielansicht: immer dunkel (Nacht), mit eigenem Hintergrund
+  document.body.classList.toggle("in-game", name === "game");
+  if (name === "game") document.documentElement.dataset.theme = "dark";
+  else delete document.documentElement.dataset.theme;
+  if (name !== "game") delete document.body.dataset.round;
   if (name !== "editor" && name !== "game") {
     lastTab = name;
     for (const tab of document.querySelectorAll("[role=tab]")) {
@@ -1211,6 +1252,8 @@ function wireEvents() {
     openGame();
   });
   $("#game-back").addEventListener("click", () => { renderEditor(); showView("editor"); });
+  $("#game-foe-summons-toggle").addEventListener("click", () => { foeSummonsOpen = !foeSummonsOpen; renderGame(); });
+  $("#game-foe-toggle").addEventListener("click", () => { foeExpanded = !foeExpanded; renderGame(); });
   $("#game-start").addEventListener("click", startGame);
   $("#game-next-round").addEventListener("click", nextRound);
   twoTap($("#game-reset"), "Really reset?", resetGame);
