@@ -277,8 +277,20 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .add-btn .plus::before { left: 0; right: 0; top: calc(50% - 1.5px); height: 3px; }
 .add-btn .plus::after { top: 0; bottom: 0; left: calc(50% - 1.5px); width: 3px; }
 .add-btn .add-text { display: none; }
-/* Handy, bis zu 3 Troupes: der Knopf sieht aus wie eine Troupe-Karte (gleiche Größe und Aufbau) */
-.add-btn.as-card {
+.add-btn .mini-row { display: none; }
+.new-wrap:not(.as-card) { display: contents; }
+/* Solange Platz ist (Handy und Desktop): der Knopf sieht aus wie eine Troupe-Karte (gleiche Größe und Aufbau) */
+/* Die Karte ist ein Rahmen (.new-wrap) mit zwei Knöpfen: Plus links unten, Import rechts unten */
+.new-wrap.as-card {
+  position: relative;
+  display: grid;
+  background: var(--surface);
+  border: 1px dashed var(--muted);
+  border-radius: var(--radius);
+}
+.new-wrap.as-card.full { opacity: 0.5; }
+.new-wrap.as-card .add-btn {
+  z-index: auto;
   position: static;
   display: grid;
   gap: 0.4rem;
@@ -288,17 +300,37 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   min-height: 0;
   aspect-ratio: auto;
   padding: 0.9rem;
+  border: 0;
   border-radius: var(--radius);
   box-shadow: none;
-  background: var(--surface);
+  background: none;
   color: var(--fg);
-  border: 1px dashed var(--muted);
   text-align: left;
   font-weight: 400;
 }
-.add-btn.as-card .add-text { display: contents; }
-.add-btn.as-card .plus { position: relative; left: auto; top: auto; transform: none; width: 1.9rem; height: 1.9rem; }
-.add-btn.as-card:disabled { opacity: 0.5; }
+.new-wrap.as-card .add-text { display: contents; }
+.new-wrap.as-card .mini-row { display: flex; }
+.new-wrap.as-card .plus { position: absolute; left: 0.9rem; top: auto; bottom: 0.9rem; transform: none; width: 1.9rem; height: 1.9rem; }
+/* Ohne Platz für die Karte: Import als grüner (Leshavult) runder Knopf über dem Plus */
+.new-wrap:not(.as-card) #import-open {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(8.75rem + env(safe-area-inset-bottom, 0px));
+  z-index: 4;
+  box-sizing: border-box;
+  width: 3.5rem;
+  height: 3.5rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: hsl(140 var(--fac-s) var(--fac-l));   /* gleicher Ton wie der Leshavult-Filter */
+  border: 0;
+  color: var(--accent-fg);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+}
+.new-wrap:not(.as-card) #import-open span { display: none; }
+.new-wrap:not(.as-card) #import-open .ico { width: 1.5rem; height: 1.5rem; }
+.new-wrap.as-card #import-open { position: absolute; z-index: 2; right: 0.9rem; bottom: 0.9rem; min-height: 0; height: 2.4rem; padding: 0 0.8rem; }
 #view-troupes { padding-bottom: 4.5rem; }
 
 .troupe-list { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
@@ -314,9 +346,42 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   text-align: left;
   font-weight: 400;
 }
+.troupe-item { position: relative; display: grid; }
+.troupe-item .troupe-card { padding-right: 3rem; }   /* Platz für das X */
+.troupe-delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-height: 0;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.25rem;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.troupe-delete .slot-x { background: var(--surface-2); border-color: var(--line); color: var(--fg); }
+.troupe-delete.armed .del-text {
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
+.icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.export-btn { margin-top: 0.75rem; }
+#import-dialog { width: min(92vw, 28rem); }
+#import-dialog textarea { width: 100%; box-sizing: border-box; }
+.dialog-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
 .troupe-name { font: 600 1.15rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .troupe-meta { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .mini-row { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.9rem; }
+/* Alle Kacheln gleich hoch: auf größeren Bildschirmen umbrechen die Portraits in eine zweite Zeile, dafür ist immer Platz */
+@media (min-width: 720px) { .mini-row { min-height: 4.05rem; align-content: flex-start; } }
 
 .share { margin-top: 1.5rem; padding: 0.75rem 1rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
 .share summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }

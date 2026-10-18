@@ -493,12 +493,36 @@ function createTroupe() {
   openEditor(created.id);
 }
 
-function deleteCurrentTroupe() {
-  const name = troupeLabel(current);
-  troupes = troupes.filter((t) => t !== current);
+function deleteTroupe(t) {
+  const name = troupeLabel(t);
+  troupes = troupes.filter((x) => x !== t);
   saveTroupes();
-  closeEditor();
+  renderTroupes();
   toast(`"${name}" deleted.`);
+}
+
+// X-Knopf auf der Kachel: erster Tipp fragt nach ("Delete?"), zweiter löscht
+function deleteButton(t) {
+  let armed = false;
+  let timer;
+  const button = el("button", { class: "troupe-delete", type: "button", "aria-label": `Delete ${troupeLabel(t)}` },
+    el("span", { class: "slot-x", "aria-hidden": "true", text: "×" }));
+  button.addEventListener("click", () => {
+    if (!armed) {
+      armed = true;
+      button.classList.add("armed");
+      button.replaceChildren(el("span", { class: "del-text", text: "Delete?" }));
+      timer = setTimeout(() => {
+        armed = false;
+        button.classList.remove("armed");
+        button.replaceChildren(el("span", { class: "slot-x", "aria-hidden": "true", text: "×" }));
+      }, 3000);
+      return;
+    }
+    clearTimeout(timer);
+    deleteTroupe(t);
+  });
+  return button;
 }
 
 // Ein eingefügter Code wird als neue Troupe angelegt und überschreibt nichts.
@@ -562,28 +586,39 @@ function troupeMeta(t) {
   if (!Number.isFinite(max)) return `${t.ids.length} models, unlimited`;
   return t.ids.length === max ? `${t.ids.length} of ${max} models, complete` : `${t.ids.length} of ${max} models`;
 }
-// Handy-Ansicht: bis zu 3 Troupes -> der Neu-Knopf steht als Karte am Ende der Liste
-const phoneQuery = window.matchMedia("(max-width: 719.98px)");
-
+// Neu-Knopf: Solange die Karte "New troupe" im sichtbaren Bereich Platz hat, steht sie als Karte
+// an der Stelle, an der die nächste Troupe erscheinen würde. Sonst gibt es den runden Knopf unten rechts.
 function renderTroupes() {
   $("#troupes-empty").hidden = troupes.length > 0;
   const add = $("#new-troupe");
   add.disabled = troupes.length >= MAX_TROUPES;
-
-  const asCard = phoneQuery.matches && troupes.length <= 3;
-  add.classList.toggle("as-card", asCard);
+  $("#new-wrap").classList.toggle("full", add.disabled);
 
   const cards = troupes.map((t) =>
-    el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
-      el("span", { class: "troupe-name", text: troupeLabel(t) }),
-      el("span", { class: "troupe-meta", text: troupeMeta(t) }),
-      el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
+    el("div", { class: "troupe-item" },
+      el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
+        el("span", { class: "troupe-name", text: troupeLabel(t) }),
+        el("span", { class: "troupe-meta", text: troupeMeta(t) }),
+        el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
+      ),
+      deleteButton(t)
     )
   );
-  $("#troupe-list").replaceChildren(...cards, ...(asCard ? [add] : []));
-  if (!asCard && add.parentElement !== $("#view-troupes")) $("#view-troupes").append(add);
+  // Erst als Karte einsetzen und messen, ob sie über der unteren Leiste noch zu sehen ist
+  const wrap = $("#new-wrap"), imp = $("#import-open");
+  wrap.classList.add("as-card");
+  wrap.append(imp);
+  $("#troupe-list").replaceChildren(...cards, wrap);
+  if ($("#view-troupes").hidden) return;   // unsichtbar: nicht messbar, wird beim Öffnen der Ansicht neu geprüft
+  const tabs = document.querySelector(".tabs");
+  const limit = tabs ? tabs.getBoundingClientRect().top : window.innerHeight;
+  if (wrap.getBoundingClientRect().bottom + window.scrollY > limit) {
+    // Kein Platz: zwei runde Knöpfe unten rechts, Import (grün) über dem Plus
+    wrap.classList.remove("as-card");
+    $("#view-troupes").append(wrap);
+  }
 }
-phoneQuery.addEventListener("change", () => renderTroupes());
+window.addEventListener("resize", () => renderTroupes());
 
 // --- Editor ---
 
@@ -629,8 +664,6 @@ function renderEditor() {
       );
     })
   );
-
-  $("#export-code").value = count ? encodeTroupe(current) : "";
 
   // Hinweiszeile: leer = Anleitung. Bleibt genau eine Fraktion übrig, ist das die Fraktion der Troupe.
   const rule = $("#editor-rule");
@@ -1119,8 +1152,8 @@ function openEditor(id) {
 
 function closeEditor() {
   current = null;
-  renderTroupes();
   showView("troupes");
+  renderTroupes();
 }
 
 
@@ -1129,8 +1162,8 @@ function closeEditor() {
 function wireEvents() {
   for (const tab of document.querySelectorAll("[role=tab]")) {
     tab.addEventListener("click", () => {
-      if (tab.dataset.tab === "troupes") renderTroupes();
       showView(tab.dataset.tab);
+      if (tab.dataset.tab === "troupes") renderTroupes();
     });
   }
 
@@ -1163,26 +1196,39 @@ function wireEvents() {
   $("#editor-name").addEventListener("input", (e) => {
     current.name = e.target.value.slice(0, 40);
     saveTroupes();
-    $("#export-code").value = current.ids.length ? encodeTroupe(current) : "";
   });
 
-  twoTap($("#delete-troupe"), "Really delete?", deleteCurrentTroupe);
-
+  // Export: Code direkt in die Zwischenablage
   $("#copy").addEventListener("click", async () => {
-    const field = $("#export-code");
-    if (!field.value) return toast("Nothing to copy yet.");
+    if (!current || !current.ids.length) return toast("Add some models to the troupe first.");
+    const code = encodeTroupe(current);
     try {
-      await navigator.clipboard.writeText(field.value);
-      toast("Code copied.");
+      await navigator.clipboard.writeText(code);
+      toast("Troupe code successfully copied to clipboard.");
     } catch {
-      field.select();
-      toast("Please copy the selected code manually.");
+      // Ältere Browser: über ein unsichtbares Textfeld kopieren
+      const tmp = el("textarea", { readonly: "", style: "position:fixed;left:-9999px;top:0;opacity:0" });
+      tmp.value = code;
+      document.body.append(tmp);
+      tmp.select();
+      let ok = false;
+      try { ok = document.execCommand("copy"); } catch { /* ignorieren */ }
+      tmp.remove();
+      toast(ok ? "Troupe code successfully copied to clipboard." : "Copying failed. Please try again.");
     }
   });
 
+  // Import: Knopf in der Übersicht öffnet ein kleines Fenster zum Einfügen
+  $("#import-open").addEventListener("click", () => {
+    $("#import-code").value = "";
+    $("#import-dialog").showModal();
+  });
+  $("#import-cancel").addEventListener("click", () => $("#import-dialog").close());
+  $("#import-dialog").addEventListener("click", (e) => { if (e.target === $("#import-dialog")) $("#import-dialog").close(); });
   $("#import").addEventListener("click", () => {
     const code = $("#import-code").value;
     if (!code.trim()) return toast("Please paste a code first.");
+    $("#import-dialog").close();
     importTroupe(code);
     $("#import-code").value = "";
   });

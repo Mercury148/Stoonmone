@@ -50,16 +50,11 @@
         No troupe yet. Tap the plus to create one.
       </p>
 
-      <details class="share">
-        <summary>Load troupe from code</summary>
-        <p class="hint">Did someone send you a troupe code, or did you save one? Paste it here. It is added as a new troupe.</p>
-        <label for="import-code">Paste code</label>
-        <textarea id="import-code" rows="3" placeholder="Paste code here"></textarea>
-        <button id="import" type="button">Load troupe</button>
-      </details>
-
       <!-- Runder Knopf unten rechts; auf dem Handy mit bis zu 3 Troupes sieht er aus wie eine Troupe-Karte (siehe renderTroupes) -->
-      <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe"><span class="add-text"><span class="troupe-name">New troupe</span><span class="troupe-meta">Tap to create one</span></span><span class="plus" aria-hidden="true"></span></button>
+      <div id="new-wrap" class="new-wrap">
+        <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe"><span class="add-text"><span class="troupe-name">New troupe</span><span class="troupe-meta">Tap to create one</span><span class="mini-row"></span></span><span class="plus" aria-hidden="true"></span></button>
+        <button id="import-open" class="ghost icon-btn" type="button" aria-label="Import troupe"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 14v5h14v-5"/></svg><span>Import</span></button>
+      </div>
     </section>
 
     <!-- ===== Seite 3: Troupe zusammenstellen (Editor) ===== -->
@@ -82,14 +77,7 @@
 
       <button id="start-game" class="play-btn" type="button">Play with this troupe</button>
 
-      <details class="share">
-        <summary>Share, back up and delete</summary>
-        <p class="hint">Your browser can lose saved data. Copy the code and keep it somewhere safe, for example in a note. You can load it again on the troupes page.</p>
-        <label for="export-code">Code of this troupe</label>
-        <textarea id="export-code" rows="3" readonly></textarea>
-        <button id="copy" type="button">Copy code</button>
-        <button id="delete-troupe" class="ghost" type="button">Delete troupe</button>
-      </details>
+      <button id="copy" class="ghost icon-btn export-btn" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/></svg><span>Export</span></button>
 
       <!-- Dieselben Filter wie im Kompendium, aber unabhängig davon -->
       <div id="editor-filters"></div>
@@ -154,6 +142,16 @@
   <!-- Detailansicht eines Charakters -->
   <dialog id="detail" aria-label="Character details">
     <div id="detail-body"></div>
+  </dialog>
+
+  <dialog id="import-dialog" aria-label="Import troupe">
+    <h3 class="section-label">Import troupe</h3>
+    <p class="hint">Paste a troupe code. It is added as a new troupe.</p>
+    <textarea id="import-code" rows="4" placeholder="Paste code here" aria-label="Troupe code"></textarea>
+    <div class="dialog-actions">
+      <button id="import" type="button">Import</button>
+      <button id="import-cancel" class="ghost" type="button">Cancel</button>
+    </div>
   </dialog>
 
   <div id="toast" class="toast" role="status" hidden></div>
