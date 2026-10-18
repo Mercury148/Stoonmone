@@ -209,16 +209,41 @@ function sanitize(saved) {
 }
 
 // Troupe in einen kurzen Text verwandeln (zum Kopieren) und zurück.
+// Jeder Charakter wird dabei durch 4 Zeichen ersetzt (ein fester Kurzwert seiner ID, siehe idCode).
+// Aufbau: TTG2.<Format>.<Charaktere>.<Name>, zum Beispiel TTG2.5-8.k3j9a0x2m4p1.Meine%20Troupe
+// Alte, längere Codes (Version 1) lassen sich weiterhin laden.
+const CODE_PREFIX = "TTG2.";
+const idByCode = new Map();   // Kurzwert -> Charakter-ID (wird beim Start gefüllt)
+
+// Fester Kurzwert aus der ID: gleiche ID ergibt immer dieselben 4 Zeichen (Ziffern und Kleinbuchstaben).
+function idCode(id) {
+  let h = 2166136261;                        // FNV-1a
+  for (let i = 0; i < id.length; i++) {
+    h ^= id.charCodeAt(i);
+    h = Math.imul(h, 16777619) >>> 0;
+  }
+  return (h % 1679616).toString(36).padStart(4, "0");   // 36^4 Möglichkeiten
+}
+
 function encodeTroupe(t) {
-  const json = JSON.stringify({ v: 1, n: t.name, f: formatOf(t).id, ids: t.ids });
-  const bytes = new TextEncoder().encode(json);
-  let binary = "";
-  bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  return btoa(binary);
+  return `${CODE_PREFIX}${formatOf(t).id}.${t.ids.map(idCode).join("")}.${encodeURIComponent(t.name)}`;
 }
 
 function decodeTroupe(code) {
-  const binary = atob(code.trim());
+  code = code.trim();
+  if (code.startsWith(CODE_PREFIX)) {
+    const rest = code.slice(CODE_PREFIX.length);
+    const first = rest.indexOf(".");
+    const second = rest.indexOf(".", first + 1);
+    if (first < 0 || second < 0) throw new Error("Unbekanntes Format");
+    const chars = rest.slice(first + 1, second);
+    if (chars.length % 4 !== 0) throw new Error("Unbekanntes Format");
+    const ids = [];
+    for (let i = 0; i < chars.length; i += 4) ids.push(idByCode.get(chars.slice(i, i + 4)) || null);   // null = unbekannt
+    return { name: decodeURIComponent(rest.slice(second + 1)), format: rest.slice(0, first), ids };
+  }
+  // Version 1 (lang): Base64 mit allen IDs im Klartext
+  const binary = atob(code);
   const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
   const obj = JSON.parse(new TextDecoder().decode(bytes));
   if (obj.v !== 1) throw new Error("Unbekanntes Format");
@@ -1201,6 +1226,9 @@ async function boot() {
   data.characters.forEach((c) => {
     if (!c.factions) c.factions = [c.faction];
     characterById.set(c.id, c);
+    const short = idCode(c.id);
+    if (idByCode.has(short)) problems.push(`The troupe code cannot tell "${c.id}" and "${idByCode.get(short)}" apart. Rename one of the ids slightly.`);
+    else idByCode.set(short, c.id);
   });
 
   const problems = checkData();
