@@ -719,3 +719,9 @@ html, body, button, input, summary { touch-action: manipulation; }
 
 /* Modellanzahl in der Kopfzeile: feste Breite, damit sich beim Formatwechsel nichts verschiebt */
 #editor-count { min-width: 4.6rem; text-align: center; box-sizing: border-box; }
+
+/* Kein Textcursor und keine Textmarkierung auf der Oberfläche; nur in Eingabefeldern (und in der Kartenansicht) bleibt beides */
+body { cursor: default; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+input, textarea { cursor: text; -webkit-user-select: text; user-select: text; }
+select, summary, label[for] { cursor: pointer; }
+#detail-body { -webkit-user-select: text; user-select: text; }
