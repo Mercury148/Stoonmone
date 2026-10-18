@@ -364,12 +364,13 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .troupe-item.dual { --c1: hsl(var(--h) var(--fac-s) var(--fac-l)); --c2: hsl(var(--h2) var(--fac-s2) var(--fac-l)); }
 .troupe-item.dual .troupe-card {
   border-color: transparent;
-  background: linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(90deg, var(--c1) 45%, var(--c2) 55%) border-box;
+  background: linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(90deg, var(--c1), var(--c2)) border-box;
 }
 .troupe-item.dual .troupe-corner::before {
-  background: linear-gradient(90deg, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.18) 50%, hsl(var(--h2) var(--fac-s2) var(--fac-l) / 0.18) 50%);
+  background: linear-gradient(90deg, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.2), hsl(var(--h2) var(--fac-s2) var(--fac-l) / 0.2));
 }
-.troupe-item.dual .troupe-corner { display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.25rem; }
+.troupe-item.dual .troupe-corner { display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.3rem; width: 10.5rem; height: 4.2rem; padding: 0 0.7rem 0.55rem 0; }
+.troupe-item.dual .troupe-corner .faction-icon { width: 1.55rem; height: 1.55rem; }
 .troupe-item.dual .troupe-corner .faction-icon:nth-child(1) { color: var(--c1); }
 .troupe-item.dual .troupe-corner .faction-icon:nth-child(2) { color: var(--c2); }
 .tile-tip { margin: 0.25rem 0 0.5rem; }
