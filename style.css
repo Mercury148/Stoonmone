@@ -75,12 +75,12 @@
 
 html { -webkit-text-size-adjust: 100%; }
 
-html { height: -webkit-fill-available; }   /* iOS: Seite füllt immer die ganze Bildschirmhöhe */
 body {
   box-sizing: border-box;
-  min-height: 100vh;
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
+  /* Die Seite ist immer 1px höher als der Bildschirm, also immer scrollbar. Sonst rutscht beim iPhone die untere
+     Leiste auf kurzen Seiten (wenig Troupes) nach oben. */
+  min-height: calc(100vh + 1px);
+  min-height: calc(100dvh + 1px);
   margin: 0;
   background: var(--bg);
   color: var(--fg);
