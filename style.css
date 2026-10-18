@@ -312,6 +312,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin-right: calc(-1 * var(--gutter-r));
   padding: 0.5rem var(--gutter-r) 0.5rem var(--gutter);
   background: var(--bg);
+  flex-wrap: wrap;
 }
 .editor-bar input { flex: 1; min-width: 0; font: 600 1.05rem/1.3 var(--font-display); }
 .back { flex: none; display: inline-flex; align-items: center; gap: 0.4rem; padding-inline: 0.75rem; }
@@ -632,7 +633,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 .game-startbar button { width: 100%; }
 
 /* 5 Modelle nebeneinander */
-.grow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.3rem; align-items: start; }
+.grow { display: grid; grid-template-columns: repeat(var(--gcols, 5), minmax(0, 1fr)); gap: 0.3rem; align-items: start; }
 .gcell { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
 .gcell.dead { opacity: 0.5; }
 .gcell-portrait {
@@ -675,10 +676,43 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 .summon-btn { min-height: 32px; padding: 0 0.2rem; border-radius: 6px; font-size: 0.7rem; }
 #game-foe-chosen { margin-bottom: 0.75rem; }
 #game-foe-chosen:empty { display: none; }
-.transform-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.gcell-media { position: relative; }
+.transform-btn {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 4px;
+  min-height: 26px;
+  padding: 0;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
 .summon-note { display: grid; place-items: center; min-height: 32px; font-size: 0.65rem; color: var(--muted); text-align: center; }
 
 /* Kein Doppeltipp-Zoom: schnelles mehrfaches Tippen (z. B. auf + und -) soll nicht zoomen.
    Das Zusammenziehen mit zwei Fingern bleibt erlaubt. */
 html, body, button, input, summary { touch-action: manipulation; }
 .gstep-row button, .summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+/* Format-Auswahl: auf dem Handy eine eigene Zeile unter der Kopfzeile, am Computer rechts neben dem Namen */
+#editor-format { order: 10; flex: 1 1 100%; min-width: 0; min-height: 44px; font-weight: 600; }
+@media (min-width: 720px) {
+  #editor-format { order: 0; flex: 0 0 auto; width: auto; }
+  .editor-bar { flex-wrap: nowrap; }
+}
+
+/* Format 6/9: neun Plätze, auf dem Handy als 3 x 3, am Computer alle neun in einer Reihe */
+.slots.nine { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 720px) {
+  .slots.nine { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+}
+
+/* 6/9: die Plätze im Editor als 3x3-Raster (am Computer in einer Reihe) */
+#editor-slots[data-format="6-9"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 720px) {
+  #editor-slots[data-format="6-9"] { grid-template-columns: repeat(9, minmax(0, 1fr)); }
+}
+@media (min-width: 720px) { .transform-btn { font-size: 0.8rem; min-height: 30px; } }

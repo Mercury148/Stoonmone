@@ -24,7 +24,6 @@
 
 // Alle Listenregeln stehen hier an einer Stelle.
 const RULES = {
-  maxModels: 8,               // so viele Modelle gehören in eine Troupe
   allowDuplicates: false,     // darf derselbe Charakter zweimal in einer Troupe vorkommen?
   maxPerKeyword: {},          // Beispiel: { "Noble": 1 } = höchstens 1 Modell mit diesem Keyword
   sameFaction: true,          // alle Modelle einer Troupe müssen mindestens eine gemeinsame Fraktion haben
@@ -205,12 +204,13 @@ function loadTroupes() {
 function sanitize(saved) {
   const ids = Array.isArray(saved.ids) ? saved.ids.filter((id) => characterById.has(id) && !isSummoned(characterById.get(id))) : [];
   const name = typeof saved.name === "string" && saved.name.trim() ? saved.name.slice(0, 40) : "Meine Troupe";
-  return { name, ids: ids.slice(0, RULES.maxModels) };
+  const format = validFormat(saved.format);
+  return { name, format, ids: ids.slice(0, formatById.get(format).max) };
 }
 
 // Troupe in einen kurzen Text verwandeln (zum Kopieren) und zurück.
 function encodeTroupe(t) {
-  const json = JSON.stringify({ v: 1, n: t.name, ids: t.ids });
+  const json = JSON.stringify({ v: 1, n: t.name, f: formatOf(t).id, ids: t.ids });
   const bytes = new TextEncoder().encode(json);
   let binary = "";
   bytes.forEach((b) => (binary += String.fromCharCode(b)));
@@ -222,7 +222,7 @@ function decodeTroupe(code) {
   const bytes = Uint8Array.from(binary, (ch) => ch.charCodeAt(0));
   const obj = JSON.parse(new TextDecoder().decode(bytes));
   if (obj.v !== 1) throw new Error("Unbekanntes Format");
-  return { name: obj.n, ids: obj.ids };
+  return { name: obj.n, format: obj.f, ids: obj.ids };
 }
 
 
@@ -395,12 +395,25 @@ function fitsFactions(t, character) {
   return character.factions.some((f) => allowed.has(f));
 }
 
+// Formate: so viele Modelle hat die Troupe (max) und so viele davon treten im Spiel an (play).
+// Math.max/min kommen mit Infinity klar: "unlimited" hat keine Grenze.
+const FORMATS = [
+  { id: "4",         label: "4 models",       max: 4,        play: 4 },
+  { id: "5-8",       label: "5 of 8 models",  max: 8,        play: 5 },
+  { id: "6-9",       label: "6 of 9 models",  max: 9,        play: 6 },
+  { id: "unlimited", label: "Unlimited",      max: Infinity, play: Infinity },
+];
+const DEFAULT_FORMAT = "5-8";
+const formatById = new Map(FORMATS.map((f) => [f.id, f]));
+function formatOf(t) { return formatById.get(t.format) || formatById.get(DEFAULT_FORMAT); }
+function validFormat(id) { return formatById.has(id) ? id : DEFAULT_FORMAT; }
+
 // Prüft, ob ein Charakter zur Troupe t hinzugefügt werden darf.
 // Gibt einen Fehlertext zurück, oder null, wenn alles in Ordnung ist.
 function checkAdd(t, id) {
   const character = characterById.get(id);
-  if (t.ids.length >= RULES.maxModels) {
-    return `The troupe is full (${RULES.maxModels} models).`;
+  if (t.ids.length >= formatOf(t).max) {
+    return `The troupe is full (${formatOf(t).max} models).`;
   }
   if (!RULES.allowDuplicates && t.ids.includes(id)) {
     return `${character.name} is already in the troupe.`;
@@ -449,7 +462,7 @@ function nextTroupeName() {
 
 function createTroupe() {
   if (troupes.length >= MAX_TROUPES) return toast(`You can save at most ${MAX_TROUPES} troupes.`);
-  const created = { id: newId(), name: nextTroupeName(), ids: [] };
+  const created = { id: newId(), name: nextTroupeName(), format: DEFAULT_FORMAT, ids: [] };
   troupes.push(created);
   saveTroupes();
   openEditor(created.id);
@@ -474,7 +487,7 @@ function importTroupe(code) {
   } catch {
     return toast("The code could not be read.");
   }
-  const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, ids: [] };
+  const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, format: validFormat(parsed.format), ids: [] };
   let skipped = 0;
   for (const id of Array.isArray(parsed.ids) ? parsed.ids : []) {
     if (!characterById.has(id) || isSummoned(characterById.get(id)) || checkAdd(created, id)) skipped++;
@@ -519,8 +532,12 @@ function renderCards() {
 }
 
 // --- Troupen-Übersicht ---
+function troupeMeta(t) {
+  const max = formatOf(t).max;
+  if (!Number.isFinite(max)) return `${t.ids.length} models, unlimited`;
+  return t.ids.length === max ? `${t.ids.length} of ${max} models, complete` : `${t.ids.length} of ${max} models`;
+}
 function renderTroupes() {
-  const max = RULES.maxModels;
   $("#troupes-empty").hidden = troupes.length > 0;
   $("#new-troupe").disabled = troupes.length >= MAX_TROUPES;
 
@@ -528,7 +545,7 @@ function renderTroupes() {
     ...troupes.map((t) =>
       el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
         el("span", { class: "troupe-name", text: troupeLabel(t) }),
-        el("span", { class: "troupe-meta", text: t.ids.length === max ? `${t.ids.length} of ${max} models, complete` : `${t.ids.length} of ${max} models` }),
+        el("span", { class: "troupe-meta", text: troupeMeta(t) }),
         el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       )
     )
@@ -549,14 +566,17 @@ function portraitCard(character) {
 }
 
 function renderEditor() {
-  const max = RULES.maxModels;
+  const max = formatOf(current).max;
   const count = current.ids.length;
 
-  $("#editor-count").textContent = `${count}/${max}`;
+  $("#editor-count").textContent = Number.isFinite(max) ? `${count}/${max}` : String(count);
+  $("#editor-format").value = formatOf(current).id;
+  $("#editor-slots").dataset.format = formatOf(current).id;   // das Raster passt sich dem Format an (siehe style.css)
+  $("#editor-slots").classList.toggle("nine", max === 9);   // 6/9: Plätze als 3 x 3 Raster
 
   // Die acht Plätze: gewählte Charaktere als Portrait (Tipp = Karte ansehen), freie Plätze gestrichelt
   $("#editor-slots").replaceChildren(
-    ...Array.from({ length: max }, (_, i) => {
+    ...Array.from({ length: Number.isFinite(max) ? max : Math.max(8, count + 1) }, (_, i) => {
       const id = current.ids[i];
       if (!id) return el("span", { class: "slot-empty" });
       const c = characterById.get(id);
@@ -772,7 +792,7 @@ function openDetail(id) {
 // Das Feld "health" in der JSON bildet die Lebensleiste der Karte ab, von links nach rechts:
 // 1 = blauer Punkt (erzeugt Energy), 0 = leerer Punkt. Wunden werden von rechts gestrichen.
 const GAME_KEY = "stoonmone-game-v1";
-const GAME_SIZE = 5;
+function gameSize() { return formatOf(current).play; }   // so viele Modelle treten im Spiel an (Infinity = beliebig viele)
 let game = null;          // { troupeId, stage, round, own: [ids], foe: [ids], models: { "side:id": { wounds, energy } } }
 let foePanel;
 
@@ -854,8 +874,8 @@ function openGame() {
     if (!c) return false;
     const twin = twinOf(c);   // ein verwandeltes Modell darf an seinem Platz bleiben
     return current.ids.includes(id) || (twin && current.ids.includes(twin.id));
-  }).slice(0, GAME_SIZE);
-  game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, GAME_SIZE);
+  }).slice(0, gameSize());
+  game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, gameSize());
   if (game.own.length === 0 || game.foe.length === 0) game.stage = "setup";
   foePanel.clear();
   renderGame();
@@ -866,7 +886,7 @@ function toggleGamePick(side, id) {
   const list = game[side];
   const i = list.indexOf(id);
   if (i >= 0) list.splice(i, 1);
-  else if (list.length >= GAME_SIZE) return toast(`Only ${GAME_SIZE} models play in a game.`);
+  else if (list.length >= gameSize()) return toast(`Only ${gameSize()} models play in this format.`);
   else list.push(id);
   saveGame();
   renderGame();
@@ -933,8 +953,11 @@ function gameCell(side, c) {
     : el("div", { class: "hboxes none", text: "no health data" });
 
   return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}` },
-    twinOf(c) ? el("button", { class: "summon-btn transform-btn", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) }) : null,
-    el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+    // Der Transform-Knopf sitzt auf dem Portrait, damit die Kachel gleich groß bleibt wie die anderen
+    el("div", { class: "gcell-media" },
+      el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+      twinOf(c) ? el("button", { class: "transform-btn", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) }) : null
+    ),
     el("div", { class: "gcell-name", text: c.name }),
     boxes,
     health
@@ -1000,7 +1023,11 @@ function resetGame() {
   renderGame();
 }
 
+// Spalten der Spielansicht: 4 Modelle in 4 Spalten, 5 in 5, 6 als 3x2, sonst 5 nebeneinander
+const GAME_COLUMNS = { 4: 4, 5: 5, 6: 3 };
+
 function renderGame() {
+  $("#view-game").style.setProperty("--gcols", GAME_COLUMNS[gameSize()] || 5);
   const setup = game.stage === "setup";
   $("#game-setup").hidden = !setup;
   $("#game-play").hidden = setup;
@@ -1008,8 +1035,11 @@ function renderGame() {
   $("#game-round").hidden = setup;
 
   if (setup) {
-    $("#game-own-count").textContent = `${game.own.length}/${GAME_SIZE}`;
-    $("#game-foe-count").textContent = `${game.foe.length}/${GAME_SIZE}`;
+    const size = gameSize();
+    const shown = (n) => (Number.isFinite(size) ? `${n}/${size}` : String(n));
+    $("#game-own-count").textContent = shown(game.own.length);
+    $("#game-foe-count").textContent = shown(game.foe.length);
+    $("#game-own-hint").textContent = Number.isFinite(size) ? `Choose the ${size} models you play this game.` : "Choose the models you play this game.";
     $("#game-own-tiles").replaceChildren(
       ...current.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, game.own.includes(c.id), () => toggleGamePick("own", c.id)))
     );
@@ -1073,6 +1103,20 @@ function wireEvents() {
 
   $("#new-troupe").addEventListener("click", createTroupe);
   $("#editor-back").addEventListener("click", closeEditor);
+
+  // Format der Troupe: wie viele Modelle sie hat und wie viele davon spielen
+  $("#editor-format").replaceChildren(...FORMATS.map((f) => el("option", { value: f.id, text: f.label })));
+  $("#editor-format").addEventListener("change", (e) => {
+    const next = formatById.get(e.target.value);
+    if (current.ids.length > next.max) {
+      toast(`This format allows only ${next.max} models. Remove some first.`);
+      e.target.value = formatOf(current).id;
+      return;
+    }
+    current.format = next.id;
+    saveTroupes();
+    renderEditor();
+  });
 
   $("#start-game").addEventListener("click", () => {
     if (current.ids.length === 0) return toast("Add some models to the troupe first.");
