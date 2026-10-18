@@ -415,6 +415,13 @@ function troupeFaction(t) {
   return left.length === 1 ? factionById.get(left[0]) : null;
 }
 
+// Eine oder (bei Troupes aus lauter Zwei-Fraktionen-Modellen) zwei Fraktionen, sonst leer
+function troupeFactionList(t) {
+  if (!RULES.sameFaction || t.ids.length === 0) return [];
+  const left = [...allowedFactions(t)];
+  return left.length >= 1 && left.length <= 2 ? left.map((id) => factionById.get(id)) : [];
+}
+
 function fitsFactions(t, character) {
   const allowed = allowedFactions(t);
   return character.factions.some((f) => allowed.has(f));
@@ -595,14 +602,17 @@ function renderTroupes() {
   $("#new-wrap").classList.toggle("full", add.disabled);
 
   const cards = troupes.map((t) => {
-    const faction = troupeFaction(t);   // nur wenn die Fraktion feststeht
-    return el("div", { class: faction ? "troupe-item has-faction" : "troupe-item", style: faction ? factionStyle(faction) : null },
+    const factions = troupeFactionList(t);   // nur wenn die Fraktion feststeht (oder genau zwei in Frage kommen)
+    const faction = factions[0];
+    const dual = factions.length === 2;
+    const dualStyle = dual ? `; --h2:${factions[1].hue}; --fac-s2:${factions[1].sat ?? 55}%` : "";
+    return el("div", { class: faction ? `troupe-item has-faction${dual ? " dual" : ""}` : "troupe-item", style: faction ? factionStyle(faction) + dualStyle : null },
       el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
         el("span", { class: "troupe-name", text: troupeLabel(t) }),
         el("span", { class: "troupe-meta", text: troupeMeta(t) }),
         el("span", { class: "mini-row", "data-n": String(t.ids.length) }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       ),
-      faction ? el("span", { class: "troupe-corner", title: faction.name }, factionIcon(faction)) : null,
+      faction ? el("span", { class: "troupe-corner", title: factions.map((f) => f.name).join(" / ") }, ...factions.map((f) => factionIcon(f))) : null,
       deleteButton(t)
     );
   });
@@ -729,22 +739,7 @@ function renderTiles() {
     ...list.map((c) => {
       const selected = current.ids.includes(c.id);
       const blocked = !selected && checkAdd(current, c.id) !== null;
-      return el("button", {
-        class: blocked ? "tile blocked" : "tile",
-        type: "button",
-        "aria-pressed": String(selected),
-        "aria-label": c.name,
-        onclick: () => toggleMember(c.id),
-      },
-        portraitCard(c),
-        el("span", { class: "tile-label" },
-          el("span", { class: "tile-name", text: c.name }),
-          el("span", { class: "tile-factions" },
-            ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
-          )
-        ),
-        selected ? el("span", { class: "tile-check", "aria-hidden": "true", text: "✓" }) : null
-      );
+      return tileFor(c, selected, () => toggleMember(c.id), blocked ? "blocked" : "");
     })
   );
 }
@@ -753,7 +748,6 @@ function renderTiles() {
 
 const HINT_KEY = "stoonmone-hint-flip-v1";   // gesetzt, wenn der Tipp nie mehr erscheinen soll
 let hintShownThisSession = false;            // der Tipp erscheint höchstens einmal pro App-Start
-
 function hintDisabled() {
   try { return localStorage.getItem(HINT_KEY) === "1"; } catch { return false; }
 }
@@ -972,8 +966,29 @@ function toggleGamePick(side, id) {
   renderGame();
 }
 
-function tileFor(c, selected, onclick) {
-  return el("button", { class: "tile", type: "button", "aria-pressed": String(selected), "aria-label": c.name, onclick },
+function tileFor(c, selected, onclick, extraClass = "") {
+  // Rechtsklick (Computer) oder Antippen und Halten (Handy) zeigt die Karte, ohne das Modell zu wählen
+  let timer = null;
+  let longPressed = false;
+  let startX = 0, startY = 0;
+  const cancel = () => { clearTimeout(timer); timer = null; };
+  const tile = el("button", { class: extraClass ? `tile ${extraClass}` : "tile", type: "button", "aria-pressed": String(selected), "aria-label": c.name,
+    onclick: (e) => {
+      if (longPressed) { longPressed = false; e.preventDefault(); return; }
+      onclick(e);
+    },
+    oncontextmenu: (e) => { e.preventDefault(); openDetail(c.id); },
+    onpointerdown: (e) => {
+      if (e.pointerType === "mouse") return;
+      longPressed = false;
+      startX = e.clientX; startY = e.clientY;
+      timer = setTimeout(() => { longPressed = true; timer = null; if (navigator.vibrate) navigator.vibrate(15); openDetail(c.id); }, 500);
+    },
+    onpointermove: (e) => { if (timer && Math.hypot(e.clientX - startX, e.clientY - startY) > 10) cancel(); },
+    onpointerup: cancel,
+    onpointercancel: cancel,
+    onpointerleave: cancel,
+  },
     portraitCard(c),
     el("span", { class: "tile-label" },
       el("span", { class: "tile-name", text: c.name }),
@@ -983,6 +998,7 @@ function tileFor(c, selected, onclick) {
     ),
     selected ? el("span", { class: "tile-check", "aria-hidden": "true", text: "✓" }) : null
   );
+  return tile;
 }
 
 // Eine kleine Zeile mit - Wert +

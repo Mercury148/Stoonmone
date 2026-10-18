@@ -360,6 +360,19 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 /* Feststehende Fraktion: Rahmen und Ecke in den Farben des gewählten Fraktionsfilters */
 .troupe-item.has-faction { border-radius: var(--radius); overflow: hidden; }
 .troupe-item.has-faction .troupe-card { border: 2px solid hsl(var(--h) var(--fac-s) var(--fac-l)); padding: calc(0.9rem - 1px); padding-right: calc(3rem - 1px); }
+/* Zwei mögliche Fraktionen (Troupe nur aus Zwei-Fraktionen-Modellen): Rahmen, Ecke und Symbole halb/halb wie bei Magic */
+.troupe-item.dual { --c1: hsl(var(--h) var(--fac-s) var(--fac-l)); --c2: hsl(var(--h2) var(--fac-s2) var(--fac-l)); }
+.troupe-item.dual .troupe-card {
+  border-color: transparent;
+  background: linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(90deg, var(--c1) 45%, var(--c2) 55%) border-box;
+}
+.troupe-item.dual .troupe-corner::before {
+  background: linear-gradient(90deg, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.18) 50%, hsl(var(--h2) var(--fac-s2) var(--fac-l) / 0.18) 50%);
+}
+.troupe-item.dual .troupe-corner { display: flex; align-items: flex-end; justify-content: flex-end; gap: 0.25rem; }
+.troupe-item.dual .troupe-corner .faction-icon:nth-child(1) { color: var(--c1); }
+.troupe-item.dual .troupe-corner .faction-icon:nth-child(2) { color: var(--c2); }
+.tile-tip { margin: 0.25rem 0 0.5rem; }
 .troupe-corner {
   position: absolute;
   right: 0;
