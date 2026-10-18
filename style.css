@@ -347,7 +347,31 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-weight: 400;
 }
 .troupe-item { position: relative; display: grid; }
-.troupe-item .troupe-card { padding-right: 3rem; }   /* Platz für das X */
+.troupe-item .troupe-card { padding-right: 3rem; }
+/* Feststehende Fraktion: Rahmen und Ecke in den Farben des gewählten Fraktionsfilters */
+.troupe-item.has-faction { border-radius: var(--radius); overflow: hidden; }
+.troupe-item.has-faction .troupe-card { border: 2px solid hsl(var(--h) var(--fac-s) var(--fac-l)); padding: calc(0.9rem - 1px); padding-right: calc(3rem - 1px); }
+.troupe-corner {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 9rem;
+  height: 3.9rem;
+  display: grid;
+  place-items: end end;
+  padding: 0 0.8rem 0.6rem 0;
+  box-sizing: border-box;
+  pointer-events: none;   /* Tippen geht durch zur Kachel */
+  color: hsl(var(--h) var(--fac-s) var(--fac-l));
+}
+.troupe-corner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--h) var(--fac-s) var(--fac-l) / 0.18);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.troupe-corner .faction-icon { position: relative; width: 1.9rem; height: 1.9rem; }   /* Platz für das X */
 .troupe-delete {
   position: absolute;
   top: 0;

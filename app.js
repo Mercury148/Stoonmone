@@ -594,16 +594,18 @@ function renderTroupes() {
   add.disabled = troupes.length >= MAX_TROUPES;
   $("#new-wrap").classList.toggle("full", add.disabled);
 
-  const cards = troupes.map((t) =>
-    el("div", { class: "troupe-item" },
+  const cards = troupes.map((t) => {
+    const faction = troupeFaction(t);   // nur wenn die Fraktion feststeht
+    return el("div", { class: faction ? "troupe-item has-faction" : "troupe-item", style: faction ? factionStyle(faction) : null },
       el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
         el("span", { class: "troupe-name", text: troupeLabel(t) }),
         el("span", { class: "troupe-meta", text: troupeMeta(t) }),
         el("span", { class: "mini-row", "data-n": String(t.ids.length) }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       ),
+      faction ? el("span", { class: "troupe-corner", title: faction.name }, factionIcon(faction)) : null,
       deleteButton(t)
-    )
-  );
+    );
+  });
   // Erst als Karte einsetzen und messen, ob sie über der unteren Leiste noch zu sehen ist
   const wrap = $("#new-wrap"), imp = $("#import-open");
   wrap.classList.add("as-card");

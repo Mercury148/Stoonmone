@@ -34,9 +34,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0,0,0,0],
-      "image": "portraits/abra.png",
-      "card": "images/Abra_Cadaverous_front.png",
-      "cardBack": "images/Abra_Cadaverous_back.png"
+      "image": "portraits/abra.webp",
+      "card": "images/Abra_Cadaverous_front.webp",
+      "cardBack": "images/Abra_Cadaverous_back.webp"
     },
     {
       "id": "agatha-tavernfrau",
@@ -46,9 +46,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0],
-      "image": "portraits/agatha.png",
-      "card": "images/Agatha_Tavernfrau_front.png",
-      "cardBack": "images/Agatha_Tavernfrau_back.png"
+      "image": "portraits/agatha.webp",
+      "card": "images/Agatha_Tavernfrau_front.webp",
+      "cardBack": "images/Agatha_Tavernfrau_back.webp"
     },
     {
       "id": "angerboda",
@@ -58,9 +58,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,0,1,0,0,0,0,0],
-      "image": "portraits/angerboda.png",
-      "card": "images/Angerboda_front.png",
-      "cardBack": "images/Angerboda_back.png"
+      "image": "portraits/angerboda.webp",
+      "card": "images/Angerboda_front.webp",
+      "cardBack": "images/Angerboda_back.webp"
     },
     {
       "id": "antonia-noonday-witch",
@@ -70,9 +70,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0,0],
-      "image": "portraits/antonia.png",
-      "card": "images/Antonia_Noonday_Witch_front.png",
-      "cardBack": "images/Antonia_Noonday_Witch_back.png"
+      "image": "portraits/antonia.webp",
+      "card": "images/Antonia_Noonday_Witch_front.webp",
+      "cardBack": "images/Antonia_Noonday_Witch_back.webp"
     },
     {
       "id": "anya-bartol",
@@ -83,9 +83,9 @@
       "abilities": [],
       "transformsInto": ["striga-anya"],
       "health": [1,1,0,1,0,0,0],
-      "image": "portraits/anya.png",
-      "card": "images/Anya_Bartol_front.png",
-      "cardBack": "images/Anya_Bartol_back.png"
+      "image": "portraits/anya.webp",
+      "card": "images/Anya_Bartol_front.webp",
+      "cardBack": "images/Anya_Bartol_back.webp"
     },
     {
       "id": "striga-anya",
@@ -97,9 +97,9 @@
       "summonedBy": ["anya-bartol"],
       "transformsInto": ["anya-bartol"],
       "health": [1,1,0,1,0,0,0],
-      "image": "portraits/stryga.png",
-      "card": "images/Striga_Anya_front.png",
-      "cardBack": "images/Striga_Anya_back.png"
+      "image": "portraits/stryga.webp",
+      "card": "images/Striga_Anya_front.webp",
+      "cardBack": "images/Striga_Anya_back.webp"
     },
     {
       "id": "banshee",
@@ -109,9 +109,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,1,1],
-      "image": "portraits/banshee.png",
-      "card": "images/Banshee_front.png",
-      "cardBack": "images/Banshee_back.png"
+      "image": "portraits/banshee.webp",
+      "card": "images/Banshee_front.webp",
+      "cardBack": "images/Banshee_back.webp"
     },
     {
       "id": "barnakelle",
@@ -121,9 +121,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0],
-      "image": "portraits/barnakelle.png",
-      "card": "images/Barnakelle_front.png",
-      "cardBack": "images/Barnakelle_back.png"
+      "image": "portraits/barnakelle.webp",
+      "card": "images/Barnakelle_front.webp",
+      "cardBack": "images/Barnakelle_back.webp"
     },
     {
       "id": "baron-von-fancy-hat",
@@ -133,9 +133,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0],
-      "image": "portraits/baron.png",
-      "card": "images/Baron_Von_Fancy_Hat_front.png",
-      "cardBack": "images/Baron_Von_Fancy_Hat_back.png"
+      "image": "portraits/baron.webp",
+      "card": "images/Baron_Von_Fancy_Hat_front.webp",
+      "cardBack": "images/Baron_Von_Fancy_Hat_back.webp"
     },
     {
       "id": "beaky-bobby",
@@ -145,9 +145,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1,0],
-      "image": "portraits/beaky.png",
-      "card": "images/Beaky_Bobby_front.png",
-      "cardBack": "images/Beaky_Bobby_back.png"
+      "image": "portraits/beaky.webp",
+      "card": "images/Beaky_Bobby_front.webp",
+      "cardBack": "images/Beaky_Bobby_back.webp"
     },
     {
       "id": "bejiminy",
@@ -157,9 +157,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,1,0],
-      "image": "portraits/beijiminy.png",
-      "card": "images/Bejiminy_front.png",
-      "cardBack": "images/Bejiminy_back.png"
+      "image": "portraits/beijiminy.webp",
+      "card": "images/Bejiminy_front.webp",
+      "cardBack": "images/Bejiminy_back.webp"
     },
     {
       "id": "belladonna",
@@ -169,9 +169,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,1,0],
-      "image": "portraits/belladonna.png",
-      "card": "images/Belladonna_front.png",
-      "cardBack": "images/Belladonna_back.png"
+      "image": "portraits/belladonna.webp",
+      "card": "images/Belladonna_front.webp",
+      "cardBack": "images/Belladonna_back.webp"
     },
     {
       "id": "billy",
@@ -181,9 +181,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0,0],
-      "image": "portraits/billy.png",
-      "card": "images/Billy_front.png",
-      "cardBack": "images/Billy_back.png"
+      "image": "portraits/billy.webp",
+      "card": "images/Billy_front.webp",
+      "cardBack": "images/Billy_back.webp"
     },
     {
       "id": "bjorn",
@@ -193,9 +193,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/bjorn.png",
-      "card": "images/Bjorn_front.png",
-      "cardBack": "images/Bjorn_back.png"
+      "image": "portraits/bjorn.webp",
+      "card": "images/Bjorn_front.webp",
+      "cardBack": "images/Bjorn_back.webp"
     },
     {
       "id": "boom-boom-mcboom",
@@ -205,9 +205,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1,0],
-      "image": "portraits/boom.png",
-      "card": "images/Boom_Boom_McBoom_front.png",
-      "cardBack": "images/Boom_Boom_McBoom_back.png"
+      "image": "portraits/boom.webp",
+      "card": "images/Boom_Boom_McBoom_front.webp",
+      "cardBack": "images/Boom_Boom_McBoom_back.webp"
     },
     {
       "id": "boris-the-bunny-summoner",
@@ -217,9 +217,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,1,0],
-      "image": "portraits/boris.png",
-      "card": "images/Boris_The_Bunny_Summoner_front.png",
-      "cardBack": "images/Boris_The_Bunny_Summoner_back.png"
+      "image": "portraits/boris.webp",
+      "card": "images/Boris_The_Bunny_Summoner_front.webp",
+      "cardBack": "images/Boris_The_Bunny_Summoner_back.webp"
     },
     {
       "id": "boulder",
@@ -229,9 +229,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,0,1,0,0,0,0,0],
-      "image": "portraits/boulder.png",
-      "card": "images/Boulder_front.png",
-      "cardBack": "images/Boulder_back.png"
+      "image": "portraits/boulder.webp",
+      "card": "images/Boulder_front.webp",
+      "cardBack": "images/Boulder_back.webp"
     },
     {
       "id": "brigid",
@@ -241,9 +241,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,1,1],
-      "image": "portraits/brigid.png",
-      "card": "images/Brigid_front.png",
-      "cardBack": "images/Brigid_back.png"
+      "image": "portraits/brigid.webp",
+      "card": "images/Brigid_front.webp",
+      "cardBack": "images/Brigid_back.webp"
     },
     {
       "id": "bristlenose",
@@ -253,9 +253,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0],
-      "image": "portraits/bristlenose.png",
-      "card": "images/Bristlenose_front.png",
-      "cardBack": "images/Bristlenose_back.png"
+      "image": "portraits/bristlenose.webp",
+      "card": "images/Bristlenose_front.webp",
+      "cardBack": "images/Bristlenose_back.webp"
     },
     {
       "id": "brother-daniel",
@@ -265,9 +265,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0],
-      "image": "portraits/daniel.png",
-      "card": "images/Brother_Daniel_front.png",
-      "cardBack": "images/Brother_Daniel_back.png"
+      "image": "portraits/daniel.webp",
+      "card": "images/Brother_Daniel_front.webp",
+      "cardBack": "images/Brother_Daniel_back.webp"
     },
     {
       "id": "brunhilde",
@@ -277,9 +277,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0,0],
-      "image": "portraits/brunhilde.png",
-      "card": "images/Brunhilde_front.png",
-      "cardBack": "images/Brunhilde_back.png"
+      "image": "portraits/brunhilde.webp",
+      "card": "images/Brunhilde_front.webp",
+      "cardBack": "images/Brunhilde_back.webp"
     },
     {
       "id": "butterfingers",
@@ -289,9 +289,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,1,0],
-      "image": "portraits/butterfingers.png",
-      "card": "images/Butterfingers_front.png",
-      "cardBack": "images/Butterfingers_back.png"
+      "image": "portraits/butterfingers.webp",
+      "card": "images/Butterfingers_front.webp",
+      "cardBack": "images/Butterfingers_back.webp"
     },
     {
       "id": "chezapeaky",
@@ -301,9 +301,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0,0],
-      "image": "portraits/chezapeaky.png",
-      "card": "images/Chezapeaky_front.png",
-      "cardBack": "images/Chezapeaky_back.png"
+      "image": "portraits/chezapeaky.webp",
+      "card": "images/Chezapeaky_front.webp",
+      "cardBack": "images/Chezapeaky_back.webp"
     },
     {
       "id": "chubs",
@@ -313,9 +313,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,1,0,1],
-      "image": "portraits/chubs.png",
-      "card": "images/Chubs_front.png",
-      "cardBack": "images/Chubs_back.png"
+      "image": "portraits/chubs.webp",
+      "card": "images/Chubs_front.webp",
+      "cardBack": "images/Chubs_back.webp"
     },
     {
       "id": "claudia-duvel",
@@ -325,9 +325,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,1,0],
-      "image": "portraits/claudia.png",
-      "card": "images/Claudia_Duvel_front.png",
-      "cardBack": "images/Claudia_Duvel_back.png"
+      "image": "portraits/claudia.webp",
+      "card": "images/Claudia_Duvel_front.webp",
+      "cardBack": "images/Claudia_Duvel_back.webp"
     },
     {
       "id": "commodore-delaheye",
@@ -337,9 +337,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/commodore.png",
-      "card": "images/Commodore_Delaheye_front.png",
-      "cardBack": "images/Commodore_Delaheye_back.png"
+      "image": "portraits/commodore.webp",
+      "card": "images/Commodore_Delaheye_front.webp",
+      "cardBack": "images/Commodore_Delaheye_back.webp"
     },
     {
       "id": "creep",
@@ -349,9 +349,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0],
-      "image": "portraits/creep.png",
-      "card": "images/Creep_front.png",
-      "cardBack": "images/Creep_back.png"
+      "image": "portraits/creep.webp",
+      "card": "images/Creep_front.webp",
+      "cardBack": "images/Creep_back.webp"
     },
     {
       "id": "crusty-balboa",
@@ -361,9 +361,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0,0],
-      "image": "portraits/crusty.png",
-      "card": "images/Crusty_Balboa_front.png",
-      "cardBack": "images/Crusty_Balboa_back.png"
+      "image": "portraits/crusty.webp",
+      "card": "images/Crusty_Balboa_front.webp",
+      "cardBack": "images/Crusty_Balboa_back.webp"
     },
     {
       "id": "danica-dusk-witch",
@@ -373,9 +373,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,0],
-      "image": "portraits/danica.png",
-      "card": "images/Danica_Dusk_Witch_front.png",
-      "cardBack": "images/Danica_Dusk_Witch_back.png"
+      "image": "portraits/danica.webp",
+      "card": "images/Danica_Dusk_Witch_front.webp",
+      "cardBack": "images/Danica_Dusk_Witch_back.webp"
     },
     {
       "id": "dentia",
@@ -385,9 +385,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,1,1],
-      "image": "portraits/dentia.png",
-      "card": "images/Dentia_front.png",
-      "cardBack": "images/Dentia_back.png"
+      "image": "portraits/dentia.webp",
+      "card": "images/Dentia_front.webp",
+      "cardBack": "images/Dentia_back.webp"
     },
     {
       "id": "diana-queen-of-the-fae",
@@ -397,9 +397,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,1,0],
-      "image": "portraits/diana.png",
-      "card": "images/Diana_Queen_of_the_Fae_front.png",
-      "cardBack": "images/Diana_Queen_of_the_Fae_back.png"
+      "image": "portraits/diana.webp",
+      "card": "images/Diana_Queen_of_the_Fae_front.webp",
+      "cardBack": "images/Diana_Queen_of_the_Fae_back.webp"
     },
     {
       "id": "dim-and-dimmer",
@@ -409,9 +409,9 @@
       "stats": null,
       "abilities": [],
       "health": [0,0,0,0,0,1,0,0,0,0,0,0,0,0],
-      "image": "portraits/dim-dimmer.png",
-      "card": "images/Dim_Dimmer_front.png",
-      "cardBack": "images/Dim_Dimmer_back.png"
+      "image": "portraits/dim-dimmer.webp",
+      "card": "images/Dim_Dimmer_front.webp",
+      "cardBack": "images/Dim_Dimmer_back.webp"
     },
     {
       "id": "doug-the-flatulent",
@@ -421,9 +421,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1,0],
-      "image": "portraits/doug.png",
-      "card": "images/Doug_the_Flatulent_front.png",
-      "cardBack": "images/Doug_the_Flatulent_back.png"
+      "image": "portraits/doug.webp",
+      "card": "images/Doug_the_Flatulent_front.webp",
+      "cardBack": "images/Doug_the_Flatulent_back.webp"
     },
     {
       "id": "dranyer",
@@ -433,9 +433,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/drayner.png",
-      "card": "images/Dranyer_front.png",
-      "cardBack": "images/Dranyer_back.png"
+      "image": "portraits/drayner.webp",
+      "card": "images/Dranyer_front.webp",
+      "cardBack": "images/Dranyer_back.webp"
     },
     {
       "id": "echo-of-the-forgotten-king",
@@ -445,9 +445,9 @@
       "stats": null,
       "abilities": [],
       "health": [0,0,0,0,0,0,0,0,0,0,0],
-      "image": "portraits/echo.png",
-      "card": "images/Echo_of_the_Forgotten_King_front.png",
-      "cardBack": "images/Echo_of_the_Forgotten_King_back.png"
+      "image": "portraits/echo.webp",
+      "card": "images/Echo_of_the_Forgotten_King_front.webp",
+      "cardBack": "images/Echo_of_the_Forgotten_King_back.webp"
     },
     {
       "id": "echo-of-the-forgotten-king-summon",
@@ -458,9 +458,9 @@
       "abilities": [],
       "summonedBy": ["igor-the-servant"],
       "health": [0,0,0,0,0,0,0,0,0,0,0],
-      "image": "portraits/echo.png",
-      "card": "images/Echo_of_the_Forgotten_King_front.png",
-      "cardBack": "images/Echo_of_the_Forgotten_King_back.png",
+      "image": "portraits/echo.webp",
+      "card": "images/Echo_of_the_Forgotten_King_front.webp",
+      "cardBack": "images/Echo_of_the_Forgotten_King_back.webp",
       "compendium": false
     },
     {
@@ -471,9 +471,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1],
-      "image": "portraits/cap.png",
-      "card": "images/El_Capitano_front.png",
-      "cardBack": "images/El_Capitano_back.png"
+      "image": "portraits/cap.webp",
+      "card": "images/El_Capitano_front.webp",
+      "cardBack": "images/El_Capitano_back.webp"
     },
     {
       "id": "eric-the-enlightened",
@@ -483,9 +483,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,0,1,0,0],
-      "image": "portraits/eric-enlightened.png",
-      "card": "images/Eric_The_Enlightened_front.png",
-      "cardBack": "images/Eric_The_Enlightened_back.png"
+      "image": "portraits/eric-enlightened.webp",
+      "card": "images/Eric_The_Enlightened_front.webp",
+      "cardBack": "images/Eric_The_Enlightened_back.webp"
     },
     {
       "id": "eric-the-squire",
@@ -495,9 +495,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,1,0,0],
-      "image": "portraits/eric.png",
-      "card": "images/Eric_The_Squire_front.png",
-      "cardBack": "images/Eric_The_Squire_back.png"
+      "image": "portraits/eric.webp",
+      "card": "images/Eric_The_Squire_front.webp",
+      "cardBack": "images/Eric_The_Squire_back.webp"
     },
     {
       "id": "firespitter",
@@ -507,9 +507,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/firespitter.png",
-      "card": "images/Firespitter_front.png",
-      "cardBack": "images/Firespitter_back.png"
+      "image": "portraits/firespitter.webp",
+      "card": "images/Firespitter_front.webp",
+      "cardBack": "images/Firespitter_back.webp"
     },
     {
       "id": "flinders-memphis",
@@ -519,9 +519,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,0,0,0,0],
-      "image": "portraits/flinders.png",
-      "card": "images/Flinders_Memphis_front.png",
-      "cardBack": "images/Flinders_Memphis_back.png"
+      "image": "portraits/flinders.webp",
+      "card": "images/Flinders_Memphis_front.webp",
+      "cardBack": "images/Flinders_Memphis_back.webp"
     },
     {
       "id": "flintlock",
@@ -531,9 +531,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,1,0,0,0],
-      "image": "portraits/flintlock.png",
-      "card": "images/Flintlock_front.png",
-      "cardBack": "images/Flintlock_back.png"
+      "image": "portraits/flintlock.webp",
+      "card": "images/Flintlock_front.webp",
+      "cardBack": "images/Flintlock_back.webp"
     },
     {
       "id": "foxglove",
@@ -543,9 +543,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,1,1],
-      "image": "portraits/foxglove.png",
-      "card": "images/Foxglove_front.png",
-      "cardBack": "images/Foxglove_back.png"
+      "image": "portraits/foxglove.webp",
+      "card": "images/Foxglove_front.webp",
+      "cardBack": "images/Foxglove_back.webp"
     },
     {
       "id": "fraya",
@@ -555,9 +555,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,1],
-      "image": "portraits/fraya.png",
-      "card": "images/Fraya_front.png",
-      "cardBack": "images/Fraya_back.png"
+      "image": "portraits/fraya.webp",
+      "card": "images/Fraya_front.webp",
+      "cardBack": "images/Fraya_back.webp"
     },
     {
       "id": "friar-flavious",
@@ -567,9 +567,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0,0],
-      "image": "portraits/friar.png",
-      "card": "images/Friar_Flavious_front.png",
-      "cardBack": "images/Friar_Flavious_back.png"
+      "image": "portraits/friar.webp",
+      "card": "images/Friar_Flavious_front.webp",
+      "cardBack": "images/Friar_Flavious_back.webp"
     },
     {
       "id": "fritz",
@@ -579,9 +579,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0,0],
-      "image": "portraits/fritz.png",
-      "card": "images/Fritz_front.png",
-      "cardBack": "images/Fritz_back.png"
+      "image": "portraits/fritz.webp",
+      "card": "images/Fritz_front.webp",
+      "cardBack": "images/Fritz_back.webp"
     },
     {
       "id": "gertrude-the-faerie-hunter",
@@ -591,9 +591,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,1,0,0,0],
-      "image": "portraits/gertrude.png",
-      "card": "images/Gertrude_the_Faerie_Hunter_front.png",
-      "cardBack": "images/Gertrude_the_Faerie_Hunter_back.png"
+      "image": "portraits/gertrude.webp",
+      "card": "images/Gertrude_the_Faerie_Hunter_front.webp",
+      "cardBack": "images/Gertrude_the_Faerie_Hunter_back.webp"
     },
     {
       "id": "gloom",
@@ -603,9 +603,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,1,0,1,0],
-      "image": "portraits/gloom.png",
-      "card": "images/Gloom_front.png",
-      "cardBack": "images/Gloom_back.png"
+      "image": "portraits/gloom.webp",
+      "card": "images/Gloom_front.webp",
+      "cardBack": "images/Gloom_back.webp"
     },
     {
       "id": "gnomish-airship",
@@ -615,9 +615,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/gnomish-airship.png",
-      "card": "images/Gnomish_Airship_front.png",
-      "cardBack": "images/Gnomish_Airship_back.png"
+      "image": "portraits/gnomish-airship.webp",
+      "card": "images/Gnomish_Airship_front.webp",
+      "cardBack": "images/Gnomish_Airship_back.webp"
     },
     {
       "id": "goblin-airship",
@@ -627,9 +627,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0],
-      "image": "portraits/goblin-airship.png",
-      "card": "images/Goblin_Airship_front.png",
-      "cardBack": "images/Goblin_Airship_back.png"
+      "image": "portraits/goblin-airship.webp",
+      "card": "images/Goblin_Airship_front.webp",
+      "cardBack": "images/Goblin_Airship_back.webp"
     },
     {
       "id": "gotchgut",
@@ -639,9 +639,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0,0,0],
-      "image": "portraits/gotchgut.png",
-      "card": "images/Gotchgut_front.png",
-      "cardBack": "images/Gotchgut_back.png"
+      "image": "portraits/gotchgut.webp",
+      "card": "images/Gotchgut_front.webp",
+      "cardBack": "images/Gotchgut_back.webp"
     },
     {
       "id": "gradock",
@@ -651,9 +651,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,0,0,0,0],
-      "image": "portraits/gradock.png",
-      "card": "images/Gradock_front.png",
-      "cardBack": "images/Gradock_back.png"
+      "image": "portraits/gradock.webp",
+      "card": "images/Gradock_front.webp",
+      "cardBack": "images/Gradock_back.webp"
     },
     {
       "id": "greymair",
@@ -663,9 +663,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/greymair.png",
-      "card": "images/Greymair_front.png",
-      "cardBack": "images/Greymair_back.png"
+      "image": "portraits/greymair.webp",
+      "card": "images/Greymair_front.webp",
+      "cardBack": "images/Greymair_back.webp"
     },
     {
       "id": "grub",
@@ -675,9 +675,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1,0],
-      "image": "portraits/grub.png",
-      "card": "images/Grub_front.png",
-      "cardBack": "images/Grub_back.png"
+      "image": "portraits/grub.webp",
+      "card": "images/Grub_front.webp",
+      "cardBack": "images/Grub_back.webp"
     },
     {
       "id": "gump",
@@ -687,9 +687,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0],
-      "image": "portraits/gump.png",
-      "card": "images/Gump_front.png",
-      "cardBack": "images/Gump_back.png"
+      "image": "portraits/gump.webp",
+      "card": "images/Gump_front.webp",
+      "cardBack": "images/Gump_back.webp"
     },
     {
       "id": "gwendoline-leshavult-priestess",
@@ -699,9 +699,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,1,1],
-      "image": "portraits/gwendoline.png",
-      "card": "images/Gwendoline_Leshavult_Priestess_front.png",
-      "cardBack": "images/Gwendoline_Leshavult_Priestess_back.png"
+      "image": "portraits/gwendoline.webp",
+      "card": "images/Gwendoline_Leshavult_Priestess_front.webp",
+      "cardBack": "images/Gwendoline_Leshavult_Priestess_back.webp"
     },
     {
       "id": "herbert-growbottom",
@@ -711,9 +711,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1],
-      "image": "portraits/herbert.png",
-      "card": "images/Herbert_Growbottom_front.png",
-      "cardBack": "images/Herbert_Growbottom_back.png"
+      "image": "portraits/herbert.webp",
+      "card": "images/Herbert_Growbottom_front.webp",
+      "cardBack": "images/Herbert_Growbottom_back.webp"
     },
     {
       "id": "hoff",
@@ -723,9 +723,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0,0],
-      "image": "portraits/hoff.png",
-      "card": "images/Hoff_front.png",
-      "cardBack": "images/Hoff_back.png"
+      "image": "portraits/hoff.webp",
+      "card": "images/Hoff_front.webp",
+      "cardBack": "images/Hoff_back.webp"
     },
     {
       "id": "igor-the-servant",
@@ -735,9 +735,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/igor.png",
-      "card": "images/Igor_The_Servant_front.png",
-      "cardBack": "images/Igor_The_Servant_back.png"
+      "image": "portraits/igor.webp",
+      "card": "images/Igor_The_Servant_front.webp",
+      "cardBack": "images/Igor_The_Servant_back.webp"
     },
     {
       "id": "iris-and-hellebore",
@@ -747,9 +747,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1,0],
-      "image": "portraits/iris-hellebore.png",
-      "card": "images/Iris_Hellebore_front.png",
-      "cardBack": "images/Iris_Hellebore_back.png"
+      "image": "portraits/iris-hellebore.webp",
+      "card": "images/Iris_Hellebore_front.webp",
+      "cardBack": "images/Iris_Hellebore_back.webp"
     },
     {
       "id": "jackalope",
@@ -759,9 +759,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0,1,0,0],
-      "image": "portraits/jackalope.png",
-      "card": "images/Jackalope_front.png",
-      "cardBack": "images/Jackalope_back.png"
+      "image": "portraits/jackalope.webp",
+      "card": "images/Jackalope_front.webp",
+      "cardBack": "images/Jackalope_back.webp"
     },
     {
       "id": "jackalope-summon",
@@ -772,9 +772,9 @@
       "abilities": [],
       "summonedBy": ["boris-the-bunny-summoner"],
       "health": [1,0,0,1,0,0,0,1,0,0],
-      "image": "portraits/jackalope.png",
-      "card": "images/Jackalope_front.png",
-      "cardBack": "images/Jackalope_back.png",
+      "image": "portraits/jackalope.webp",
+      "card": "images/Jackalope_front.webp",
+      "cardBack": "images/Jackalope_back.webp",
       "compendium": false
     },
     {
@@ -785,9 +785,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,1,0,1,0],
-      "image": "portraits/jayda.png",
-      "card": "images/Jayda_front.png",
-      "cardBack": "images/Jayda_back.png"
+      "image": "portraits/jayda.webp",
+      "card": "images/Jayda_front.webp",
+      "cardBack": "images/Jayda_back.webp"
     },
     {
       "id": "jerry-heir",
@@ -797,9 +797,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,1,0,0,1,0],
-      "image": "portraits/jerry-heir.png",
-      "card": "images/Jerry_Heir_front.png",
-      "cardBack": "images/Jerry_Heir_back.png"
+      "image": "portraits/jerry-heir.webp",
+      "card": "images/Jerry_Heir_front.webp",
+      "cardBack": "images/Jerry_Heir_back.webp"
     },
     {
       "id": "joanna-nordic-princess",
@@ -809,9 +809,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0],
-      "image": "portraits/joanna.png",
-      "card": "images/Joanna_Nordic_Princess_front.png",
-      "cardBack": "images/Joanna_Nordic_Princess_back.png"
+      "image": "portraits/joanna.webp",
+      "card": "images/Joanna_Nordic_Princess_front.webp",
+      "cardBack": "images/Joanna_Nordic_Princess_back.webp"
     },
     {
       "id": "jobie",
@@ -821,9 +821,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1],
-      "image": "portraits/jobie.png",
-      "card": "images/Jobie_front.png",
-      "cardBack": "images/Jobie_back.png"
+      "image": "portraits/jobie.webp",
+      "card": "images/Jobie_front.webp",
+      "cardBack": "images/Jobie_back.webp"
     },
     {
       "id": "kalista-leshavult-priestess",
@@ -833,9 +833,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0,0],
-      "image": "portraits/kalista.png",
-      "card": "images/Kalista_Leshavult_Priestess_front.png",
-      "cardBack": "images/Kalista_Leshavult_Priestess_back.png"
+      "image": "portraits/kalista.webp",
+      "card": "images/Kalista_Leshavult_Priestess_front.webp",
+      "cardBack": "images/Kalista_Leshavult_Priestess_back.webp"
     },
     {
       "id": "kauffman",
@@ -845,9 +845,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0,0],
-      "image": "portraits/kauffman.png",
-      "card": "images/Kaufman_front.png",
-      "cardBack": "images/Kaufman_back.png"
+      "image": "portraits/kauffman.webp",
+      "card": "images/Kaufman_front.webp",
+      "cardBack": "images/Kaufman_back.webp"
     },
     {
       "id": "kavanagh-the-jongler",
@@ -857,9 +857,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/kavanagh.png",
-      "card": "images/Kavanagh_the_Jongler_front.png",
-      "cardBack": "images/Kavanagh_the_Jongler_back.png"
+      "image": "portraits/kavanagh.webp",
+      "card": "images/Kavanagh_the_Jongler_front.webp",
+      "cardBack": "images/Kavanagh_the_Jongler_back.webp"
     },
     {
       "id": "klaus",
@@ -869,9 +869,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0],
-      "image": "portraits/klaus.png",
-      "card": "images/Klaus_front.png",
-      "cardBack": "images/Klaus_back.png"
+      "image": "portraits/klaus.webp",
+      "card": "images/Klaus_front.webp",
+      "cardBack": "images/Klaus_back.webp"
     },
     {
       "id": "knoll",
@@ -881,9 +881,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0],
-      "image": "portraits/knoll.png",
-      "card": "images/Knoll_front.png",
-      "cardBack": "images/Knoll_back.png"
+      "image": "portraits/knoll.webp",
+      "card": "images/Knoll_front.webp",
+      "cardBack": "images/Knoll_back.webp"
     },
     {
       "id": "liv",
@@ -893,9 +893,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/liv.png",
-      "card": "images/Liv_front.png",
-      "cardBack": "images/Liv_back.png"
+      "image": "portraits/liv.webp",
+      "card": "images/Liv_front.webp",
+      "cardBack": "images/Liv_back.webp"
     },
     {
       "id": "loci-nordic-shipwright",
@@ -905,9 +905,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/loci.png",
-      "card": "images/Loci_Nordic_Shipwright_front.png",
-      "cardBack": "images/Loci_Nordic_Shipwright_back.png"
+      "image": "portraits/loci.webp",
+      "card": "images/Loci_Nordic_Shipwright_front.webp",
+      "cardBack": "images/Loci_Nordic_Shipwright_back.webp"
     },
     {
       "id": "loubard",
@@ -917,9 +917,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0,0,0],
-      "image": "portraits/loubard.png",
-      "card": "images/Loubard_front.png",
-      "cardBack": "images/Loubard_back.png"
+      "image": "portraits/loubard.webp",
+      "card": "images/Loubard_front.webp",
+      "cardBack": "images/Loubard_back.webp"
     },
     {
       "id": "mama-gimble",
@@ -929,9 +929,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0],
-      "image": "portraits/mama-gimble.png",
-      "card": "images/Mama_Gimble_front.png",
-      "cardBack": "images/Mama_Gimble_back.png"
+      "image": "portraits/mama-gimble.webp",
+      "card": "images/Mama_Gimble_front.webp",
+      "cardBack": "images/Mama_Gimble_back.webp"
     },
     {
       "id": "marley",
@@ -941,9 +941,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1,0],
-      "image": "portraits/marley.png",
-      "card": "images/Marley_front.png",
-      "cardBack": "images/Marley_back.png"
+      "image": "portraits/marley.webp",
+      "card": "images/Marley_front.webp",
+      "cardBack": "images/Marley_back.webp"
     },
     {
       "id": "matilda",
@@ -953,9 +953,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0,0],
-      "image": "portraits/matilda.png",
-      "card": "images/Matilda_front.png",
-      "cardBack": "images/Matilda_back.png"
+      "image": "portraits/matilda.webp",
+      "card": "images/Matilda_front.webp",
+      "cardBack": "images/Matilda_back.webp"
     },
     {
       "id": "morag",
@@ -965,9 +965,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,1],
-      "image": "portraits/morag.png",
-      "card": "images/Morag_front.png",
-      "cardBack": "images/Morag_back.png"
+      "image": "portraits/morag.webp",
+      "card": "images/Morag_front.webp",
+      "cardBack": "images/Morag_back.webp"
     },
     {
       "id": "morris",
@@ -977,9 +977,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,0,0,0,0],
-      "image": "portraits/morris.png",
-      "card": "images/Morris_front.png",
-      "cardBack": "images/Morris_back.png"
+      "image": "portraits/morris.webp",
+      "card": "images/Morris_front.webp",
+      "cardBack": "images/Morris_back.webp"
     },
     {
       "id": "mr-toodles",
@@ -989,9 +989,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/toodles.png",
-      "card": "images/Mr_Toodles_front.png",
-      "cardBack": "images/Mr_Toodles_back.png"
+      "image": "portraits/toodles.webp",
+      "card": "images/Mr_Toodles_front.webp",
+      "cardBack": "images/Mr_Toodles_back.webp"
     },
     {
       "id": "muridae",
@@ -1001,9 +1001,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0,0],
-      "image": "portraits/muridae.png",
-      "card": "images/Muridae_front.png",
-      "cardBack": "images/Muridae_back.png"
+      "image": "portraits/muridae.webp",
+      "card": "images/Muridae_front.webp",
+      "cardBack": "images/Muridae_back.webp"
     },
     {
       "id": "nancy-priston",
@@ -1013,9 +1013,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1,0],
-      "image": "portraits/nancy.png",
-      "card": "images/Nancy_Priston_front.png",
-      "cardBack": "images/Nancy_Priston_back.png"
+      "image": "portraits/nancy.webp",
+      "card": "images/Nancy_Priston_front.webp",
+      "cardBack": "images/Nancy_Priston_back.webp"
     },
     {
       "id": "nanny",
@@ -1025,9 +1025,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0,0],
-      "image": "portraits/nanny.png",
-      "card": "images/Nanny_front.png",
-      "cardBack": "images/Nanny_back.png"
+      "image": "portraits/nanny.webp",
+      "card": "images/Nanny_front.webp",
+      "cardBack": "images/Nanny_back.webp"
     },
     {
       "id": "natty-slum-thief",
@@ -1037,9 +1037,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,1],
-      "image": "portraits/natty.png",
-      "card": "images/Natty_Slum_Thief_front.png",
-      "cardBack": "images/Natty_Slum_Thief_back.png"
+      "image": "portraits/natty.webp",
+      "card": "images/Natty_Slum_Thief_front.webp",
+      "cardBack": "images/Natty_Slum_Thief_back.webp"
     },
     {
       "id": "negroli",
@@ -1049,9 +1049,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/negroli.png",
-      "card": "images/Negroli_front.png",
-      "cardBack": "images/Negroli_back.png"
+      "image": "portraits/negroli.webp",
+      "card": "images/Negroli_front.webp",
+      "cardBack": "images/Negroli_back.webp"
     },
     {
       "id": "old-calders",
@@ -1061,9 +1061,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,1,0],
-      "image": "portraits/calders.png",
-      "card": "images/Old_Calders_front.png",
-      "cardBack": "images/Old_Calders_back.png"
+      "image": "portraits/calders.webp",
+      "card": "images/Old_Calders_front.webp",
+      "cardBack": "images/Old_Calders_back.webp"
     },
     {
       "id": "old-polly",
@@ -1073,9 +1073,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,0,0,0,0],
-      "image": "portraits/polly.png",
-      "card": "images/Old_Polly_front.png",
-      "cardBack": "images/Old_Polly_back.png"
+      "image": "portraits/polly.webp",
+      "card": "images/Old_Polly_front.webp",
+      "cardBack": "images/Old_Polly_back.webp"
     },
     {
       "id": "olim",
@@ -1085,9 +1085,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0,0,0,0],
-      "image": "portraits/olim.png",
-      "card": "images/Olim_front.png",
-      "cardBack": "images/Olim_back.png"
+      "image": "portraits/olim.webp",
+      "card": "images/Olim_front.webp",
+      "cardBack": "images/Olim_back.webp"
     },
     {
       "id": "peggy",
@@ -1097,9 +1097,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,1,0],
-      "image": "portraits/peggy.png",
-      "card": "images/Peggy_front.png",
-      "cardBack": "images/Peggy_back.png"
+      "image": "portraits/peggy.webp",
+      "card": "images/Peggy_front.webp",
+      "cardBack": "images/Peggy_back.webp"
     },
     {
       "id": "portly-pete",
@@ -1109,9 +1109,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0],
-      "image": "portraits/portly-pete.png",
-      "card": "images/Portly_Pete_front.png",
-      "cardBack": "images/Portly_Pete_back.png"
+      "image": "portraits/portly-pete.webp",
+      "card": "images/Portly_Pete_front.webp",
+      "cardBack": "images/Portly_Pete_back.webp"
     },
     {
       "id": "powder-monkey",
@@ -1121,9 +1121,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1],
-      "image": "portraits/monkey.png",
-      "card": "images/Powder_Monkey_front.png",
-      "cardBack": "images/Powder_Monkey_back.png"
+      "image": "portraits/monkey.webp",
+      "card": "images/Powder_Monkey_front.webp",
+      "cardBack": "images/Powder_Monkey_back.webp"
     },
     {
       "id": "prof-boffinsworth",
@@ -1133,9 +1133,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/boffins.png",
-      "card": "images/Prof_Boffinsworth_front.png",
-      "cardBack": "images/Prof_Boffinsworth_back.png"
+      "image": "portraits/boffins.webp",
+      "card": "images/Prof_Boffinsworth_front.webp",
+      "cardBack": "images/Prof_Boffinsworth_back.webp"
     },
     {
       "id": "quack",
@@ -1145,9 +1145,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,1,0,0],
-      "image": "portraits/quack.png",
-      "card": "images/Quack_front.png",
-      "cardBack": "images/Quack_back.png"
+      "image": "portraits/quack.webp",
+      "card": "images/Quack_front.webp",
+      "cardBack": "images/Quack_back.webp"
     },
     {
       "id": "quarrel",
@@ -1157,9 +1157,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0,0],
-      "image": "portraits/quarrel.png",
-      "card": "images/Quarrel_front.png",
-      "cardBack": "images/Quarrel_back.png"
+      "image": "portraits/quarrel.webp",
+      "card": "images/Quarrel_front.webp",
+      "cardBack": "images/Quarrel_back.webp"
     },
     {
       "id": "raegan",
@@ -1169,9 +1169,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0],
-      "image": "portraits/raegan.png",
-      "card": "images/Raegan_front.png",
-      "cardBack": "images/Raegan_back.png"
+      "image": "portraits/raegan.webp",
+      "card": "images/Raegan_front.webp",
+      "cardBack": "images/Raegan_back.webp"
     },
     {
       "id": "ribald",
@@ -1181,9 +1181,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,0,0,0,1,0,0,0,0],
-      "image": "portraits/ribald.png",
-      "card": "images/Ribald_front.png",
-      "cardBack": "images/Ribald_back.png"
+      "image": "portraits/ribald.webp",
+      "card": "images/Ribald_front.webp",
+      "cardBack": "images/Ribald_back.webp"
     },
     {
       "id": "roary",
@@ -1193,9 +1193,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/roary.png",
-      "card": "images/Roary_front.png",
-      "cardBack": "images/Roary_back.png"
+      "image": "portraits/roary.webp",
+      "card": "images/Roary_front.webp",
+      "cardBack": "images/Roary_back.webp"
     },
     {
       "id": "ruwt",
@@ -1205,9 +1205,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,1],
-      "image": "portraits/ruwt.png",
-      "card": "images/Ruwt_front.png",
-      "cardBack": "images/Ruwt_back.png"
+      "image": "portraits/ruwt.webp",
+      "card": "images/Ruwt_front.webp",
+      "cardBack": "images/Ruwt_back.webp"
     },
     {
       "id": "seasick-stu",
@@ -1217,9 +1217,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1],
-      "image": "portraits/seasick.png",
-      "card": "images/Seasick_Stu_front.png",
-      "cardBack": "images/Seasick_Stu_back.png"
+      "image": "portraits/seasick.webp",
+      "card": "images/Seasick_Stu_front.webp",
+      "cardBack": "images/Seasick_Stu_back.webp"
     },
     {
       "id": "senara",
@@ -1229,9 +1229,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,1,0],
-      "image": "portraits/sen-ara.png",
-      "card": "images/Sen_Ara_front.png",
-      "cardBack": "images/Sen_Ara_back.png"
+      "image": "portraits/sen-ara.webp",
+      "card": "images/Sen_Ara_front.webp",
+      "cardBack": "images/Sen_Ara_back.webp"
     },
     {
       "id": "serif",
@@ -1241,9 +1241,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,0],
-      "image": "portraits/serif.png",
-      "card": "images/Serif_front.png",
-      "cardBack": "images/Serif_back.png"
+      "image": "portraits/serif.webp",
+      "card": "images/Serif_front.webp",
+      "cardBack": "images/Serif_back.webp"
     },
     {
       "id": "shabbaroon",
@@ -1253,9 +1253,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,1],
-      "image": "portraits/shabbaroon.png",
-      "card": "images/Shabbaroon_front.png",
-      "cardBack": "images/Shabbaroon_back.png"
+      "image": "portraits/shabbaroon.webp",
+      "card": "images/Shabbaroon_front.webp",
+      "cardBack": "images/Shabbaroon_back.webp"
     },
     {
       "id": "silvertongue",
@@ -1265,9 +1265,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,0,1],
-      "image": "portraits/silvertongue.png",
-      "card": "images/Silvertongue_front.png",
-      "cardBack": "images/Silvertongue_back.png"
+      "image": "portraits/silvertongue.webp",
+      "card": "images/Silvertongue_front.webp",
+      "cardBack": "images/Silvertongue_back.webp"
     },
     {
       "id": "sir-guillemot-poppycock",
@@ -1277,9 +1277,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0,0,0],
-      "image": "portraits/poppyc.png",
-      "card": "images/Sir_Guillemot_Poppycock_front.png",
-      "cardBack": "images/Sir_Guillemot_Poppycock_back.png"
+      "image": "portraits/poppyc.webp",
+      "card": "images/Sir_Guillemot_Poppycock_front.webp",
+      "cardBack": "images/Sir_Guillemot_Poppycock_back.webp"
     },
     {
       "id": "sir-hogswash",
@@ -1289,9 +1289,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0,0,0,0],
-      "image": "portraits/hogs.png",
-      "card": "images/Sir_Hogswash_front.png",
-      "cardBack": "images/Sir_Hogswash_back.png"
+      "image": "portraits/hogs.webp",
+      "card": "images/Sir_Hogswash_front.webp",
+      "cardBack": "images/Sir_Hogswash_back.webp"
     },
     {
       "id": "skuggi",
@@ -1301,9 +1301,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/skaggi.png",
-      "card": "images/Skuggi_front.png",
-      "cardBack": "images/Skuggi_back.png"
+      "image": "portraits/skaggi.webp",
+      "card": "images/Skuggi_front.webp",
+      "cardBack": "images/Skuggi_back.webp"
     },
     {
       "id": "snag",
@@ -1313,9 +1313,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0,0,0,1,0],
-      "image": "portraits/snag.png",
-      "card": "images/Snag_front.png",
-      "cardBack": "images/Snag_back.png"
+      "image": "portraits/snag.webp",
+      "card": "images/Snag_front.webp",
+      "cardBack": "images/Snag_back.webp"
     },
     {
       "id": "stilts-kim",
@@ -1325,9 +1325,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1],
-      "image": "portraits/stilts-kim.png",
-      "card": "images/Stilts_Kim_front.png",
-      "cardBack": "images/Stilts_Kim_back.png"
+      "image": "portraits/stilts-kim.webp",
+      "card": "images/Stilts_Kim_front.webp",
+      "cardBack": "images/Stilts_Kim_back.webp"
     },
     {
       "id": "streatham",
@@ -1337,9 +1337,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,0,1,0,0,0],
-      "image": "portraits/streatham.png",
-      "card": "images/Streatham_front.png",
-      "cardBack": "images/Streatham_back.png"
+      "image": "portraits/streatham.webp",
+      "card": "images/Streatham_front.webp",
+      "cardBack": "images/Streatham_back.webp"
     },
     {
       "id": "swash",
@@ -1349,9 +1349,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,1,0],
-      "image": "portraits/swash.png",
-      "card": "images/Swash_front.png",
-      "cardBack": "images/Swash_back.png"
+      "image": "portraits/swash.webp",
+      "card": "images/Swash_front.webp",
+      "cardBack": "images/Swash_back.webp"
     },
     {
       "id": "swiggarty-swooty",
@@ -1361,9 +1361,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,1,0],
-      "image": "portraits/swooty.png",
-      "card": "images/Swiggarty_Swooty_front.png",
-      "cardBack": "images/Swiggarty_Swooty_back.png"
+      "image": "portraits/swooty.webp",
+      "card": "images/Swiggarty_Swooty_front.webp",
+      "cardBack": "images/Swiggarty_Swooty_back.webp"
     },
     {
       "id": "syril-swampfoot",
@@ -1373,9 +1373,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,1,0],
-      "image": "portraits/syril.png",
-      "card": "images/Syril_Swampfoot_front.png",
-      "cardBack": "images/Syril_Swampfoot_back.png"
+      "image": "portraits/syril.webp",
+      "card": "images/Syril_Swampfoot_front.webp",
+      "cardBack": "images/Syril_Swampfoot_back.webp"
     },
     {
       "id": "tabby-the-librarian",
@@ -1385,9 +1385,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0,0],
-      "image": "portraits/tabby.png",
-      "card": "images/Tabby_the_Librarian_front.png",
-      "cardBack": "images/Tabby_the_Librarian_back.png"
+      "image": "portraits/tabby.webp",
+      "card": "images/Tabby_the_Librarian_front.webp",
+      "cardBack": "images/Tabby_the_Librarian_back.webp"
     },
     {
       "id": "teetoe",
@@ -1397,9 +1397,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,1,1],
-      "image": "portraits/teetoe.png",
-      "card": "images/Teetoe_front.png",
-      "cardBack": "images/Teetoe_back.png"
+      "image": "portraits/teetoe.webp",
+      "card": "images/Teetoe_front.webp",
+      "cardBack": "images/Teetoe_back.webp"
     },
     {
       "id": "the-beast",
@@ -1409,9 +1409,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,0,0,0,0,0],
-      "image": "portraits/beast.png",
-      "card": "images/The_Beast_front.png",
-      "cardBack": "images/The_Beast_back.png"
+      "image": "portraits/beast.webp",
+      "card": "images/The_Beast_front.webp",
+      "cardBack": "images/The_Beast_back.webp"
     },
     {
       "id": "the-duchess",
@@ -1421,9 +1421,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/duchess.png",
-      "card": "images/The_Duchess_front.png",
-      "cardBack": "images/The_Duchess_back.png"
+      "image": "portraits/duchess.webp",
+      "card": "images/The_Duchess_front.webp",
+      "cardBack": "images/The_Duchess_back.webp"
     },
     {
       "id": "the-fencer",
@@ -1433,9 +1433,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,0,1],
-      "image": "portraits/fencer.png",
-      "card": "images/The_Fencer_front.png",
-      "cardBack": "images/The_Fencer_back.png"
+      "image": "portraits/fencer.webp",
+      "card": "images/The_Fencer_front.webp",
+      "cardBack": "images/The_Fencer_back.webp"
     },
     {
       "id": "the-goblin-king",
@@ -1445,9 +1445,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/goblin-king.png",
-      "card": "images/The_Goblin_King_front.png",
-      "cardBack": "images/The_Goblin_King_back.png"
+      "image": "portraits/goblin-king.webp",
+      "card": "images/The_Goblin_King_front.webp",
+      "cardBack": "images/The_Goblin_King_back.webp"
     },
     {
       "id": "the-mortician",
@@ -1457,9 +1457,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,0],
-      "image": "portraits/mortician.png",
-      "card": "images/The_Mortician_front.png",
-      "cardBack": "images/The_Mortician_back.png"
+      "image": "portraits/mortician.webp",
+      "card": "images/The_Mortician_front.webp",
+      "cardBack": "images/The_Mortician_back.webp"
     },
     {
       "id": "the-revenant",
@@ -1469,9 +1469,9 @@
       "stats": null,
       "abilities": [],
       "health": [0,0,1,0,1,0,1],
-      "image": "portraits/revenant.png",
-      "card": "images/The_Revenant_front.png",
-      "cardBack": "images/The_Revenant_back.png"
+      "image": "portraits/revenant.webp",
+      "card": "images/The_Revenant_front.webp",
+      "cardBack": "images/The_Revenant_back.webp"
     },
     {
       "id": "the-tax-collector",
@@ -1481,9 +1481,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0],
-      "image": "portraits/tax-collector.png",
-      "card": "images/The_Tax_Collector_front.png",
-      "cardBack": "images/The_Tax_Collector_back.png"
+      "image": "portraits/tax-collector.webp",
+      "card": "images/The_Tax_Collector_front.webp",
+      "cardBack": "images/The_Tax_Collector_back.webp"
     },
     {
       "id": "vespa",
@@ -1493,9 +1493,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,1,0],
-      "image": "portraits/vespa.png",
-      "card": "images/Vespa_front.png",
-      "cardBack": "images/Vespa_back.png"
+      "image": "portraits/vespa.webp",
+      "card": "images/Vespa_front.webp",
+      "cardBack": "images/Vespa_back.webp"
     },
     {
       "id": "vicious-syd",
@@ -1505,9 +1505,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,0,1,0],
-      "image": "portraits/syd.png",
-      "card": "images/Vicious_Syd_front.png",
-      "cardBack": "images/Vicious_Syd_back.png"
+      "image": "portraits/syd.webp",
+      "card": "images/Vicious_Syd_front.webp",
+      "cardBack": "images/Vicious_Syd_back.webp"
     },
     {
       "id": "viktor-petty-graverobber",
@@ -1517,9 +1517,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,1,0],
-      "image": "portraits/graverobber.png",
-      "card": "images/Viktor_Petty_Graverobber_front.png",
-      "cardBack": "images/Viktor_Petty_Graverobber_back.png"
+      "image": "portraits/graverobber.webp",
+      "card": "images/Viktor_Petty_Graverobber_front.webp",
+      "cardBack": "images/Viktor_Petty_Graverobber_back.webp"
     },
     {
       "id": "viscount-de-faulte",
@@ -1529,9 +1529,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,0,1,0,0,1,0,0,0,0],
-      "image": "portraits/viscont.png",
-      "card": "images/Viscount_De_Faulte_front.png",
-      "cardBack": "images/Viscount_De_Faulte_back.png"
+      "image": "portraits/viscont.webp",
+      "card": "images/Viscount_De_Faulte_front.webp",
+      "cardBack": "images/Viscount_De_Faulte_back.webp"
     },
     {
       "id": "wasp",
@@ -1541,9 +1541,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,1,0,1],
-      "image": "portraits/wasp.png",
-      "card": "images/Wasp_front.png",
-      "cardBack": "images/Wasp_back.png"
+      "image": "portraits/wasp.webp",
+      "card": "images/Wasp_front.webp",
+      "cardBack": "images/Wasp_back.webp"
     },
     {
       "id": "wenda-wetbones",
@@ -1553,9 +1553,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1],
-      "image": "portraits/wenda.png",
-      "card": "images/Wenda_Wetbones_front.png",
-      "cardBack": "images/Wenda_Wetbones_back.png"
+      "image": "portraits/wenda.webp",
+      "card": "images/Wenda_Wetbones_front.webp",
+      "cardBack": "images/Wenda_Wetbones_back.webp"
     },
     {
       "id": "wendigo",
@@ -1565,9 +1565,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,1,0],
-      "image": "portraits/wendigo.png",
-      "card": "images/Wendigo_front.png",
-      "cardBack": "images/Wendigo_back.png"
+      "image": "portraits/wendigo.webp",
+      "card": "images/Wendigo_front.webp",
+      "cardBack": "images/Wendigo_back.webp"
     },
     {
       "id": "young-jack",
@@ -1577,9 +1577,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,1,1,0,0,0,0],
-      "image": "portraits/young-jack.png",
-      "card": "images/Young_Jack_front.png",
-      "cardBack": "images/Young_Jack_back.png"
+      "image": "portraits/young-jack.webp",
+      "card": "images/Young_Jack_front.webp",
+      "cardBack": "images/Young_Jack_back.webp"
     },
     {
       "id": "zorya-dawn-witch",
@@ -1589,9 +1589,9 @@
       "stats": null,
       "abilities": [],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/zorya.png",
-      "card": "images/Zorya_Dawn_Witch_front.png",
-      "cardBack": "images/Zorya_Dawn_Witch_back.png"
+      "image": "portraits/zorya.webp",
+      "card": "images/Zorya_Dawn_Witch_front.webp",
+      "cardBack": "images/Zorya_Dawn_Witch_back.webp"
     },
     {
       "id":"brave-sir-pidge",
@@ -1602,9 +1602,9 @@
       "abilities": [],
       "summonedBy": ["negroli","abra-cadaverous","roary"],
       "health": [0],
-      "image": "portraits/pidge.png",
-      "card": "images/Brave_Sir_Pidge_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/pidge.webp",
+      "card": "images/Brave_Sir_Pidge_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"flay",
@@ -1615,9 +1615,9 @@
       "abilities": [],
       "summonedBy": ["greymair","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/flay.png",
-      "card": "images/Flay_Bearer_of_Knowledge_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/flay.webp",
+      "card": "images/Flay_Bearer_of_Knowledge_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"jeremy",
@@ -1628,9 +1628,9 @@
       "abilities": [],
       "summonedBy": ["senara","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/jeremy.png",
-      "card": "images/Jeremy_Lord_of_the_Deep_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/jeremy.webp",
+      "card": "images/Jeremy_Lord_of_the_Deep_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"lampy-darkson",
@@ -1641,9 +1641,9 @@
       "abilities": [],
       "summonedBy": ["greymair","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/lampy.png",
-      "card": "images/Lampy_Darkson_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/lampy.webp",
+      "card": "images/Lampy_Darkson_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"teacake",
@@ -1654,9 +1654,9 @@
       "abilities": [],
       "summonedBy": ["jerry-heir","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/teacake.png",
-      "card": "images/Teacake_of_Torment_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/teacake.webp",
+      "card": "images/Teacake_of_Torment_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"musician",
@@ -1667,9 +1667,9 @@
       "abilities": [],
       "summonedBy": ["negroli","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/musician.png",
-      "card": "images/Terrible_Musician_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/musician.webp",
+      "card": "images/Terrible_Musician_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"pookie",
@@ -1680,9 +1680,9 @@
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/pookie.png",
-      "card": "images/Pookie_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/pookie.webp",
+      "card": "images/Pookie_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"sprog",
@@ -1693,9 +1693,9 @@
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/sprog.png",
-      "card": "images/Sprog_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/sprog.webp",
+      "card": "images/Sprog_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"urchin",
@@ -1706,9 +1706,9 @@
       "abilities": [],
       "summonedBy": ["nanny","roary","abra-cadaverous","roary"],
       "health": [0,0],
-      "image": "portraits/urchin.png",
-      "card": "images/Urchin_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/urchin.webp",
+      "card": "images/Urchin_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"bunny1",
@@ -1719,9 +1719,9 @@
       "abilities": [],
       "summonedBy":["boris-the-bunny-summoner"],
       "health": [0,0,0,0],
-      "image": "portraits/bunny1.png",
-      "card": "images/Murder_Bunny_1_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/bunny1.webp",
+      "card": "images/Murder_Bunny_1_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"bunny2",
@@ -1732,9 +1732,9 @@
       "abilities": [],
       "summonedBy":["boris-the-bunny-summoner"],
       "health": [0,0,0,0],
-      "image": "portraits/bunny2.png",
-      "card": "images/Murder_Bunny_2_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/bunny2.webp",
+      "card": "images/Murder_Bunny_2_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     },
     {
       "id":"bunny3",
@@ -1745,9 +1745,9 @@
       "abilities": [],
       "summonedBy":["boris-the-bunny-summoner"],
       "health": [0,0,0,0],
-      "image": "portraits/bunny3.png",
-      "card": "images/Murder_Bunny_3_front.png",
-      "cardBack": "images/no_signature_back.png"
+      "image": "portraits/bunny3.webp",
+      "card": "images/Murder_Bunny_3_front.webp",
+      "cardBack": "images/no_signature_back.webp"
     }
   ]
 }
