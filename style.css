@@ -910,3 +910,8 @@ select, summary, label[for] { cursor: pointer; }
 @supports (-webkit-touch-callout: none) {
   @media (orientation: portrait) { :root { --safe-b: max(env(safe-area-inset-bottom, 0px), 34px); } }
 }
+
+/* Scrollleiste ausblenden (Scrollen geht weiter): so verschiebt sich beim Wechsel zwischen
+   langen und kurzen Seiten nichts mehr seitlich */
+html { scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
