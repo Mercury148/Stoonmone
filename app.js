@@ -1154,7 +1154,10 @@ function renderGame() {
     const chosen = game.foe.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick("foe", c.id)));
     const slots = Number.isFinite(size) ? Math.max(0, size - chosen.length) : 1;   // voll: kein leerer Platz mehr
     $("#game-foe-chosen").replaceChildren(...chosen, ...Array.from({ length: slots }, () => el("div", { class: "tile-empty", "aria-hidden": "true" })));
-    const list = foePanel.list().filter((c) => !isSummoned(c));
+    // Wie im Troupe-Builder: Fraktionen und Modelle, die nicht zu den schon gewählten Gegner-Modellen passen, werden abgedunkelt bzw. ausgeblendet
+    const foeTroupe = { ids: game.foe };
+    foePanel.setAllowed(RULES.sameFaction && game.foe.length > 0 ? allowedFactions(foeTroupe) : null);
+    const list = foePanel.list().filter((c) => !isSummoned(c) && (game.foe.includes(c.id) || fitsFactions(foeTroupe, c)));
     foePanel.showCount(list.length, data.characters.filter((c) => !isSummoned(c)).length);
     $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, game.foe.includes(c.id), () => toggleGamePick("foe", c.id))));
     // Alle Gegner-Modelle gewählt: Liste einklappen, per Knopf wieder aufklappbar

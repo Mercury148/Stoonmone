@@ -1001,9 +1001,6 @@ body.in-game[data-round]::before {
   pointer-events: none;
 }
 
-/* Die lange Liste der Gegner-Modelle scrollt in einem eigenen Bereich, damit "Your models" darunter gut erreichbar bleibt */
-#game-foe-tiles.foe-pick { max-height: 55vh; overflow-y: auto; overscroll-behavior: contain; padding: 2px; margin-bottom: 0.5rem; }
-
 /* Next round / Reset: kein Aufblitzen von Rahmen oder Übergang beim Antippen */
 .game-tools button { outline: none; transition: none; -webkit-tap-highlight-color: transparent; }
 
