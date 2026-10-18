@@ -67,6 +67,7 @@
       <div class="editor-bar">
         <button id="editor-back" class="ghost back" type="button">Back</button>
         <input id="editor-name" type="text" maxlength="40" autocomplete="off" aria-label="Troupe name">
+        <select id="editor-format" aria-label="Troupe format"></select>
         <span id="editor-count" class="badge big"></span>
       </div>
 
@@ -106,7 +107,7 @@
       <!-- Auswahl: 5 Modelle der eigenen Troupe, 5 des Gegners -->
       <div id="game-setup" hidden>
         <h3 class="section-label">Your models <span class="badge" id="game-own-count"></span></h3>
-        <p class="hint">Choose the 5 models you play this game.</p>
+        <p class="hint" id="game-own-hint"></p>
         <div id="game-own-tiles" class="tiles"></div>
 
         <h3 class="section-label">Opponent <span class="badge" id="game-foe-count"></span></h3>
