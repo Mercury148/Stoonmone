@@ -311,11 +311,11 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .new-wrap.as-card .add-text { display: contents; }
 .new-wrap.as-card .mini-row { display: flex; }
 .new-wrap.as-card .plus { position: absolute; left: 0.9rem; top: auto; bottom: 0.9rem; transform: none; width: 1.9rem; height: 1.9rem; }
-/* Ohne Platz für die Karte: Import als grüner (Leshavult) runder Knopf über dem Plus */
+/* Ohne Platz für die Karte: Import als grüner (Leshavult) runder Knopf links neben dem Plus */
 .new-wrap:not(.as-card) #import-open {
   position: fixed;
-  right: max(1rem, env(safe-area-inset-right, 0px));
-  bottom: calc(8.75rem + env(safe-area-inset-bottom, 0px));
+  right: calc(5.25rem + max(0px, env(safe-area-inset-right, 0px)));   /* links neben dem Plus-Knopf */
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
   z-index: 4;
   box-sizing: border-box;
   width: 3.5rem;
