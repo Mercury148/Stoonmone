@@ -868,10 +868,15 @@ function saveGame() {
   try { localStorage.setItem(GAME_KEY, JSON.stringify(game)); } catch { /* ignorieren */ }
 }
 
+const MAX_ROUNDS = 5;   // Runde 5 ist "Sudden Death" (Sonnenaufgang)
+
 function loadGame() {
   try {
     const g = JSON.parse(localStorage.getItem(GAME_KEY));
-    if (g && typeof g === "object" && Array.isArray(g.own) && Array.isArray(g.foe) && g.models) return g;
+    if (g && typeof g === "object" && Array.isArray(g.own) && Array.isArray(g.foe) && g.models) {
+      g.round = Math.min(MAX_ROUNDS, Math.max(1, Number(g.round) || 1));
+      return g;
+    }
   } catch { /* ignorieren */ }
   return null;
 }
@@ -998,8 +1003,10 @@ function gameCell(side, c) {
   // Der gerade nicht aktive Zwilling steht ausgegraut in der Beschworenen-Zeile (kein Summon-Knopf)
   if (twinOf(c) && !game[side].includes(c.id)) {
     return el("div", { class: "gcell unsummoned" },
-      el("div", { class: "summon-note", text: "Transformed" }),
-      el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+      el("div", { class: "gcell-media" },
+        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+        el("div", { class: "summon-note", text: "Transformed" })
+      ),
       el("div", { class: "gcell-name", text: c.name }),
       el("div", { class: "hboxes none", text: "not in play" })
     );
@@ -1008,8 +1015,11 @@ function gameCell(side, c) {
   // Auch ein beschworenes Modell, das auf 0 Lebenspunkte fällt, geht zurück in den Zustand "nicht im Spiel" und kann neu beschworen werden
   if (isSummoned(c) && !twinOf(c) && (!m.summoned || (health && remaining <= 0))) {
     return el("div", { class: "gcell unsummoned" },
-      el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) }),
-      el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+      // Der Summon-Knopf liegt auf dem Portrait, die Kachel wird dadurch nicht größer
+      el("div", { class: "gcell-media" },
+        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+        el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) })
+      ),
       el("div", { class: "gcell-name", text: c.name }),
       el("div", { class: "hboxes none", text: "not in play" })
     );
@@ -1051,7 +1061,13 @@ function renderGamePlay() {
   };
   fill("foe", "#game-foe-row", "#game-foe-summons", "#game-foe-summon-wrap");
   fill("own", "#game-own-row", "#game-own-summons", "#game-own-summon-wrap");
-  $("#game-round").textContent = `Round ${game.round}`;
+  const last = game.round >= MAX_ROUNDS;
+  $("#game-round").textContent = last ? "Sudden Death" : `Round ${game.round}`;
+  // Die Kopfzeile wird von Runde zu Runde röter: die Nacht geht zu Ende, in Runde 5 geht die Sonne auf
+  $("#view-game .editor-bar").dataset.round = String(game.round);
+  const next = $("#game-next-round");
+  next.disabled = last;
+  next.textContent = last ? "Last round" : "Next round";
 }
 
 // Jedes Modell bekommt die Energy, die es laut Lebensleiste erzeugt. Übrige Energy verfällt dabei.
@@ -1078,11 +1094,14 @@ function startGame() {
 
 // Neue Runde: übrige Energy verfällt, danach erzeugt jedes Modell Energy gemäß seiner verbleibenden Lebenspunkte
 function nextRound() {
+  if (game.round >= MAX_ROUNDS) return;
   generateEnergy();
   game.round += 1;
   saveGame();
   renderGamePlay();
-  toast(`Round ${game.round}: old energy expired, new energy generated.`);
+  toast(game.round >= MAX_ROUNDS
+    ? "Sudden Death: the sun rises. Old energy expired, new energy generated."
+    : `Round ${game.round}: old energy expired, new energy generated.`);
 }
 
 function resetGame() {
@@ -1101,6 +1120,7 @@ function renderGame() {
   $("#game-play").hidden = setup;
   $("#game-title").textContent = setup ? "Choose models" : "Game";
   $("#game-round").hidden = setup;
+  if (setup) delete $("#view-game .editor-bar").dataset.round;
 
   if (setup) {
     const size = gameSize();

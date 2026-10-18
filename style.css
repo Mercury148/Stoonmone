@@ -833,11 +833,10 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 /* Beschworene Modelle, die noch nicht im Spiel sind */
 .gcell.unsummoned .gcell-portrait { filter: grayscale(1); opacity: 0.45; }
 .gcell.unsummoned .gcell-name { opacity: 0.6; }
-.summon-btn { min-height: 32px; padding: 0 0.2rem; border-radius: 6px; font-size: 0.7rem; }
 #game-foe-chosen { margin-bottom: 0.75rem; }
 #game-foe-chosen:empty { display: none; }
 .gcell-media { position: relative; }
-.transform-btn {
+.transform-btn, .summon-btn {
   position: absolute;
   left: 4px;
   right: 4px;
@@ -850,7 +849,22 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   color: var(--accent);
   border: 1px solid var(--accent);
 }
-.summon-note { display: grid; place-items: center; min-height: 32px; font-size: 0.65rem; color: var(--muted); text-align: center; }
+.summon-note {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 4px;
+  display: grid;
+  place-items: center;
+  min-height: 26px;
+  border-radius: 6px;
+  font-size: 0.6rem;
+  background: var(--surface);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  text-align: center;
+  pointer-events: none;
+}
 
 /* Kein Doppeltipp-Zoom: schnelles mehrfaches Tippen (z. B. auf + und -) soll nicht zoomen.
    Das Zusammenziehen mit zwei Fingern bleibt erlaubt. */
@@ -875,7 +889,7 @@ html, body, button, input, summary { touch-action: manipulation; }
 @media (min-width: 720px) {
   #editor-slots[data-format="6-9"] { grid-template-columns: repeat(9, minmax(0, 1fr)); }
 }
-@media (min-width: 720px) { .transform-btn { font-size: 0.8rem; min-height: 30px; } }
+@media (min-width: 720px) { .transform-btn, .summon-btn { font-size: 0.8rem; min-height: 30px; } .summon-note { font-size: 0.8rem; min-height: 30px; } }
 
 /* Modellanzahl in der Kopfzeile: feste Breite, damit sich beim Formatwechsel nichts verschiebt */
 #editor-count { min-width: 4.6rem; text-align: center; box-sizing: border-box; }
@@ -915,3 +929,14 @@ select, summary, label[for] { cursor: pointer; }
    langen und kurzen Seiten nichts mehr seitlich */
 html { scrollbar-width: none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+
+/* Spielansicht: Kopfzeile wie ein Nachthimmel, der von Runde zu Runde roter wird (Sonnenaufgang in Runde 5) */
+#view-game .editor-bar[data-round] { color: #fff; transition: background-color 0.6s ease; }
+#view-game .editor-bar[data-round] .game-title { color: #fff; }
+#view-game .editor-bar[data-round] .back { color: #fff; border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.08); }
+#view-game .editor-bar[data-round] .badge { background: rgba(255, 255, 255, 0.2); color: #fff; }
+#view-game .editor-bar[data-round="1"] { background: hsl(228 38% 14%); }
+#view-game .editor-bar[data-round="2"] { background: hsl(262 32% 21%); }
+#view-game .editor-bar[data-round="3"] { background: hsl(318 34% 27%); }
+#view-game .editor-bar[data-round="4"] { background: hsl(348 52% 32%); }
+#view-game .editor-bar[data-round="5"] { background: hsl(14 82% 42%); }
