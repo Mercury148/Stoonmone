@@ -27,6 +27,10 @@
   --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --radius: 10px;
+  /* Unterer Sicherheitsabstand (Home-Balken beim iPhone). Safari ändert diesen Wert je nachdem, ob die Browserleiste
+     ein- oder ausgeklappt ist, dadurch wurde die untere Leiste mal höher, mal niedriger. Auf iPhones im Hochformat
+     gilt deshalb immer mindestens der große Wert, die Leiste bleibt gleich hoch. */
+  --safe-b: env(safe-area-inset-bottom, 0px);
   --gutter: max(16px, env(safe-area-inset-left, 0px));
   --gutter-r: max(16px, env(safe-area-inset-right, 0px));
 }
@@ -71,17 +75,22 @@
 
 html { -webkit-text-size-adjust: 100%; }
 
+html { height: -webkit-fill-available; }   /* iOS: Seite füllt immer die ganze Bildschirmhöhe */
 body {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
   margin: 0;
   background: var(--bg);
   color: var(--fg);
   font: 16px/1.5 var(--font-body);
-  padding-block: max(12px, env(safe-area-inset-top, 0px)) calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  padding-block: max(12px, env(safe-area-inset-top, 0px)) calc(5.5rem + var(--safe-b));
   padding-left: var(--gutter);
   padding-right: var(--gutter-r);
 }
 /* Im Editor gibt es keine untere Leiste, also weniger Platz darunter */
-body.editing { padding-block-end: calc(2rem + env(safe-area-inset-bottom, 0px)); }
+body.editing { padding-block-end: calc(2rem + var(--safe-b)); }
 
 main, .topbar { max-width: 62rem; margin-inline: auto; }
 
@@ -254,7 +263,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   /* fest unten rechts, über der unteren Leiste */
   position: fixed;
   right: max(1rem, env(safe-area-inset-right, 0px));
-  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(5rem + var(--safe-b));
   z-index: 4;
   box-sizing: border-box;
   width: 3.5rem;
@@ -315,7 +324,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .new-wrap:not(.as-card) #import-open {
   position: fixed;
   right: calc(5.25rem + max(0px, env(safe-area-inset-right, 0px)));   /* links neben dem Plus-Knopf */
-  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(5rem + var(--safe-b));
   z-index: 4;
   box-sizing: border-box;
   width: 3.5rem;
@@ -575,7 +584,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   inset: auto 0 0 0;
   display: flex;
   gap: 0.5rem;
-  padding: 0.5rem var(--gutter-r) calc(0.5rem + env(safe-area-inset-bottom, 0px)) var(--gutter);
+  padding: 0.5rem var(--gutter-r) calc(0.5rem + var(--safe-b)) var(--gutter);
   background: var(--surface);
   border-top: 1px solid var(--line);
 }
@@ -619,7 +628,7 @@ dialog::backdrop { background: rgba(8, 9, 16, 0.6); }
 .toast {
   position: fixed;
   left: 50%;
-  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  bottom: calc(5.5rem + var(--safe-b));
   transform: translateX(-50%);
   width: max-content;
   max-width: calc(100% - 2rem);
@@ -631,7 +640,7 @@ dialog::backdrop { background: rgba(8, 9, 16, 0.6); }
   text-align: center;
   z-index: 10;
 }
-body.editing .toast { bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }
+body.editing .toast { bottom: calc(1.5rem + var(--safe-b)); }
 
 @media (prefers-reduced-motion: no-preference) {
   .chip, button { transition: background-color 0.15s, color 0.15s; }
@@ -763,9 +772,9 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   }
   #start-game span, #copy span { display: none; }
   #start-game .ico, #copy .ico { width: 1.6rem; height: 1.6rem; }
-  #start-game { bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }   /* wie der Plus-Knopf: Akzentfarbe */
+  #start-game { bottom: calc(1.5rem + var(--safe-b)); }   /* wie der Plus-Knopf: Akzentfarbe */
   #copy {
-    bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(5.75rem + var(--safe-b));
     background: hsl(140 var(--fac-s) var(--fac-l));   /* gleiches Grün wie der Import-Knopf */
     color: var(--accent-fg);
   }
@@ -778,7 +787,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   position: sticky;
   bottom: 0;
   z-index: 4;
-  padding: 0.6rem 0 calc(0.6rem + env(safe-area-inset-bottom, 0px));
+  padding: 0.6rem 0 calc(0.6rem + var(--safe-b));
   background: linear-gradient(to top, var(--bg) 70%, transparent);
 }
 .game-startbar button { width: 100%; }
@@ -896,4 +905,8 @@ select, summary, label[for] { cursor: pointer; }
   background: hsl(140 var(--fac-s) var(--fac-l));
   color: var(--accent-fg);
   border: 0;
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (orientation: portrait) { :root { --safe-b: max(env(safe-area-inset-bottom, 0px), 34px); } }
 }
