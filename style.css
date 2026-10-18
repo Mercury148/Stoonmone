@@ -716,3 +716,6 @@ html, body, button, input, summary { touch-action: manipulation; }
   #editor-slots[data-format="6-9"] { grid-template-columns: repeat(9, minmax(0, 1fr)); }
 }
 @media (min-width: 720px) { .transform-btn { font-size: 0.8rem; min-height: 30px; } }
+
+/* Modellanzahl in der Kopfzeile: feste Breite, damit sich beim Formatwechsel nichts verschiebt */
+#editor-count { min-width: 4.6rem; text-align: center; box-sizing: border-box; }

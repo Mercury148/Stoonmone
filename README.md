@@ -1,4 +1,4 @@
-# Stoonmone
+# Tauber Tourist Guide
 
 Unofficial fan-made companion app for Moonstone. This project is not affiliated
 with, endorsed by, or sponsored by Goblin King Games. Moonstone, its characters,
@@ -50,7 +50,7 @@ Jeder Charakter in `data/characters.json` sieht so aus:
 - Neue Fraktionen kommen oben in die Liste `factions`. Der `hue` (0 bis 360) ist der Farbton der Fraktion.
 - Ein Bild trägst du bei `image` als Pfad ein, zum Beispiel `"images/hedda.jpg"`. Ohne Bild erscheinen Initialen.
 - Die Werte (Leben, Energie, Bewegung) sind nur Beispiele. Passe sie in `app.js` in der Funktion `openDetail` an die echten Werte an.
-- **Nach jeder Änderung** die Zahl bei `CACHE_NAME` in `sw.js` erhöhen (`Stoonmone-v2`, `Stoonmone-v3`, ...), sonst zeigt das Handy die alte Version.
+- **Nach jeder Änderung** die Zahl bei `CACHE_NAME` in `sw.js` erhöhen (zum Beispiel von `v0.5.2` auf `v0.5.3`), sonst zeigt das Handy die alte Version.
 
 ## Listenregeln anpassen
 

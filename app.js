@@ -569,7 +569,7 @@ function renderEditor() {
   const max = formatOf(current).max;
   const count = current.ids.length;
 
-  $("#editor-count").textContent = Number.isFinite(max) ? `${count}/${max}` : String(count);
+  $("#editor-count").textContent = Number.isFinite(max) ? `${count}/${max}` : `${count}/∞`;
   $("#editor-format").value = formatOf(current).id;
   $("#editor-slots").dataset.format = formatOf(current).id;   // das Raster passt sich dem Format an (siehe style.css)
   $("#editor-slots").classList.toggle("nine", max === 9);   // 6/9: Plätze als 3 x 3 Raster
