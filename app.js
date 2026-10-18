@@ -951,14 +951,14 @@ function openGame() {
   game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, gameSize());
   if (game.own.length === 0 || game.foe.length === 0) game.stage = "setup";
   foePanel.clear();
-  foeExpanded = false;
+  foeListOpen = !(Number.isFinite(gameSize()) && game.foe.length >= gameSize());
   foeSummonsOpen = false;
   renderGame();
   showView("game");
 }
 
 let foeSummonsOpen = false;   // Liste der möglichen Beschwörungen des Gegners aufgeklappt?
-let foeExpanded = false;   // Liste der Gegner-Modelle von Hand wieder aufgeklappt?
+let foeListOpen = true;   // Liste der Gegner-Modelle aufgeklappt?
 
 function toggleGamePick(side, id) {
   const list = game[side];
@@ -966,8 +966,8 @@ function toggleGamePick(side, id) {
   if (i >= 0) list.splice(i, 1);
   else if (list.length >= gameSize()) return toast(`Only ${gameSize()} models play in this format.`);
   else list.push(id);
-  // Sind alle Gegner-Modelle gewählt, klappt die Liste wieder ein
-  if (side === "foe" && Number.isFinite(gameSize()) && list.length >= gameSize()) foeExpanded = false;
+  // Sind alle Gegner-Modelle gewählt, klappt die Liste ein. Wird eines wieder entfernt, klappt sie auf.
+  if (side === "foe" && Number.isFinite(gameSize())) foeListOpen = list.length < gameSize();
   saveGame();
   renderGame();
 }
@@ -1159,11 +1159,11 @@ function renderGame() {
     $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, game.foe.includes(c.id), () => toggleGamePick("foe", c.id))));
     // Alle Gegner-Modelle gewählt: Liste einklappen, per Knopf wieder aufklappbar
     const foeFull = Number.isFinite(size) && game.foe.length >= size;
-    const collapsed = foeFull && !foeExpanded;
+    const collapsed = !foeListOpen;
     $("#game-foe-picker").hidden = collapsed;
     const toggle = $("#game-foe-toggle");
-    toggle.hidden = !foeFull;
-    toggle.textContent = collapsed ? "Change opponent models" : "Hide list";
+    toggle.hidden = false;   // immer da, damit das Layout gleich bleibt
+    toggle.textContent = !collapsed ? "Hide list" : foeFull ? "Change opponent models" : "Show list";
     toggle.setAttribute("aria-expanded", String(!collapsed));
     // Mögliche Beschwörungen der gewählten Gegner-Modelle (nur zum Anschauen, Tippen öffnet die Karte)
     const possible = gameSummons("foe");
@@ -1253,7 +1253,7 @@ function wireEvents() {
   });
   $("#game-back").addEventListener("click", () => { renderEditor(); showView("editor"); });
   $("#game-foe-summons-toggle").addEventListener("click", () => { foeSummonsOpen = !foeSummonsOpen; renderGame(); });
-  $("#game-foe-toggle").addEventListener("click", () => { foeExpanded = !foeExpanded; renderGame(); });
+  $("#game-foe-toggle").addEventListener("click", () => { foeListOpen = !foeListOpen; renderGame(); });
   $("#game-start").addEventListener("click", startGame);
   $("#game-next-round").addEventListener("click", nextRound);
   twoTap($("#game-reset"), "Really reset?", resetGame);
