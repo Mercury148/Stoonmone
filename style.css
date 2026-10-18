@@ -375,13 +375,17 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .export-btn { margin-top: 0.75rem; }
 #import-dialog { width: min(92vw, 28rem); }
-#import-dialog textarea { width: 100%; box-sizing: border-box; }
+#import-dialog textarea { width: 100%; box-sizing: border-box; font-size: 16px; }   /* mindestens 16px, sonst zoomt iOS beim Antippen hinein */
 .dialog-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
 .troupe-name { font: 600 1.15rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .troupe-meta { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .mini-row { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.9rem; }
-/* Alle Kacheln gleich hoch: auf größeren Bildschirmen umbrechen die Portraits in eine zweite Zeile, dafür ist immer Platz */
-@media (min-width: 720px) { .mini-row { min-height: 4.05rem; align-content: flex-start; } }
+/* Alle Kacheln gleich hoch: Platz für zwei Portrait-Zeilen. Feste Anordnung: 4 = 2x2, 8 = 2x4, 9 = 5+4 */
+.mini-row { min-height: 4.05rem; align-content: flex-start; }
+.mini-row[data-n="4"], .mini-row[data-n="8"], .mini-row[data-n="9"] { display: grid; justify-content: start; grid-template-columns: repeat(var(--mcols), 1.9rem); }
+.mini-row[data-n="4"] { --mcols: 2; }
+.mini-row[data-n="8"] { --mcols: 4; }
+.mini-row[data-n="9"] { --mcols: 5; }
 
 .share { margin-top: 1.5rem; padding: 0.75rem 1rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
 .share summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
@@ -708,6 +712,41 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 
 /* ---------- Gameview ---------- */
 .play-btn { width: 100%; margin-top: 0.75rem; }
+.icon-btn .ico.solid { fill: currentColor; stroke-width: 1; }
+/* Desktop: Play füllt die Zeile, Export steht rechts daneben (gleiche Höhe), zusammen so breit wie vorher der Play-Knopf allein */
+@media (min-width: 720px) {
+  .action-row { display: flex; gap: 0.75rem; margin: 0.75rem 0 1rem; }
+  .action-row .play-btn { flex: 1 1 auto; width: auto; margin: 0; }
+  .action-row .export-btn { flex: none; margin: 0; }
+}
+@media (max-width: 719.98px) { .action-row { display: contents; } }
+
+/* Handy: Play und Export schweben als runde Knöpfe unten rechts (nur Symbol) */
+@media (max-width: 719.98px) {
+  #start-game, #copy {
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right, 0px));
+    z-index: 4;
+    box-sizing: border-box;
+    width: 3.5rem;
+    height: 3.5rem;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+  #start-game span, #copy span { display: none; }
+  #start-game .ico, #copy .ico { width: 1.6rem; height: 1.6rem; }
+  #start-game { bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)); }   /* wie der Plus-Knopf: Akzentfarbe */
+  #copy {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+    background: hsl(140 var(--fac-s) var(--fac-l));   /* gleiches Grün wie der Import-Knopf */
+    color: var(--accent-fg);
+  }
+  #view-editor { padding-bottom: 9rem; }   /* damit die Knöpfe keine Kacheln verdecken */
+}
 .game-title { flex: 1; margin: 0; font: 600 1.15rem/1.2 var(--font-display); }
 .game-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 0.5rem; }
 .game-tools button { padding-inline: 0.4rem; font-size: 0.85rem; }
@@ -813,3 +852,24 @@ body { cursor: default; -webkit-user-select: none; user-select: none; -webkit-to
 input, textarea { cursor: text; -webkit-user-select: text; user-select: text; }
 select, summary, label[for] { cursor: pointer; }
 #detail-body { -webkit-user-select: text; user-select: text; }
+
+/* Import und Export: immer im Leshavult-Grün (gleicher Ton wie der Fraktionsfilter) */
+#import-open, #copy {
+  background: hsl(140 var(--fac-s) var(--fac-l));
+  color: var(--accent-fg);
+  border-color: transparent;
+}
+
+/* Import und Export immer im Leshavult-Grün (gleicher Ton wie der Fraktionsfilter) */
+#import-open, #copy {
+  background: hsl(140 var(--fac-s) var(--fac-l));
+  color: var(--accent-fg);
+  border-color: transparent;
+}
+
+/* Import und Export immer im Leshavult-Grün (gleicher Ton wie der Filter) */
+#import-open, #copy {
+  background: hsl(140 var(--fac-s) var(--fac-l));
+  color: var(--accent-fg);
+  border: 0;
+}

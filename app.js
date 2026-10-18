@@ -599,7 +599,7 @@ function renderTroupes() {
       el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
         el("span", { class: "troupe-name", text: troupeLabel(t) }),
         el("span", { class: "troupe-meta", text: troupeMeta(t) }),
-        el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
+        el("span", { class: "mini-row", "data-n": String(t.ids.length) }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       ),
       deleteButton(t)
     )
@@ -1225,6 +1225,13 @@ function wireEvents() {
   });
   $("#import-cancel").addEventListener("click", () => $("#import-dialog").close());
   $("#import-dialog").addEventListener("click", (e) => { if (e.target === $("#import-dialog")) $("#import-dialog").close(); });
+  // Enter im Eingabefeld startet den Import (Shift+Enter wäre ein Zeilenumbruch)
+  $("#import-code").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+      e.preventDefault();
+      $("#import").click();
+    }
+  });
   $("#import").addEventListener("click", () => {
     const code = $("#import-code").value;
     if (!code.trim()) return toast("Please paste a code first.");
