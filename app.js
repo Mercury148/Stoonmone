@@ -562,20 +562,28 @@ function troupeMeta(t) {
   if (!Number.isFinite(max)) return `${t.ids.length} models, unlimited`;
   return t.ids.length === max ? `${t.ids.length} of ${max} models, complete` : `${t.ids.length} of ${max} models`;
 }
+// Handy-Ansicht: bis zu 3 Troupes -> der Neu-Knopf steht als Karte am Ende der Liste
+const phoneQuery = window.matchMedia("(max-width: 719.98px)");
+
 function renderTroupes() {
   $("#troupes-empty").hidden = troupes.length > 0;
-  $("#new-troupe").disabled = troupes.length >= MAX_TROUPES;
+  const add = $("#new-troupe");
+  add.disabled = troupes.length >= MAX_TROUPES;
 
-  $("#troupe-list").replaceChildren(
-    ...troupes.map((t) =>
-      el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
-        el("span", { class: "troupe-name", text: troupeLabel(t) }),
-        el("span", { class: "troupe-meta", text: troupeMeta(t) }),
-        el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
-      )
+  const asCard = phoneQuery.matches && troupes.length <= 3;
+  add.classList.toggle("as-card", asCard);
+
+  const cards = troupes.map((t) =>
+    el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
+      el("span", { class: "troupe-name", text: troupeLabel(t) }),
+      el("span", { class: "troupe-meta", text: troupeMeta(t) }),
+      el("span", { class: "mini-row" }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
     )
   );
+  $("#troupe-list").replaceChildren(...cards, ...(asCard ? [add] : []));
+  if (!asCard && add.parentElement !== $("#view-troupes")) $("#view-troupes").append(add);
 }
+phoneQuery.addEventListener("change", () => renderTroupes());
 
 // --- Editor ---
 

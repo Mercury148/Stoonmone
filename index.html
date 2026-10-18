@@ -47,7 +47,7 @@
 
       <div id="troupe-list" class="troupe-list"></div>
       <p id="troupes-empty" class="empty" hidden>
-        No troupe yet. Tap the plus in the corner to create one.
+        No troupe yet. Tap the plus to create one.
       </p>
 
       <details class="share">
@@ -58,8 +58,8 @@
         <button id="import" type="button">Load troupe</button>
       </details>
 
-      <!-- Runder Knopf unten rechts in der Ecke -->
-      <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe"><span class="plus" aria-hidden="true"></span></button>
+      <!-- Runder Knopf unten rechts; auf dem Handy mit bis zu 3 Troupes sieht er aus wie eine Troupe-Karte (siehe renderTroupes) -->
+      <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe"><span class="add-text"><span class="troupe-name">New troupe</span><span class="troupe-meta">Tap to create one</span></span><span class="plus" aria-hidden="true"></span></button>
     </section>
 
     <!-- ===== Seite 3: Troupe zusammenstellen (Editor) ===== -->

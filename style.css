@@ -276,6 +276,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 .add-btn .plus::before { left: 0; right: 0; top: calc(50% - 1.5px); height: 3px; }
 .add-btn .plus::after { top: 0; bottom: 0; left: calc(50% - 1.5px); width: 3px; }
+.add-btn .add-text { display: none; }
+/* Handy, bis zu 3 Troupes: der Knopf sieht aus wie eine Troupe-Karte (gleiche Größe und Aufbau) */
+.add-btn.as-card {
+  position: static;
+  display: grid;
+  gap: 0.4rem;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: auto;
+  padding: 0.9rem;
+  border-radius: var(--radius);
+  box-shadow: none;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px dashed var(--muted);
+  text-align: left;
+  font-weight: 400;
+}
+.add-btn.as-card .add-text { display: contents; }
+.add-btn.as-card .plus { position: relative; left: auto; top: auto; transform: none; width: 1.9rem; height: 1.9rem; }
+.add-btn.as-card:disabled { opacity: 0.5; }
 #view-troupes { padding-bottom: 4.5rem; }
 
 .troupe-list { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
