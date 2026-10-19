@@ -5,11 +5,12 @@
 // WICHTIG: Wenn du Dateien änderst (zum Beispiel characters.json),
 // erhöhe die Zahl bei CACHE_NAME, sonst zeigt das Handy noch die alte Version.
 
-const CACHE_NAME = "stoonmone-v0.7"; // Version der App, bei Änderungen erhöhen
+const CACHE_NAME = "TTG-v1.0.1";
 const DATEIEN = [
   "./",
   "index.html",
   "style.css",
+  "legal.html",
   "app.js",
   "data/characters.json",
   "manifest.webmanifest",

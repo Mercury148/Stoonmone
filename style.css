@@ -1,5 +1,5 @@
 /* ==========================================================
-   Stoonmone: Gestaltung
+   Tauber Tourist Guide: Gestaltung
    Idee: ruhige Nachtfarben, Mondgold als einziger Akzent,
    jede Fraktion bekommt eine eigene Farbe (Farbton aus der JSON).
    Handy zuerst: eine Spalte, große Tippflächen, Leiste unten.
@@ -1023,3 +1023,8 @@ body.in-game[data-round]::before {
 .foe-actions button { flex: 1 1 0; min-width: 0; padding-inline: 0.4rem; font-size: 0.9rem; }
 .foe-actions:not(:has(button:not([hidden]))) { display: none; }
 #game-foe-summons-panel { margin-bottom: 0.75rem; }
+
+/* Fußzeile mit Impressum-Link (nicht im Editor und Spiel) */
+.site-foot { margin-top: 2.5rem; font-size: 0.78rem; color: var(--muted); text-align: center; }
+.site-foot a { color: inherit; }
+body.editing .site-foot { display: none; }

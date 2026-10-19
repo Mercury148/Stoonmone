@@ -1,8 +1,6 @@
-# Tauber Tourist Guide
+# Tauber Tourist Guide (TTG)
 
-Unofficial fan-made companion app for Moonstone. This project is not affiliated
-with, endorsed by, or sponsored by Goblin King Games. Moonstone, its characters,
-card artwork and rules are the property of Goblin King Games.
+Kompendium mit Filter und Troupe-Liste. Alle Daten sind erfundene Platzhalter.
 
 ## Dateien
 
@@ -50,7 +48,7 @@ Jeder Charakter in `data/characters.json` sieht so aus:
 - Neue Fraktionen kommen oben in die Liste `factions`. Der `hue` (0 bis 360) ist der Farbton der Fraktion.
 - Ein Bild trägst du bei `image` als Pfad ein, zum Beispiel `"images/hedda.jpg"`. Ohne Bild erscheinen Initialen.
 - Die Werte (Leben, Energie, Bewegung) sind nur Beispiele. Passe sie in `app.js` in der Funktion `openDetail` an die echten Werte an.
-- **Nach jeder Änderung** die Zahl bei `CACHE_NAME` in `sw.js` erhöhen (zum Beispiel von `v0.5.2` auf `v0.5.3`), sonst zeigt das Handy die alte Version.
+- **Nach jeder Änderung** die Zahl bei `CACHE_NAME` in `sw.js` erhöhen (`ttg-v2`, `ttg-v3`, ...), sonst zeigt das Handy die alte Version.
 
 ## Listenregeln anpassen
 

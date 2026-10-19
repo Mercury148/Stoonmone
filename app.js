@@ -1,7 +1,7 @@
 "use strict";
 
 /* ==========================================================
-   Stoonmone: die ganze Logik der App in einer Datei.
+   Tauber Tourist Guide: die ganze Logik der App in einer Datei.
 
    Aufbau:
    1. Einstellungen und Listenregeln
@@ -29,9 +29,9 @@ const RULES = {
   sameFaction: true,          // alle Modelle einer Troupe müssen mindestens eine gemeinsame Fraktion haben
 };
 
-const STORAGE_KEY = "mondbuch-troupes-v2";     // alle gespeicherten Troupen
+const STORAGE_KEY = "ttg-troupes-v1";     // alle gespeicherten Troupen
 // Frühere Versionen mit nur einer Troupe (wird übernommen, falls vorhanden)
-const OLD_STORAGE_KEYS = ["Stoonmone-troupe-v1", "mondbuch-troupe-v1"];
+const OLD_STORAGE_KEYS = [];
 const MAX_TROUPES = 30;                        // so viele Troupen lassen sich speichern
 
 
@@ -746,7 +746,7 @@ function renderTiles() {
 
 // --- Kartenansicht: die Charakterkarte groß, ein Tipp dreht sie um ---
 
-const HINT_KEY = "stoonmone-hint-flip-v1";   // gesetzt, wenn der Tipp nie mehr erscheinen soll
+const HINT_KEY = "ttg-hint-flip-v1";   // gesetzt, wenn der Tipp nie mehr erscheinen soll
 let hintShownThisSession = false;            // der Tipp erscheint höchstens einmal pro App-Start
 function hintDisabled() {
   try { return localStorage.getItem(HINT_KEY) === "1"; } catch { return false; }
@@ -853,7 +853,7 @@ function openDetail(id) {
 // Im Spiel treten 5 Modelle an (aus den 8 der Troupe). Jedes Modell hat seinen eigenen Energy-Pool.
 // Das Feld "health" in der JSON bildet die Lebensleiste der Karte ab, von links nach rechts:
 // 1 = blauer Punkt (erzeugt Energy), 0 = leerer Punkt. Wunden werden von rechts gestrichen.
-const GAME_KEY = "stoonmone-game-v1";
+const GAME_KEY = "ttg-game-v1";
 function gameSize() { return formatOf(current).play; }   // so viele Modelle treten im Spiel an (Infinity = beliebig viele)
 let game = null;          // { troupeId, stage, round, own: [ids], foe: [ids], models: { "side:id": { wounds, energy } } }
 let foePanel;
