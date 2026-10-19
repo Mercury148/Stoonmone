@@ -1036,19 +1036,19 @@
          "t": "example",
          "src": "images/rules/melee-falling-swing.webp",
          "alt": "Melee Card: Falling Swing",
-         "x": "***Aggressive Move***\n*Your character delivers a powerful attack by driving their weapon down from above.*\n\nFalling Swing deals severe damage to a handful of enemy moves and is particularly punishing against Rising Attacks and Low Guards. However, by using this move you can expect some damage in return and an opponent using High Guard is likely to ruin your day..."
+         "x": "\n*Your character delivers a powerful attack by driving their weapon down from above.*\n\nFalling Swing deals severe damage to a handful of enemy moves and is particularly punishing against Rising Attacks and Low Guards. However, by using this move you can expect some damage in return and an opponent using High Guard is likely to ruin your day..."
         },
         {
          "t": "example",
          "src": "images/rules/melee-thrust.webp",
          "alt": "Melee Card: Thrust",
-         "x": "***Aggressive Move***\n*Your character lunges forward to strike the opponent with the tip of their weapon.*\n\nThrust has a decent potential for damage and can be a strong move to use against a Falling Swing. However, it is a somewhat risky move with mirrored Thrusts being a messy affair and Sweeping Cuts another hazard to watch out for..."
+         "x": "\n*Your character lunges forward to strike the opponent with the tip of their weapon.*\n\nThrust has a decent potential for damage and can be a strong move to use against a Falling Swing. However, it is a somewhat risky move with mirrored Thrusts being a messy affair and Sweeping Cuts another hazard to watch out for..."
         },
         {
          "t": "example",
          "src": "images/rules/melee-rising-attack.webp",
          "alt": "Melee Card: Rising Attack",
-         "x": "***Aggressive Move***\n*Your character swings or stabs up from below, a difficult move for the enemy to avoid.*\n\nThis is a versatile attack, capable of delivering all damage types (*Impact*, *Slicing* or *Piercing*) and deals moderate damage to almost all enemy moves. However, beware the Low Guard!"
+         "x": "\n*Your character swings or stabs up from below, a difficult move for the enemy to avoid.*\n\nThis is a versatile attack, capable of delivering all damage types (*Impact*, *Slicing* or *Piercing*) and deals moderate damage to almost all enemy moves. However, beware the Low Guard!"
         }
        ]
       },
@@ -1060,7 +1060,7 @@
          "t": "example",
          "src": "images/rules/melee-sweeping-cut.webp",
          "alt": "Melee Card: Sweeping Cut",
-         "x": "***Neutral Move***\n*Your character sweeps their weapon horizontally to deflect incoming blows or cut at the enemy’s hands.*\n\nSweeping Cut deals a relatively small amount of damage in most cases but is a brutally effective counter to the Thrust, enabling a *Follow-Up Attack*."
+         "x": "\n*Your character sweeps their weapon horizontally to deflect incoming blows or cut at the enemy’s hands.*\n\nSweeping Cut deals a relatively small amount of damage in most cases but is a brutally effective counter to the Thrust, enabling a *Follow-Up Attack*."
         }
        ]
       },
@@ -1072,13 +1072,13 @@
          "t": "example",
          "src": "images/rules/melee-high-guard.webp",
          "alt": "Melee Card: High Guard",
-         "x": "***Defensive Move***\n*Your character holds their weapon high to block lines of attack to the head and shoulders.*\n\nThis move deals no damage but will generally suffer little to no damage in return from most cards. It can be devastating if deployed at the right moment against a Falling Swing by enabling a *Follow-Up Attack* of your own!"
+         "x": "\n*Your character holds their weapon high to block lines of attack to the head and shoulders.*\n\nThis move deals no damage but will generally suffer little to no damage in return from most cards. It can be devastating if deployed at the right moment against a Falling Swing by enabling a *Follow-Up Attack* of your own!"
         },
         {
          "t": "example",
          "src": "images/rules/melee-low-guard.webp",
          "alt": "Melee Card: Low Guard",
-         "x": "***Defensive Move***\n*Your character holds their weapon low to block lines of attack against the legs and belly.*\n\nThis move deals no damage but will generally suffer little to no damage in return from most cards. It can be devastating if deployed at the right moment against a Rising Attack enabling a *Follow-Up Attack*."
+         "x": "\n*Your character holds their weapon low to block lines of attack against the legs and belly.*\n\nThis move deals no damage but will generally suffer little to no damage in return from most cards. It can be devastating if deployed at the right moment against a Rising Attack enabling a *Follow-Up Attack*."
         }
        ]
       }
