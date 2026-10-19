@@ -5,7 +5,7 @@
 // WICHTIG: Wenn du Dateien änderst (zum Beispiel characters.json),
 // erhöhe die Zahl bei CACHE_NAME, sonst zeigt das Handy noch die alte Version.
 
-const CACHE_NAME = "TTG-v1.2.7";
+const CACHE_NAME = "TTG-v1.2.8";
 const DATEIEN = [
   "./",
   "images/rules/arcane-deck.webp",
@@ -52,6 +52,10 @@ const DATEIEN = [
     "images/rules/melee-sweeping-cut.webp",
     "images/rules/melee-thrust.webp",
     "images/rules/reaction-example.webp",
+    "images/factions/commonwealth.webp",
+    "images/factions/dominion.webp",
+    "images/factions/leshavult.webp",
+    "images/factions/shades.webp",
     "data/rules.json",
     "data/faq.json",
 ];
