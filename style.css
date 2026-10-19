@@ -1217,3 +1217,6 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .editor-faction .faction-icon { width: 1.5rem; height: 1.5rem; }
 .editor-faction .dot { width: 0.8rem; height: 0.8rem; }
 .editor-faction .dot.open { background: var(--muted); opacity: 0.4; }
+
+/* Alle Kacheln im Kompendium gleich groß: alle Zeilen so hoch wie die höchste Kachel */
+.cards { grid-auto-rows: 1fr; }
