@@ -152,6 +152,17 @@
         </div>
       </div>
     </section>
+
+    <!-- ===== Seite 5: Regeln (Suche und aufklappbare Abschnitte kommen aus app.js, Inhalt aus data/rules.json) ===== -->
+    <section id="view-rules" aria-label="Rules" hidden>
+      <div id="rules-guide"></div>
+    </section>
+
+    <!-- ===== Seite 6: FAQs (Inhalt aus data/faq.json) ===== -->
+    <section id="view-faqs" aria-label="FAQs" hidden>
+      <div id="faqs-guide"></div>
+    </section>
+
     <footer class="site-foot">
       <a href="legal.html">Legal notice &amp; privacy</a> · Unofficial fan project, not affiliated with Goblin King Games
     </footer>
@@ -161,6 +172,8 @@
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button role="tab" id="tab-compendium" data-tab="compendium" aria-selected="true" type="button">Compendium</button>
     <button role="tab" id="tab-troupes" data-tab="troupes" aria-selected="false" type="button">Troupes</button>
+    <button role="tab" id="tab-rules" data-tab="rules" aria-selected="false" type="button">Rules</button>
+    <button role="tab" id="tab-faqs" data-tab="faqs" aria-selected="false" type="button">FAQs</button>
   </nav>
 
   <!-- Detailansicht eines Charakters -->

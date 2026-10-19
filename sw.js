@@ -5,7 +5,7 @@
 // WICHTIG: Wenn du Dateien änderst (zum Beispiel characters.json),
 // erhöhe die Zahl bei CACHE_NAME, sonst zeigt das Handy noch die alte Version.
 
-const CACHE_NAME = "TTG-v1.0.8";
+const CACHE_NAME = "TTG-v1.2";
 const DATEIEN = [
   "./",
   "index.html",
@@ -17,6 +17,36 @@ const DATEIEN = [
   "icon-180.png",
   "icon-192.png",
   "icon-512.png",
+  "images/rules/arcane-deck.webp",
+  "images/rules/cover-example.webp",
+  "images/rules/ex-flipped-card.webp",
+  "images/rules/ex-furious-charge.webp",
+  "images/rules/ex-ice-veins.webp",
+  "images/rules/ex-shoot-musket.webp",
+  "images/rules/ex1-cards.webp",
+  "images/rules/ex1-health.webp",
+  "images/rules/ex1-hoff-hand.webp",
+  "images/rules/ex1-reveal.webp",
+  "images/rules/ex1-serif-hand.webp",
+  "images/rules/ex2-baron-hand.webp",
+  "images/rules/ex2-cards.webp",
+  "images/rules/ex2-choices.webp",
+  "images/rules/ex2-followup.webp",
+  "images/rules/ex2-grub-hand.webp",
+  "images/rules/ex2-health1.webp",
+  "images/rules/ex2-health2.webp",
+  "images/rules/ex2-moments.webp",
+  "images/rules/ex2-signature.webp",
+  "images/rules/ex2-upgrade.webp",
+  "images/rules/melee-falling-swing.webp",
+  "images/rules/melee-follow-up-table.webp",
+  "images/rules/melee-groin-tickler.webp",
+  "images/rules/melee-high-guard.webp",
+  "images/rules/melee-low-guard.webp",
+  "images/rules/melee-rising-attack.webp",
+  "images/rules/melee-sweeping-cut.webp",
+  "images/rules/melee-thrust.webp",
+  "images/rules/reaction-example.webp",
 ];
 
 self.addEventListener("install", (event) => {
