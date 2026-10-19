@@ -276,6 +276,24 @@ const FACTION_IMAGES = {
   shades: "images/factions/shades.webp",
 };
 
+// Doppelwappen für gemischte Fraktionen: images/factions/<a>-<b>.webp (Reihenfolge wie in FACTION_ORDER)
+const FACTION_ORDER = ["commonwealth", "dominion", "leshavult", "shades"];
+function dualImage(factions) {
+  if (factions.length !== 2) return null;
+  const ids = factions.map((f) => f.id).sort((a, b) => FACTION_ORDER.indexOf(a) - FACTION_ORDER.indexOf(b));
+  if (ids.some((id) => !FACTION_IMAGES[id])) return null;
+  return `images/factions/${ids[0]}-${ids[1]}.webp`;
+}
+
+// Ein Symbol für eine oder zwei Fraktionen (bei zwei: das Doppelwappen)
+function factionsIcon(factions) {
+  const image = dualImage(factions);
+  if (!image) return null;
+  const box = el("span", { class: "faction-icon dual-icon", "aria-hidden": "true" });
+  box.append(el("img", { src: image, alt: "", draggable: "false" }));
+  return box;
+}
+
 function factionIcon(faction) {
   const box = el("span", { class: "faction-icon", "aria-hidden": "true" });
   const image = faction.icon || FACTION_IMAGES[faction.id];
@@ -858,7 +876,7 @@ function renderTroupes() {
         el("span", { class: "troupe-meta", text: troupeMeta(t) }),
         el("span", { class: "mini-row", "data-n": String(t.ids.length) }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       ),
-      faction ? el("span", { class: "troupe-corner", title: factions.map((f) => f.name).join(" / ") }, ...factions.map((f) => factionIcon(f))) : null,
+      faction ? el("span", { class: "troupe-corner", title: factions.map((f) => f.name).join(" / ") }, ...(factionsIcon(factions) ? [factionsIcon(factions)] : factions.map((f) => factionIcon(f)))) : null,
       deleteButton(t)
     );
   });
@@ -938,7 +956,7 @@ function renderEditor() {
   } else {
     rule.replaceChildren(
       el("span", { class: "rule-faction" },
-        ...list.map((f) => factionBadge(f)),
+        ...(dualImage(list) ? [(() => { const b = factionsIcon(list); b.removeAttribute("aria-hidden"); b.title = list.map((f) => f.name).join(" / "); b.setAttribute("role", "img"); b.setAttribute("aria-label", b.title); return b; })()] : list.map((f) => factionBadge(f))),
         el("span", { class: "rule-text", text: `${list.length > 1 ? "Factions" : "Faction"}: ${list.map((f) => f.name).join(" · ")}` })
       )
     );
