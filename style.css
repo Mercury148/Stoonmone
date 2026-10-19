@@ -430,10 +430,11 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .mini-row { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.9rem; }
 /* Alle Kacheln gleich hoch: Platz für zwei Portrait-Zeilen. Feste Anordnung: 4 = 2x2, 8 = 2x4, 9 = 5+4 */
 .mini-row { min-height: 4.05rem; align-content: flex-start; }
-.mini-row[data-n="4"], .mini-row[data-n="8"], .mini-row[data-n="9"] { display: grid; justify-content: start; grid-template-columns: repeat(var(--mcols), 1.9rem); }
+.mini-row[data-n="4"], .mini-row[data-n="8"], .mini-row[data-n="9"], .mini-row[data-n="10"] { display: grid; justify-content: start; grid-template-columns: repeat(var(--mcols), 1.9rem); }
 .mini-row[data-n="4"] { --mcols: 2; }
 .mini-row[data-n="8"] { --mcols: 4; }
 .mini-row[data-n="9"] { --mcols: 5; }
+.mini-row[data-n="10"] { --mcols: 5; }
 
 .share { margin-top: 1.5rem; padding: 0.75rem 1rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
 .share summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
@@ -563,7 +564,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   right: 0;
   bottom: 0;
   display: grid;
-  gap: 0.25rem;
   padding: 1.1rem 0.45rem 0.4rem;
   background: linear-gradient(to top, rgba(19, 21, 31, 0.92) 70%, rgba(19, 21, 31, 0));
 }
@@ -576,7 +576,17 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.tile-factions { display: flex; gap: 0.25rem; min-height: 0.65rem; }
+/* Fraktionssymbole: oben links in der Ecke, mit dem gleichen dunklen Verlauf wie beim Namen (nur diagonal nach oben links) */
+.tile-factions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.45rem 1.5rem 1.4rem 0.5rem;
+  background: radial-gradient(ellipse at 0 0, rgba(19, 21, 31, 0.92) 30%, rgba(19, 21, 31, 0) 75%);
+  pointer-events: none;
+}
 .tile[aria-pressed="true"] { border-color: var(--accent); }
 .tile-check {
   position: absolute;
@@ -627,13 +637,6 @@ dialog::backdrop { background: rgba(8, 9, 16, 0.6); }
 .detail { padding: 1.25rem; display: grid; gap: 1rem; }
 .detail-head { display: flex; gap: 1rem; align-items: center; }
 .detail-head h2 { margin: 0; font: 600 1.4rem/1.2 var(--font-display); overflow-wrap: anywhere; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 0; }
-.stats div { background: var(--surface-2); border-radius: var(--radius); padding: 0.5rem 0.25rem; text-align: center; }
-.stats dt { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-.stats dd { margin: 0; font: 600 1.4rem/1.2 var(--font-display); font-variant-numeric: tabular-nums; }
-.abilities { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
-.abilities h3 { margin: 0 0 0.15rem; font-size: 1rem; }
-.abilities p { margin: 0; max-width: 65ch; }
 .detail-actions { display: flex; gap: 0.5rem; }
 .detail-actions button { flex: 1; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
@@ -741,6 +744,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 
 /* Kleinere Namen auf den schmalen Plätzen oben (Handy, 4 pro Reihe) */
 .slot-portrait .tile-label { padding-inline: 0.3rem; }
+.slot-portrait .tile-factions { padding: 0.3rem 1rem 1rem 0.35rem; }
 .slot-portrait .tile-name { font-size: 0.66rem; }
 @media (min-width: 60rem) {
   .slot-portrait .tile-label { padding-inline: 0.45rem; }
@@ -905,6 +909,18 @@ html, body, button, input, summary { touch-action: manipulation; }
 @media (min-width: 720px) {
   #editor-slots[data-format="6-9"] { grid-template-columns: repeat(9, minmax(0, 1fr)); }
 }
+
+/* 6/10: zehn Plätze, auf dem Handy als 5 x 2, am Computer alle zehn in einer Reihe */
+.slots.ten { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (min-width: 720px) {
+  .slots.ten { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+}
+#editor-slots[data-format="6-10"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.slots.ten .tile-name { font-size: 0.58rem; }   /* 5 Plätze pro Reihe auf dem Handy: kleinere Namen */
+@media (min-width: 720px) { .slots.ten .tile-name { font-size: 0.66rem; } }
+@media (min-width: 720px) {
+  #editor-slots[data-format="6-10"] { grid-template-columns: repeat(10, minmax(0, 1fr)); }
+}
 @media (min-width: 720px) { .transform-btn, .summon-btn { font-size: 0.8rem; min-height: 30px; } .summon-note { font-size: 0.8rem; min-height: 30px; } }
 
 /* Modellanzahl in der Kopfzeile: feste Breite, damit sich beim Formatwechsel nichts verschiebt */
@@ -1029,3 +1045,13 @@ body.in-game[data-round]::before {
 .site-foot { margin-top: 2.5rem; font-size: 0.78rem; color: var(--muted); text-align: center; }
 .site-foot a { color: inherit; }
 body.editing .site-foot { display: none; }
+
+/* Bilder nicht ziehbar und nicht markierbar (Charakterkarten, Portraits, Icons) */
+img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-select: none; }
+
+/* Fraktionszeile im Editor: feste Höhe und immer sichtbar (nichts springt) */
+#editor-rule { min-height: 1.5rem; display: flex; align-items: center; margin: 0.25rem 0 0.4rem; }
+#editor-rule .rule-faction { gap: 0.3rem; min-width: 0; max-width: 100%; }
+#editor-rule .rule-text { min-width: 0; margin-left: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#editor-rule .rule-faction.open { color: var(--muted); font-weight: 400; }
+#editor-rule .rule-faction.open .dot { background: var(--muted); opacity: 0.5; }

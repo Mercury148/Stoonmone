@@ -27,6 +27,11 @@ const RULES = {
   allowDuplicates: false,     // darf derselbe Charakter zweimal in einer Troupe vorkommen?
   maxPerKeyword: {},          // Beispiel: { "Noble": 1 } = höchstens 1 Modell mit diesem Keyword
   sameFaction: true,          // alle Modelle einer Troupe müssen mindestens eine gemeinsame Fraktion haben
+  // Exklusivität: aus jeder Gruppe darf höchstens EIN Charakter in einer Troupe sein (IDs aus characters.json).
+  // Eine weitere Gruppe = eine weitere Zeile in der Liste.
+  exclusive: [
+    ["grub", "herbert-growbottom"],
+  ],
 };
 
 const STORAGE_KEY = "ttg-troupes-v1";     // alle gespeicherten Troupen
@@ -279,21 +284,28 @@ function factionIcon(faction) {
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 function createFilterPanel(container, onChange) {
-  const state = { query: "", factions: new Set(), keywords: new Set() };
+  const state = { query: "", factions: new Set(), keywords: new Set(), synergies: new Set() };
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
-  const search = el("input", { type: "search", placeholder: "Search (name, keyword, ability)", "aria-label": "Search", autocomplete: "off" });
+  const search = el("input", { type: "search", placeholder: "Search (name, keyword)", "aria-label": "Search", autocomplete: "off" });
   const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
   const summary = el("summary", {});
   const chips = el("div", { class: "chips" });
   const box = el("details", { class: "keyword-box" }, summary, chips);
+  // Synergien: zusätzliche Schlagwörter pro Charakter ("synergies" in characters.json), die NICHT auf der Karte stehen
+  const synSummary = el("summary", {});
+  const synChips = el("div", { class: "chips" });
+  const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
   const count = el("span", {});
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, search, box, factionRow, meta));
+  container.replaceChildren(el("div", { class: "filters" }, search, box, synBox, factionRow, meta));
 
   const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "en"));
+
+  const allSynergies = [...new Set(data.characters.flatMap((c) => c.synergies || []))].sort((a, b) => a.localeCompare(b, "en"));
+  synBox.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
 
   // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
   function renderFactions() {
@@ -340,16 +352,39 @@ function createFilterPanel(container, onChange) {
     if (state.keywords.size) summary.append(el("span", { class: "keyword-selected", text: [...state.keywords].join(", ") }));
   }
 
+  function renderSynergies() {
+    synChips.replaceChildren(
+      ...allSynergies.map((tag) =>
+        el("button", {
+          class: "chip",
+          type: "button",
+          "aria-pressed": String(state.synergies.has(tag)),
+          text: tag,
+          onclick: () => {
+            if (state.synergies.has(tag)) state.synergies.delete(tag);
+            else state.synergies.add(tag);
+            renderSynergies();
+            onChange();
+          },
+        })
+      )
+    );
+    synSummary.textContent = "Synergies";
+    if (state.synergies.size) synSummary.append(el("span", { class: "keyword-selected", text: [...state.synergies].join(", ") }));
+  }
+
   search.addEventListener("input", () => { state.query = search.value; onChange(); });
   reset.addEventListener("click", () => {
-    state.query = ""; state.factions.clear(); state.keywords.clear();
+    state.query = ""; state.factions.clear(); state.keywords.clear(); state.synergies.clear();
     search.value = "";
     renderKeywords();
+    renderSynergies();
     renderFactions();
     onChange();
   });
 
   renderKeywords();
+  renderSynergies();
   renderFactions();
 
   return {
@@ -358,14 +393,18 @@ function createFilterPanel(container, onChange) {
       const query = state.query.trim().toLowerCase();
       return data.characters.filter((c) => {
         if (state.factions.size && !c.factions.some((f) => state.factions.has(f))) return false;
-        // Mehrere Keywords: es genügt eines davon (Human, Noble = Human oder Noble oder beides)
-        if (state.keywords.size && !c.keywords.some((k) => state.keywords.has(k))) return false;
+        // Keywords und Synergien addieren sich: gezeigt wird, wer ein gewähltes Keyword ODER eine gewählte Synergie hat.
+        // Innerhalb jeder Gruppe genügt ebenfalls eines davon. Ist nur eine Gruppe gewählt, gilt nur diese.
+        if (state.keywords.size || state.synergies.size) {
+          const byKeyword = state.keywords.size > 0 && c.keywords.some((k) => state.keywords.has(k));
+          const bySynergy = state.synergies.size > 0 && (c.synergies || []).some((k) => state.synergies.has(k));
+          if (!byKeyword && !bySynergy) return false;
+        }
         if (query) {
           const text = [
             c.name,
             ...c.keywords,
             ...c.factions.map((id) => factionById.get(id).name),
-            ...c.abilities.flatMap((a) => [a.name, a.text]),
           ].join(" ").toLowerCase();
           if (!text.includes(query)) return false;
         }
@@ -375,15 +414,17 @@ function createFilterPanel(container, onChange) {
     // Zählzeile aktualisieren
     showCount(shown, total = data.characters.length) {
       count.textContent = `${shown} of ${total} characters`;
-      reset.hidden = !(state.query || state.factions.size || state.keywords.size);
+      reset.hidden = !(state.query || state.factions.size || state.keywords.size || state.synergies.size);
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
-      state.query = ""; state.factions.clear(); state.keywords.clear();
+      state.query = ""; state.factions.clear(); state.keywords.clear(); state.synergies.clear();
       search.value = "";
       renderKeywords();
+      renderSynergies();
       renderFactions();
       box.open = false;
+      synBox.open = false;
     },
     // Fraktionen, die nicht mehr möglich sind, werden abgedunkelt (null = alle möglich)
     setAllowed(set) {
@@ -433,8 +474,7 @@ const FORMATS = [
   { id: "4",         label: "4 models",       max: 4,        play: 4 },
   { id: "5-8",       label: "5 of 8 models",  max: 8,        play: 5 },
   { id: "6-9",       label: "6 of 9 models",  max: 9,        play: 6 },
-  { id: "6-10",      label: "6 of 10 models", max: 10,       play: 6 },    
-  
+  { id: "6-10",      label: "6 of 10 models", max: 10,       play: 6 },
   { id: "unlimited", label: "Unlimited",      max: Infinity, play: Infinity },
 ];
 const DEFAULT_FORMAT = "5-8";
@@ -455,6 +495,14 @@ function checkAdd(t, id) {
   if (!fitsFactions(t, character)) {
     const names = [...allowedFactions(t)].map((f) => factionById.get(f).name).join(", ");
     return `${character.name} does not fit this troupe. Still possible: ${names}.`;
+  }
+  for (const group of RULES.exclusive) {
+    if (!group.includes(id)) continue;
+    const other = t.ids.find((i) => i !== id && group.includes(i));
+    if (other) {
+      const names = group.map((i) => characterById.get(i)?.name).filter(Boolean).join(" and ");
+      return `${character.name} cannot join: ${characterById.get(other).name} is already in the troupe. Only one of ${names} is allowed.`;
+    }
   }
   for (const [keyword, max] of Object.entries(RULES.maxPerKeyword)) {
     if (!character.keywords.includes(keyword)) continue;
@@ -655,6 +703,7 @@ function renderEditor() {
   $("#editor-format").value = formatOf(current).id;
   $("#editor-slots").dataset.format = formatOf(current).id;   // das Raster passt sich dem Format an (siehe style.css)
   $("#editor-slots").classList.toggle("nine", max === 9);   // 6/9: Plätze als 3 x 3 Raster
+  $("#editor-slots").classList.toggle("ten", max === 10);   // 6/10: Plätze als 5 x 2 Raster
 
   // Die acht Plätze: gewählte Charaktere als Portrait (Tipp = Karte ansehen), freie Plätze gestrichelt
   $("#editor-slots").replaceChildren(
@@ -665,11 +714,11 @@ function renderEditor() {
       return el("div", { class: "slot-portrait" },
         el("button", { class: "slot-open", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
           portraitCard(c),
+          el("span", { class: "tile-factions" },
+            ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
+          ),
           el("span", { class: "tile-label" },
-            el("span", { class: "tile-name", text: c.name }),
-            el("span", { class: "tile-factions" },
-              ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
-            )
+            el("span", { class: "tile-name", text: c.name })
           )
         ),
         el("button", { class: "slot-remove", type: "button", "aria-label": `Remove ${c.name} from troupe`, onclick: () => removeMember(id) },
@@ -679,24 +728,26 @@ function renderEditor() {
     })
   );
 
-  // Hinweiszeile: leer = Anleitung. Bleibt genau eine Fraktion übrig, ist das die Fraktion der Troupe.
+  // Fraktionszeile: immer sichtbar, damit die Portraits nicht springen, wenn sie erscheint.
+  // Eine Fraktion: "Faction: X". Haben alle Modelle beide Fraktionen, stehen beide da. Sonst noch offen.
   const rule = $("#editor-rule");
-  const left = [...allowedFactions(current)];
-  if (count === 0) {
-    rule.textContent = "Tap characters below to add them.";
-    rule.hidden = false;
-  } else if (RULES.sameFaction && left.length === 1) {
-    const faction = factionById.get(left[0]);
+  const list = troupeFactionList(current);
+  if (list.length === 0) {
     rule.replaceChildren(
-      el("span", { class: "rule-faction" },
-        el("span", { class: "dot", style: factionStyle(faction) }),
-        `Faction: ${faction.name}`
+      el("span", { class: "rule-faction open" },
+        el("span", { class: "dot" }),
+        el("span", { class: "rule-text", text: "Faction: not set yet" })
       )
     );
-    rule.hidden = false;
   } else {
-    rule.hidden = true;   // noch mehrere Fraktionen möglich: nichts anzeigen
+    rule.replaceChildren(
+      el("span", { class: "rule-faction" },
+        ...list.map((f) => el("span", { class: "dot", style: factionStyle(f) })),
+        el("span", { class: "rule-text", text: `${list.length > 1 ? "Factions" : "Faction"}: ${list.map((f) => f.name).join(" · ")}` })
+      )
+    );
   }
+  rule.hidden = false;
   renderSummons();
   editorPanel.setAllowed(RULES.sameFaction && count > 0 ? allowedFactions(current) : null);
   renderTiles();
@@ -711,11 +762,11 @@ function renderSummons() {
       el("div", { class: "slot-portrait summoned" },
         el("button", { class: "slot-open", type: "button", "aria-label": `${c.name} (summoned): open details`, onclick: () => openDetail(c.id) },
           portraitCard(c),
+          el("span", { class: "tile-factions" },
+            ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
+          ),
           el("span", { class: "tile-label" },
-            el("span", { class: "tile-name", text: c.name }),
-            el("span", { class: "tile-factions" },
-              ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
-            )
+            el("span", { class: "tile-name", text: c.name })
           )
         )
       )
@@ -822,9 +873,7 @@ function openDetail(id) {
   if (c.card) return openCardView(c);
   $("#detail").classList.remove("card-view");
 
-  // Variante 2: kein Bild, dann Text. Werte und Regeln erscheinen nur, wenn sie eingetragen sind.
-  const stat = (label, value) => el("div", {}, el("dt", { text: label }), el("dd", { text: String(value) }));
-
+  // Variante 2: keine Karte, dann Name, Fraktion und Keywords
   $("#detail-body").replaceChildren(
     el("div", { class: "detail" },
       el("div", { class: "detail-head" },
@@ -835,13 +884,6 @@ function openDetail(id) {
         )
       ),
       c.keywords.length ? el("div", { class: "tag-row" }, ...c.keywords.map((k) => el("span", { class: "tag", text: k }))) : null,
-      c.stats
-        ? el("dl", { class: "stats" }, stat("Health", c.stats.leben), stat("Energy", c.stats.energie), stat("Movement", c.stats.bewegung))
-        : null,
-      c.abilities.length
-        ? el("ul", { class: "abilities" },
-            ...c.abilities.map((a) => el("li", {}, el("h3", { text: a.name }), el("p", { text: a.text }))))
-        : el("p", { class: "hint", text: "Stats and rules text have not been entered yet." }),
       close
     )
   );
@@ -992,11 +1034,12 @@ function tileFor(c, selected, onclick, extraClass = "") {
     onpointerleave: cancel,
   },
     portraitCard(c),
+    // Fraktionssymbole oben links in der Ecke (mit dunklem Verlauf), der Name bleibt unten
+    el("span", { class: "tile-factions" },
+      ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
+    ),
     el("span", { class: "tile-label" },
-      el("span", { class: "tile-name", text: c.name }),
-      el("span", { class: "tile-factions" },
-        ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
-      )
+      el("span", { class: "tile-name", text: c.name })
     ),
     selected ? el("span", { class: "tile-check", "aria-hidden": "true", text: "✓" }) : null
   );
@@ -1348,8 +1391,11 @@ function checkData() {
     for (const sid of c.summonedBy || []) {
       if (!characterById.has(sid)) problems.push(`${c.name}: "summonedBy" nennt die unbekannte ID "${sid}".`);
     }
-    if (!Array.isArray(c.keywords) || !Array.isArray(c.abilities)) {
-      problems.push(`${c.name}: "keywords" and "abilities" must be lists, empty [] if necessary.`);
+    if (!Array.isArray(c.keywords)) {
+      problems.push(`${c.name}: "keywords" must be a list, empty [] if necessary.`);
+    }
+    if (c.synergies !== undefined && !(Array.isArray(c.synergies) && c.synergies.every((t) => typeof t === "string"))) {
+      problems.push(`${c.name}: "synergies" must be a list of texts, for example ["Animal"].`);
     }
   }
   return problems;
@@ -1404,5 +1450,8 @@ async function boot() {
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
   } catch { /* ignorieren */ }
 }
+
+// Bilder (auch die Charakterkarten) lassen sich nicht herausziehen
+document.addEventListener("dragstart", (e) => { if (e.target instanceof HTMLImageElement) e.preventDefault(); });
 
 boot();
