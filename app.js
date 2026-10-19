@@ -942,26 +942,21 @@ function renderEditor() {
     })
   );
 
-  // Fraktionszeile: immer sichtbar, damit die Portraits nicht springen, wenn sie erscheint.
-  // Eine Fraktion: "Faction: X". Haben alle Modelle beide Fraktionen, stehen beide da. Sonst noch offen.
-  const rule = $("#editor-rule");
+  // Fraktionssymbol neben dem Namensfeld (Platz bleibt immer reserviert, damit nichts springt).
+  // Eine Fraktion: ihr Wappen. Haben alle Modelle beide Fraktionen, das Doppelwappen. Sonst noch offen.
+  const slot = $("#editor-faction");
   const list = troupeFactionList(current);
+  const label = list.map((f) => f.name).join(" / ");
+  slot.title = list.length ? label : "Faction: not set yet";
   if (list.length === 0) {
-    rule.replaceChildren(
-      el("span", { class: "rule-faction open" },
-        el("span", { class: "dot" }),
-        el("span", { class: "rule-text", text: "Faction: not set yet" })
-      )
-    );
+    slot.replaceChildren(el("span", { class: "dot open" }));
   } else {
-    rule.replaceChildren(
-      el("span", { class: "rule-faction" },
-        ...(dualImage(list) ? [(() => { const b = factionsIcon(list); b.removeAttribute("aria-hidden"); b.title = list.map((f) => f.name).join(" / "); b.setAttribute("role", "img"); b.setAttribute("aria-label", b.title); return b; })()] : list.map((f) => factionBadge(f))),
-        el("span", { class: "rule-text", text: `${list.length > 1 ? "Factions" : "Faction"}: ${list.map((f) => f.name).join(" · ")}` })
-      )
-    );
+    const icon = list.length === 2 && dualImage(list) ? factionsIcon(list) : factionIcon(list[0]);
+    icon.removeAttribute("aria-hidden");
+    icon.setAttribute("role", "img");
+    icon.setAttribute("aria-label", label);
+    slot.replaceChildren(icon);
   }
-  rule.hidden = false;
   renderSummons();
   editorPanel.setAllowed(RULES.sameFaction && count > 0 ? allowedFactions(current) : null);
   renderTiles();

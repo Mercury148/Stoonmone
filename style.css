@@ -1211,3 +1211,9 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .faction-icon img { position: absolute; left: 50%; top: 50%; width: 218.6%; height: 218.6%; max-width: none; transform: translate(-50%, -50%); pointer-events: none; }
 .faction-btn { overflow: visible; }
 .faction-btn .faction-icon { width: 1.5rem; height: 1.5rem; margin: 0.55rem 0 0.45rem; }
+
+/* Fraktionswappen neben dem Namensfeld des Troupe Builders */
+.editor-faction { flex: none; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; }
+.editor-faction .faction-icon { width: 1.5rem; height: 1.5rem; }
+.editor-faction .dot { width: 0.8rem; height: 0.8rem; }
+.editor-faction .dot.open { background: var(--muted); opacity: 0.4; }
