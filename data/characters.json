@@ -6,23 +6,26 @@
     {
       "id": "commonwealth",
       "name": "Commonwealth",
-      "hue": 42
+      "hue": 38,
+      "sat": 48
     },
     {
       "id": "dominion",
       "name": "Dominion",
-      "hue": 215
+      "hue": 210,
+      "sat": 38
     },
     {
       "id": "leshavult",
       "name": "Leshavult",
-      "hue": 140
+      "hue": 100,
+      "sat": 30
     },
     {
       "id": "shades",
       "name": "Shades of Moonreach",
-      "hue": 265,
-      "sat": 14
+      "hue": 28,
+      "sat": 9
     }
   ],
   "characters": [
