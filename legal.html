@@ -9,7 +9,7 @@
   <link rel="icon" href="icon-192.png" type="image/png">
   <link rel="stylesheet" href="style.css">
   <style>
-    body { padding-block-end: calc(2rem + var(--safe-b)); }
+    body { padding-block-end: calc(6rem + var(--safe-b)); }   /* Platz, damit der Zurück-Knopf keinen Text verdeckt */
     .legal { max-width: 42rem; margin-inline: auto; }
     .legal h1 { font-size: 1.5rem; margin: 1rem 0 0.25rem; }
     .legal h2 { font-size: 1.15rem; margin: 2rem 0 0.4rem; color: var(--accent); }
@@ -17,41 +17,49 @@
     .legal p, .legal li { line-height: 1.6; }
     .legal ul { padding-left: 1.2rem; }
     .legal a { color: var(--accent); }
-    .legal .back { display: inline-block; margin-top: 0.5rem; }
+    /* Schwebender Zurück-Knopf: gleiche Optik wie Import und Export (rund, Gelb wie Play), unten links */
+    .fab-back {
+      position: fixed;
+      left: max(1rem, env(safe-area-inset-left, 0px));
+      bottom: calc(1.5rem + var(--safe-b));
+      z-index: 4;
+      box-sizing: border-box;
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 3.5rem; height: 3.5rem;
+      border-radius: 50%;
+      background: var(--accent);   /* gleiches Gelb wie die Play-Knöpfe */
+      color: var(--accent-fg);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    }
+    .legal .fab-back { color: var(--accent-fg); }   /* sonst überschreibt die Link-Farbe den Pfeil */
+    .fab-back .ico { width: 1.6rem; height: 1.6rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .legal .disclaimer { padding: 0.7rem 0.9rem; background: var(--accent-soft); border-radius: var(--radius); }
-    /* Fill in: highlighted yellow so nothing is forgotten */
-    .fill { background: #ffe066; color: #1a1608; padding: 0 0.25em; border-radius: 3px; font-weight: 600; }
   </style>
 </head>
 <body>
   <main class="legal">
-    <a class="back" href="./">&larr; Back to the app</a>
+    <a class="fab-back" href="./" aria-label="Back to the app"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
 
     <h1>Legal notice (Impressum)</h1>
     <p><strong>Information pursuant to § 5 DDG (German Digital Services Act)</strong></p>
     <p>
-      Jan Poljak
-      <br>
-      Kirchweg 88
-      <br>
-      34119 Kassel
-      <br>
+      Jan Poljak<br>
+      Kirchweg 88<br>
+      34119 Kassel<br>
       Germany
     </p>
 
     <h3>Contact</h3>
-    <p>Email: jpoljak1993@proton.me
+    <p>Email: jpoljak1993@proton.me</p>
 
     <h3>Responsible for content (§ 18 (2) MStV)</h3>
-    <p>Jan Poljak, address as above.
+    <p>Jan Poljak, address as above.</p>
 
     <h2>Unofficial fan project</h2>
     <p class="disclaimer">
-      Tauber Tourist Guide is an unofficial, non-commercial fan project. It is not affiliated with or endorsed by
-      Goblin King Games. <em>Moonstone</em>, its characters, names, artwork and rules are the property of
+      Tauber Tourist Guide is a non-profit fan project created for your convenience.<em>Moonstone</em>, its characters, names, artwork and rules are the property of
       Goblin King Games. This project is published with their permission and is free of charge, without advertising.
-      If you are a rights holder and have a concern, please contact me and I will respond promptly.
-    </p>
+      </p>
 
     <h2>Privacy policy</h2>
 
@@ -102,7 +110,7 @@
       questions, write to me at the email address above.
     </p>
 
-    <p class="sub">Last updated: October 2026
+    <p class="sub">Last updated: October 2026</p>
   </main>
 </body>
 </html>
