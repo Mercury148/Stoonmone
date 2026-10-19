@@ -1,0 +1,535 @@
+{
+ "meta": {
+  "title": "Rules",
+  "note": "Rules text by Goblin King Games (Moonstone Basic Rules v3), used with their permission for this non-commercial fan project."
+ },
+ "sections": [
+  {
+   "id": "intro",
+   "title": "Introduction",
+   "blocks": [
+    {
+     "t": "p",
+     "x": "Moonstone™ is a character-driven fantasy skirmish game for 2-4 players set in the mysterious world of Tauber."
+    },
+    {
+     "t": "p",
+     "x": "Alongside its human population, Tauber is inhabited by mischievous faeries, trickster goblins, gruff gnomes, revolting trolls and stoic giants to mention just some of the incredible biodiversity that call the place home."
+    },
+    {
+     "t": "p",
+     "x": "The most precious resource known to the inhabitants of Tauber are the Moonstones, so called due to the way they emerge from the ground unpredictably during the night, only to be dissolved by the emerging sun. An enterprising leader can earn a king’s ransom by rooting up the stones before the break of dawn and trading them to the Wizards at the Tower of Grommel, or to their agents."
+    },
+    {
+     "t": "p",
+     "x": "Players of Moonstone™ must quickly assemble a troupe of adventurers to set forth and collect the stones. Of course as word quickly spreads, you may not be the only ones with your eyes on the prize, and sadly, bloody conflict is almost inevitable...."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "What You Need to Play"
+    },
+    {
+     "t": "p",
+     "x": "To play Moonstone, in addition to these rules you will need:"
+    },
+    {
+     "t": "ul",
+     "items": [
+      "2–4 players",
+      "A 3’ by 3’ playing surface with fantasy terrain",
+      "3–6 ***Moonstone Miniatures*** for each player, with accompanying ***Character Cards***.",
+      "A tape measure or precision measuring instrument(s)",
+      "A 21-card ***Arcane Deck***",
+      "An 18-card ***Melee Deck***",
+      "A pile of small blue disks to use as ***Energy Tokens***",
+      "7x four-sided dice to act as ***Moonstones***",
+      "1x six-sided die for each player"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "definitions",
+   "title": "Game Definitions",
+   "blocks": [
+    {
+     "t": "p",
+     "x": "**Character** – A unique inhabitant of Tauber represented by both a model and a character card."
+    },
+    {
+     "t": "p",
+     "x": "**Target** – Many abilities require you to choose a target. The target is any single model (friendly, enemy or even the originator) that fits the requirements listed in the ability, such as range or keyword."
+    },
+    {
+     "t": "p",
+     "x": "**Originator** – A character that is currently using an ability with a target."
+    },
+    {
+     "t": "p",
+     "x": "**Range** – All distances are measured in inches. Players can take measurements at any time and for any reason."
+    },
+    {
+     "t": "p",
+     "x": "**Within** – The distance between the originator’s base (or other given point) and the nearest part of the target’s base is equal to or less than the given range."
+    },
+    {
+     "t": "p",
+     "x": "**Entirely Within** – Where the distance between the originator’s base (or other given point) and the furthest part of the target’s base is equal to or less than the given range."
+    },
+    {
+     "t": "p",
+     "x": "**Line of Sight / LoS** – The ability to draw an unobstructed line along the playing surface from one model’s base to another model, Moonstone or terrain piece that the active player wishes to target with an ability."
+    },
+    {
+     "t": "p",
+     "x": "**Pulse** – An area of effect (AoE) that affects all models within a given range, including the originator, regardless of LoS."
+    },
+    {
+     "t": "p",
+     "x": "**Friendly** – Characters you brought into the game."
+    },
+    {
+     "t": "p",
+     "x": "**Enemy** – Characters brought into the game by another player."
+    },
+    {
+     "t": "p",
+     "x": "**Damage / Dmg** – A common effect that causes a player to fill in health boxes on the affected model’s character card. Damage always has a type: *Impact*, *Piercing*, *Slicing* or *Magical*, which can cause its value to be modified by other abilities or effects."
+    },
+    {
+     "t": "p",
+     "x": "**Wounds / Wds** – Similar to damage, but does not have a type and cannot be modified. Filled in health boxes are also referred to as Wds."
+    },
+    {
+     "t": "p",
+     "x": "**Slain** – A character that has filled in all their character card’s health boxes as a result of wounds and must now be removed from the game, after first dropping any Moonstones carried."
+    },
+    {
+     "t": "p",
+     "x": "**Gains / Restores** – Some abilities allow characters to ‘restore’ resources such as energy or Wds while others specify that the resource is ‘gained’. When ‘gain’ is used the character can exceed their usual maximum, whereas ‘restore’ does not allow a character to exceed the starting values printed on their card."
+    }
+   ]
+  },
+  {
+   "id": "characters",
+   "title": "Characters",
+   "blocks": [
+    {
+     "t": "p",
+     "x": "Each character in Moonstone should be represented by a suitable 32mm scale miniature from Goblin King Games. They each also have their own Character Card containing the following information:"
+    },
+    {
+     "t": "figure",
+     "src": "images/rules/card-flintlock.webp",
+     "alt": "Example character card: Flintlock",
+     "w": 17
+    },
+    {
+     "t": "p",
+     "x": "**Name:** The character’s name. If the character has been updated since first publishing then a version number is also given after the name."
+    },
+    {
+     "t": "p",
+     "x": "**Keywords:** Describes the character’s race and sometimes other attributes. Keywords have no direct affect but may be referenced by rules or character abilities."
+    },
+    {
+     "t": "p",
+     "x": "**Melee Stat:** The number of Melee Cards the character draws when fighting in a Round of Melee."
+    },
+    {
+     "t": "p",
+     "x": "**Melee Range:** The maximum range an enemy must be within for this character to declare it as a target of a Melee Attack action."
+    },
+    {
+     "t": "p",
+     "x": "**Passive Abilities:** These are ‘always-on’ effects that apply bonuses or penalties to events that occur in the game."
+    },
+    {
+     "t": "p",
+     "x": "**Arcane Abilities:** These are special abilities that can be taken as actions by discarding the amount of energy noted in the brackets. They always begin with one or more coloured icons representing the Arcane Cards which cause an effect when played. The active player draws a number of Arcane Cards equal to their Arcane Stat and selects one to determine the success or failure of the action while another player ‘resists’."
+    },
+    {
+     "t": "p",
+     "x": "**Arcane Stat:** The number of Arcane Cards this character draws when performing an Arcane Ability."
+    },
+    {
+     "t": "p",
+     "x": "**Evade Stat:** This represents how difficult it is for enemy characters to hit this model with a ranged attack by modifying the number of Arcane Cards they draw."
+    },
+    {
+     "t": "p",
+     "x": "**Faction Symbol:** This indicates which faction can take this character. For example: Commonwealth (sun symbol), Dominion (moon symbol) or Leshavult (stag skull symbol) faction."
+    },
+    {
+     "t": "p",
+     "x": "**Active Abilities:** These are simple abilities that can be taken as actions by expending the amount of energy noted in the brackets."
+    },
+    {
+     "t": "p",
+     "x": "**Base Size:** The diameter of the base the character must be placed on."
+    },
+    {
+     "t": "p",
+     "x": "**Energy:** Energy is a character’s main resource. It is discarded each time the character takes actions and is replenished at the start of each turn during the Replenish Step. However as characters suffer wounds they begin to generate less energy. A character generates an amount of energy equal to the number of blue dots remaining on their energy chart."
+    },
+    {
+     "t": "p",
+     "x": "**Health Boxes:** Each character has a certain number of health boxes which represent the amount of damage they can suffer before being *Slain*. Each time the character suffers one or more wounds, the controlling player should fill in a corresponding number of health boxes, starting from the right. When all health boxes are filled in, the character is *Slain*. If the character was carrying one or more Moonstones, the player who inflicted the fatal wounds should place those Moonstones (i.e. dice) in base contact with the slain model, displaying a depth value of ‘1’. Then the model is removed from the board. It will take no further part in the game."
+    }
+   ]
+  },
+  {
+   "id": "preparation",
+   "title": "Preparation",
+   "blocks": [
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Starting a Game"
+    },
+    {
+     "t": "p",
+     "x": "These rules explain how to start a friendly game of Moonstone. The pre-game sequence is slightly different for tournament and campaign play as described in the Organised Play Document and Campaign rules respectively."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "1. Set up the Board"
+    },
+    {
+     "t": "p",
+     "x": "Moonstone is played on 3’ x 3’ playing surface. Players should arrange some terrain in a mutually agreeable and aesthetically pleasing manner."
+    },
+    {
+     "t": "p",
+     "x": "Avoid placing terrain on the very centre of the board."
+    },
+    {
+     "t": "figure",
+     "src": "images/rules/board.webp",
+     "alt": "A 3’ x 3’ playing surface with fantasy terrain",
+     "w": 26
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "2. Choose Troupes"
+    },
+    {
+     "t": "p",
+     "x": "All players start the game with an equal number of characters chosen from their collection. Agree with your opponent(s) how many characters you each want to play with. This is known as your troupe size. The larger the troupe size chosen, the longer you can expect the game to take."
+    },
+    {
+     "t": "p",
+     "x": "At the time of writing there are four factions in Moonstone:"
+    },
+    {
+     "t": "gallery",
+     "cols": 2,
+     "items": [
+      {
+       "src": "images/rules/crest-commonwealth.webp",
+       "caption": "Commonwealth"
+      },
+      {
+       "src": "images/rules/crest-dominion.webp",
+       "caption": "Dominion"
+      },
+      {
+       "src": "images/rules/crest-leshavult.webp",
+       "caption": "Leshavult"
+      },
+      {
+       "src": "images/rules/crest-shades.webp",
+       "caption": "Shades of Moonreach"
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "x": "Commonwealth typically includes humans, giants and gnomes; Dominion typically includes goblins, faeries and trolls; Leshavult typically includes fauns, spirits and cultists; and Shades typically include spirits, risen and psychopomps."
+    },
+    {
+     "t": "p",
+     "x": "Players must first choose a faction and may only pick characters that belong to that faction (as indicated by the crest at the top right of their Character Card)."
+    },
+    {
+     "t": "p",
+     "x": "Some characters are cross-faction as indicated by the following symbols."
+    },
+    {
+     "t": "gallery",
+     "cols": 3,
+     "items": [
+      {
+       "src": "images/rules/crest-commonwealth-dominion.webp",
+       "caption": "Commonwealth & Dominion"
+      },
+      {
+       "src": "images/rules/crest-commonwealth-leshavult.webp",
+       "caption": "Commonwealth & Leshavult"
+      },
+      {
+       "src": "images/rules/crest-dominion-leshavult.webp",
+       "caption": "Dominion & Leshavult"
+      },
+      {
+       "src": "images/rules/crest-leshavult-shades.webp",
+       "caption": "Leshavult & Shades"
+      },
+      {
+       "src": "images/rules/crest-dominion-shades.webp",
+       "caption": "Dominion & Shades"
+      },
+      {
+       "src": "images/rules/crest-commonwealth-shades.webp",
+       "caption": "Commonwealth & Shades"
+      }
+     ]
+    },
+    {
+     "t": "p",
+     "x": "Cross-faction characters can be selected by troupes who have chosen *either* of the parent factions."
+    },
+    {
+     "t": "p",
+     "x": "Each character can only be selected for your troupe once. Beyond that, there are no restrictions to which characters a player may choose to take."
+    },
+    {
+     "t": "p",
+     "x": "For a 1.5-2 hour game, the following troupe sizes are recommended:"
+    },
+    {
+     "t": "p",
+     "x": "**2-Player Game:** 6 characters each\n**3-Player Game:** 4 characters each\n**4-Player Game:** 3 characters each"
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "3. Grow Moonstones"
+    },
+    {
+     "t": "p",
+     "x": "After characters have been chosen, players should determine the position of the Moonstones on the board."
+    },
+    {
+     "t": "p",
+     "x": "To do this, one player should take seven 4-sided dice, hold them in a fist, palm down, about 12-16” above the centre of the board, then open their hand so that the dice drop. Leave them where they fall. If any dice fall outside of the 3’ x 3’ play area, they should be re-dropped from the centre of the board."
+    },
+    {
+     "t": "figure",
+     "src": "images/rules/die.webp",
+     "alt": "A four-sided die with a depth value of 1",
+     "w": 11
+    },
+    {
+     "t": "p",
+     "x": "Each die represents the location of a Moonstone. The number shown on each die represents the difficulty of extracting it from the ground and is referred to as the *Depth Value*. The example above has a depth value of ‘1’."
+    },
+    {
+     "t": "p",
+     "x": "During the game, characters may take possession of a Moonstone, by performing the Harvest action. Models may move freely over Moonstones but may not end a move with their base overlapping the dice."
+    },
+    {
+     "t": "p",
+     "x": "Optionally, for games with fewer than usual characters, players can agree to use five Moonstones instead of the usual seven."
+    },
+    {
+     "t": "note",
+     "x": "**Mulligan**\nIf any player is unhappy with the Moonstone spread they may request a re-drop, called a Mulligan. No player can call a Mulligan more than once."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "4. Deploy Troupes"
+    },
+    {
+     "t": "p",
+     "x": "Next, each player rolls a 6-sided die. In the case of ties, roll again."
+    },
+    {
+     "t": "h",
+     "l": 3,
+     "x": "2-Player Game"
+    },
+    {
+     "t": "p",
+     "x": "The player with the highest roll chooses if they want to be the *Early Bird* or have *Initiative*."
+    },
+    {
+     "t": "p",
+     "x": "The *Early Bird* chooses a table edge and places down one model from their troupe, entirely within 10” of the table edge. Then, the player with *Initiative* places down their first model entirely within 10” of the opposite table edge. Players continue to take turns placing one model at a time, always entirely within 10” of their own table edge, until all models have been placed on the board."
+    },
+    {
+     "t": "h",
+     "l": 3,
+     "x": "3-4 Player Game"
+    },
+    {
+     "t": "p",
+     "x": "The player with the highest roll chooses a table edge and places down one model from their troupe, entirely within 10” of the table edge."
+    },
+    {
+     "t": "p",
+     "x": "Then, the player with the next highest roll chooses an unclaimed table edge and deploys their first model entirely within 10” of that table edge. Then the player with the third highest roll does the same, choosing from the remaining two unclaimed table edges to place down their first model. Finally, if there is a fourth player, their table edge must be the remaining unclaimed edge."
+    },
+    {
+     "t": "p",
+     "x": "Players should then continue in that order, each placing one model at a time, until all models have been placed down."
+    },
+    {
+     "t": "p",
+     "x": "No player is considered to have *Initiative*."
+    },
+    {
+     "t": "p",
+     "x": "Note that in the case of tied dice rolls, only the tied players roll again to determine which of them places first. This does not affect the order of the other players."
+    }
+   ]
+  },
+  {
+   "id": "winning",
+   "title": "Winning the Game",
+   "blocks": [
+    {
+     "t": "p",
+     "x": "The player with the most Moonstones in their possession at the end of Turn 4 (sunrise) is the winner. If two or more players have an equal number of Moonstones, begin a new *Sudden Death* turn. During the *Sudden Death* turn, if any player is in possession of more Moonstones than all other opponents at the end of any action, they immediately win the game."
+    }
+   ]
+  },
+  {
+   "id": "turn",
+   "title": "Turn Order and Activations",
+   "blocks": [
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Playing a Turn"
+    },
+    {
+     "t": "h",
+     "l": 3,
+     "x": "1. Replenish Step"
+    },
+    {
+     "t": "p",
+     "x": "At the start of each turn, including the first, all players should place one blue ***energy token*** on each of their character cards for each blue dot remaining on that card’s health bar."
+    },
+    {
+     "t": "example",
+     "src": "images/rules/card-greymair.webp",
+     "alt": "Example character card: Greymair, with two blue energy tokens",
+     "x": "***Example:*** *During the replenish step, while at full health, Greymair would be allocated back up to 3 energy tokens in total since his health chart has 3 blue dots. Unfortunately though, he has suffered 2 wounds earlier in the game, and one of the blue dots has now been filled in. This means his controller can only assign him 2 energy tokens this turn.*"
+    },
+    {
+     "t": "h",
+     "l": 3,
+     "x": "2. Activation Step"
+    },
+    {
+     "t": "p",
+     "x": "During the Activation Step, the first player chooses one of their characters to ***activate***. While *activated*, a character may do as many ***actions*** as it wishes, until it is unable to take any further actions or the player wants to end the activation. At that point, the player to the left chooses one of their characters to activate, and so on. Once a player has activated all of their characters they are skipped over, but other players can continue to activate models when it is their turn."
+    },
+    {
+     "t": "p",
+     "x": "Once all players have activated all of their characters then move to the Discard Step."
+    },
+    {
+     "t": "h",
+     "l": 3,
+     "x": "3. Discard Step"
+    },
+    {
+     "t": "p",
+     "x": "When all characters have completed their activations any unspent energy tokens left on character cards are removed and a new turn begins with the Replenish Step."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Who Activates First"
+    },
+    {
+     "t": "p",
+     "x": "To determine which player activates first each turn, all players should roll a 6-sided die. The player with the highest score chooses which player activates first. If there is a player with *Initiative*, they are automatically considered to have won the roll off on Turn 1 and receive a bonus to their die roll on turns 2 and 3. Re-roll any ties."
+    },
+    {
+     "t": "p",
+     "x": "**Turn 1:** If a player has *Initiative*, do not roll-off. That player is automatically considered the winner. Otherwise, roll-off.\n**Turn 2:** Roll-off. A player with *Initiative* adds +2 to their roll.\n**Turn 3:** Roll-off. A player with *Initiative* adds +1 to their roll.\n**Turn 4+:** Roll-off."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Activating a Model"
+    },
+    {
+     "t": "p",
+     "x": "During its activation a character can take any of the following actions, in any order:"
+    },
+    {
+     "t": "p",
+     "x": "**Step.** Cost: (1) energy.\nThis model discards 1 energy, then can be moved up to 1” in any direction."
+    },
+    {
+     "t": "p",
+     "x": "**Jog.** Cost: (0) energy. *Once per turn.*\nThis model can be moved up to 4” with as many changes of direction during the move as desired. However, if at any point within this move you are engaged by an enemy model, you may not increase the distance between the engaging model and your own model. Moving closer to, or circling around, engaging enemy models is allowed."
+    },
+    {
+     "t": "p",
+     "x": "**Traverse.** Cost: (2) energy.\nThis action can only be taken if the model is in base contact with an obstacle that is 1” thick or less, such as a hedge or closed door. This model discards 2 energy and is moved into base contact with the opposite side of the obstacle, up to a maximum of 1” from the starting location of the model. For more details see the ***Terrain*** section on page 10."
+    },
+    {
+     "t": "p",
+     "x": "**Harvest.** Cost: (1) energy.\nThis model discards 1 energy and may then reduce the *Depth Value* on any Moonstone it is in base contact with by -1. If the Moonstone's *Depth Value* is reduced to '0' or less then this model takes possession of the Moonstone. Place it on this character’s card. You may not take this action if this model is currently engaged by an enemy."
+    },
+    {
+     "t": "p",
+     "x": "**Melee Attack.** Cost: (1) energy.\nThis model discards 1 energy, then makes a ***Melee Attack*** (described on page 15) against one model within its Melee Range and LoS."
+    },
+    {
+     "t": "p",
+     "x": "**Active Ability.** Cost: (X) energy.\nThis model discards the amount of energy listed in brackets after the ability name and then performs the effect listed in the ability’s text."
+    },
+    {
+     "t": "p",
+     "x": "**Arcane Ability.** Cost: (X) energy.\nThis model discards the amount of energy listed in brackets after the ability name and then resolves the ***Arcane Ability*** as described on page 9."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Moving Through Gaps"
+    },
+    {
+     "t": "note",
+     "x": "Usually during moves, a model’s bases may not overlap another model’s base, *Obstacle* or *Barrier* terrain at any stage. However, an exception is permitted to avoid unrealistic situations where a model might otherwise be unable to move through spaces a real individual clearly could squeeze through. During a character's own activation, while performing any kind of move, the model can ‘squeeze’ though gaps between two items of terrain; or between an item of terrain and a friendly model; or between two friendly models, even if the gap is smaller than their base size. They must be able to end the move with sufficient room for their base to be placed flat on the table without overlapping another model’s base or terrain. You may not squeeze through gaps created between enemy models; or enemy models and terrain. You cannot use abilities to move other models through gaps."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Line of Sight"
+    },
+    {
+     "t": "p",
+     "x": "Unless otherwise noted, players need ***Line of Sight*** (LoS) between an active character and any target they may wish to choose when taking an action."
+    },
+    {
+     "t": "p",
+     "x": "A character has LoS if a straight line could be drawn between any part of the originator’s base and the target’s base, without crossing over another model or item of *Barrier Terrain*."
+    },
+    {
+     "t": "h",
+     "l": 2,
+     "x": "Engagements"
+    },
+    {
+     "t": "p",
+     "x": "A model is considered to be ***engaging*** any enemy models that are within its Melee Range and LoS."
+    },
+    {
+     "t": "p",
+     "x": "A model is considered to be ***engaged*** by any enemy models if it is within their Melee Range and LoS."
+    }
+   ]
+  }
+ ]
+}
