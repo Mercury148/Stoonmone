@@ -676,9 +676,9 @@ function confirmImport() {
   pendingImport = null;
   troupes.push(created);
   saveTroupes();
-  renderTroupes();
   $("#import-dialog").close();
   if (!current) showView("troupes");
+  renderTroupes();   // erst nach dem Wechsel der Ansicht: nur eine sichtbare Ansicht lässt sich vermessen
   toast(`"${troupeLabel(created)}" added.`);
 }
 
@@ -1421,6 +1421,330 @@ function renderGame() {
   }
 }
 
+/* ---------- Regeln und FAQs ---------- */
+
+// Eine Seite mit Suche und aufklappbaren Abschnitten. Der Inhalt steht in einer JSON-Datei
+// (data/rules.json für die Regeln, data/faq.json für die FAQs). Aufbau der Datei:
+//   { "meta": { "note": "…" }, "sections": [ { "id": "…", "title": "…", "blocks": [ … ] } ] }
+// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), ul (Liste), note (Kasten),
+//         figure (Bild), gallery (Bilderreihe mit Beschriftung), example (Kasten mit Bild und Text),
+//         group (aufklappbarer Unterpunkt: { "t": "group", "title": "…", "blocks": [ … ] }, beliebig tief verschachtelbar),
+//         annotated (Bild mit nummerierten Punkten: src, alt, w, pins [[x%, y%], …], items ["Erklärung 1", …]).
+// Im Text: *kursiv*, **fett**, ***fett kursiv***, \n = Zeilenumbruch, [[farbe:X]] = farbiges Arcane-Symbol (pink, green, blue).
+const GUIDES = {
+  rules: { container: "#rules-guide", url: "data/rules.json", placeholder: "Search the rules", empty: "No rules found." },
+  faqs:  { container: "#faqs-guide",  url: "data/faq.json",   placeholder: "Search the FAQs",  empty: "The FAQs will follow soon." },
+};
+const guideInstances = {};
+
+function openGuide(name) {
+  const config = GUIDES[name];
+  if (!config) return;
+  if (!guideInstances[name]) guideInstances[name] = createGuide($(config.container), config);
+  guideInstances[name].load();
+}
+
+// Text mit Markierungen in DOM-Knoten verwandeln (nie als HTML, daher sicher)
+function inlineNodes(text) {
+  const out = [];
+  const pieces = String(text).split(/(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|\[\[[a-z]+:[^\]]+\]\])/);
+  const plain = (s) => s.split("\n").forEach((line, i) => { if (i) out.push(el("br")); if (line) out.push(line); });
+  for (const piece of pieces) {
+    if (piece.startsWith("***") && piece.endsWith("***") && piece.length > 6) out.push(el("strong", {}, el("em", { text: piece.slice(3, -3) })));
+    else if (piece.startsWith("**") && piece.endsWith("**") && piece.length > 4) out.push(el("strong", { text: piece.slice(2, -2) }));
+    else if (piece.startsWith("*") && piece.endsWith("*") && piece.length > 2) out.push(el("em", { text: piece.slice(1, -1) }));
+    else if (/^\[\[[a-z]+:[^\]]+\]\]$/.test(piece)) {
+      const [color, symbol] = piece.slice(2, -2).split(":");
+      out.push(el("span", { class: `arc arc-${color}`, text: symbol }));   // farbiges Arcane-Symbol
+    }
+    else plain(piece);
+  }
+  return out;
+}
+
+function plainText(text) {
+  return String(text).replace(/\[\[[a-z]+:([^\]]+)\]\]/g, "$1").replace(/\*+/g, "").replace(/\s+/g, " ").trim();
+}
+
+// Beim Suchen: Anführungszeichen und Groß-/Kleinschreibung gleichsetzen (die Länge bleibt gleich)
+function searchForm(s) {
+  return s.toLowerCase().replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
+}
+
+function blockNode(block) {
+  switch (block.t) {
+    case "h":
+      return el(block.l === 3 ? "h4" : "h3", { class: block.l === 3 ? "rule-h3" : "rule-h2" }, ...inlineNodes(block.x));
+    case "ul":
+      return el("ul", {}, ...block.items.map((item) => el("li", {}, ...inlineNodes(item))));
+    case "note":
+      return el("div", { class: "rule-note" }, ...inlineNodes(block.x));
+    case "figure":
+      return el("figure", { class: "rule-fig" },
+        el("img", { src: block.src, alt: block.alt || "", loading: "lazy", style: block.w ? `max-width:min(100%, ${Number(block.w) || 22}rem)` : null }),
+        block.caption ? el("figcaption", { text: block.caption }) : null);
+    case "gallery":
+      return el("div", { class: "rule-gallery", style: `--cols:${Number(block.cols) || 2}` }, ...block.items.map((item) =>
+        el("figure", {}, el("img", { src: item.src, alt: "", loading: "lazy" }), el("figcaption", { text: item.caption }))));
+    case "example":
+      return el("div", { class: "rule-example" },
+        el("img", { src: block.src, alt: block.alt || "", loading: "lazy", style: block.w ? `flex-basis:${Number(block.w) || 11}rem;width:${Number(block.w) || 11}rem` : null }),
+        el("p", {}, ...inlineNodes(block.x)));
+    case "annotated":
+      return annotatedNode(block);
+    default:
+      return el("p", {}, ...inlineNodes(block.x));
+  }
+}
+
+// Bild mit nummerierten Punkten; darunter die Erklärungen mit denselben Nummern
+function annotatedNode(block) {
+  const pins = block.pins || [];
+  const flash = (node) => {
+    node.classList.remove("flash");
+    void node.offsetWidth;   // Animation neu starten
+    node.classList.add("flash");
+    setTimeout(() => node.classList.remove("flash"), 1800);
+  };
+  const pinNodes = [], itemNodes = [];
+  const wrap = el("div", { class: "annot-img" }, el("img", { src: block.src, alt: block.alt || "", loading: "lazy" }));
+  pins.forEach((pos, i) => {
+    const pin = el("button", { class: "pin", type: "button", style: `left:${Number(pos[0])}%;top:${Number(pos[1])}%`, "aria-label": `Explanation ${i + 1}`, text: String(i + 1) });
+    pin.addEventListener("click", () => {
+      const item = itemNodes[i];
+      if (!item) return;
+      item.scrollIntoView({ block: "center", behavior: "smooth" });
+      flash(item);
+    });
+    pinNodes.push(pin);
+    wrap.append(pin);
+  });
+  const list = el("ol", { class: "annot-list" }, ...block.items.map((text, i) => {
+    const num = el("button", { class: "def-num", type: "button", "aria-label": `Show point ${i + 1} on the card`, text: String(i + 1) });
+    num.addEventListener("click", () => {
+      wrap.scrollIntoView({ block: "center", behavior: "smooth" });
+      if (pinNodes[i]) flash(pinNodes[i]);
+    });
+    const item = el("li", {}, num, el("div", { class: "def-text" }, ...inlineNodes(text)));
+    itemNodes.push(item);
+    return item;
+  }));
+  return el("div", { class: "annot", style: block.w ? `--annot-w:${Number(block.w) || 22}rem` : null }, wrap, list);
+}
+
+// Suchbare Einheiten eines Blocks (für Treffer und Sprung)
+function leafUnits(block, node) {
+  switch (block.t) {
+    case "h": return [{ node, text: block.x, kind: "title" }];
+    case "ul": return block.items.map((t, i) => ({ node: node.children[i], text: t, kind: "text" }));
+    case "gallery": return block.items.map((it, i) => ({ node: node.children[i], text: it.caption || "", kind: "text" }));
+    case "annotated": return block.items.map((t, i) => ({ node: node.querySelectorAll("li")[i], text: t, kind: "text" }));
+    case "figure": return block.caption ? [{ node, text: block.caption, kind: "text" }] : [];
+    case "example": return [{ node, text: `${block.x || ""} ${block.alt || ""}`, kind: "text" }];   // Alt-Text enthält z. B. den Kartennamen
+    default: return block.x ? [{ node, text: block.x, kind: "text" }] : [];
+  }
+}
+
+function blockTexts(block) {
+  const parts = [];
+  if (block.x) parts.push(block.x);
+  if (block.items) parts.push(...block.items.map((i) => (typeof i === "string" ? i : i.caption || "")));
+  if (block.caption) parts.push(block.caption);
+  if (block.t === "example" && block.alt) parts.push(block.alt);
+  return parts;
+}
+
+function createGuide(container, config) {
+  const search = el("input", { type: "search", placeholder: config.placeholder, "aria-label": config.placeholder, autocomplete: "off", enterkeyhint: "search" });
+  const status = el("span", { class: "hint guide-status" });
+  const next = el("button", { class: "ghost guide-next", type: "button", hidden: "", text: "Next hit ↓" });
+  const list = el("div", { class: "guide-list" });
+  const foot = el("p", { class: "guide-note", hidden: "" });
+  container.replaceChildren(el("div", { class: "guide-bar" }, search, el("div", { class: "guide-row" }, status, next)), list, foot);
+
+  let sections = [];       // oberste Abschnitte: { node, text, children }
+  let allGroups = [];      // alle aufklappbaren Gruppen (auch verschachtelte)
+  let units = [];          // alle suchbaren Absätze und Überschriften
+  let loadState = "idle";  // idle | loading | done
+  let openBefore = null;   // welche Gruppen waren vor der Suche offen?
+  let hits = [], hitIndex = -1, jumpTimer = null;
+
+  function clearMarks() {
+    for (const m of list.querySelectorAll("mark")) m.replaceWith(document.createTextNode(m.textContent));
+    list.normalize();
+  }
+
+  function markTerms(root, terms) {
+    const pattern = new RegExp(terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) {
+      const n = walker.currentNode;
+      if (n.parentElement && n.parentElement.closest(".pin, .def-num")) continue;   // Nummern nicht markieren
+      nodes.push(n);
+    }
+    for (const node of nodes) {
+      const text = node.nodeValue;
+      const form = searchForm(text);
+      pattern.lastIndex = 0;
+      let match, pos = 0, frag = null;
+      while ((match = pattern.exec(form))) {
+        if (!match[0]) { pattern.lastIndex++; continue; }
+        frag = frag || document.createDocumentFragment();
+        frag.append(text.slice(pos, match.index), el("mark", { text: text.slice(match.index, match.index + match[0].length) }));
+        pos = match.index + match[0].length;
+      }
+      if (frag) { frag.append(text.slice(pos)); node.replaceWith(frag); }
+    }
+  }
+
+  // Gruppen ein- oder ausblenden; Treffer werden aufgeklappt
+  function visit(group, terms) {
+    const match = !terms.length || terms.every((t) => group.text.includes(t));
+    group.node.hidden = !match;
+    if (match && terms.length) group.node.open = true;
+    for (const child of group.children) visit(child, terms);
+    return match;
+  }
+
+  // Treffer sortieren: ganzer Suchtext im selben Absatz > Überschrift > Teile des Suchtextes
+  function rankHits(terms) {
+    const phrase = terms.join(" ");
+    const full = [], part = [];
+    units.forEach((u, order) => {
+      if (u.node.closest("details[hidden]")) return;
+      const own = terms.filter((t) => u.text.includes(t)).length;
+      if (!own) return;
+      const context = terms.every((t) => `${u.ctx} ${u.text}`.includes(t));
+      let score = own * 10;
+      if (own === terms.length) score += 100; else if (context) score += 50;
+      if (u.text.includes(phrase)) score += 40;
+      if (u.kind === "title") score += 30;
+      if (u.text.startsWith(terms[0])) score += 5;
+      (own === terms.length || context ? full : part).push({ u, score, order });
+    });
+    return (full.length ? full : part).sort((a, b) => b.score - a.score || a.order - b.order).map((x) => x.u);
+  }
+
+  function updateStatus(terms) {
+    const total = sections.length;
+    if (!terms.length) {
+      status.textContent = total ? `${total} section${total === 1 ? "" : "s"}` : "";
+      next.hidden = true;
+    } else if (!hits.length) {
+      status.textContent = `Nothing found for "${search.value.trim()}".`;
+      next.hidden = true;
+    } else {
+      status.textContent = hitIndex < 0 ? `${hits.length} hit${hits.length === 1 ? "" : "s"}` : `Hit ${hitIndex + 1} of ${hits.length}`;
+      next.hidden = hits.length < 2;
+    }
+  }
+
+  function goTo(index) {
+    if (!hits.length) return;
+    hitIndex = ((index % hits.length) + hits.length) % hits.length;
+    const node = hits[hitIndex].node;
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    node.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    for (const old of list.querySelectorAll(".hit-flash")) old.classList.remove("hit-flash");
+    void node.offsetWidth;
+    node.classList.add("hit-flash");
+    setTimeout(() => node.classList.remove("hit-flash"), 2000);
+    updateStatus(searchForm(search.value).split(/\s+/).filter(Boolean));
+  }
+
+  function apply() {
+    clearTimeout(jumpTimer);
+    clearMarks();
+    const terms = searchForm(search.value).split(/\s+/).filter(Boolean);
+    hits = []; hitIndex = -1;
+    if (!terms.length) {
+      // Suche leer: alles zeigen, offene Gruppen wie vor der Suche wiederherstellen
+      for (const s of sections) visit(s, terms);
+      if (openBefore) for (const g of allGroups) g.node.open = openBefore.has(g.node);
+      openBefore = null;
+      updateStatus(terms);
+      return;
+    }
+    if (!openBefore) openBefore = new Set(allGroups.filter((g) => g.node.open).map((g) => g.node));
+    for (const s of sections) visit(s, terms);
+    markTerms(list, terms);
+    hits = rankHits(terms);
+    updateStatus(terms);
+    if (hits.length) jumpTimer = setTimeout(() => goTo(0), 350);   // kurz warten, falls noch weitergetippt wird
+  }
+
+  search.addEventListener("input", apply);
+  search.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    clearTimeout(jumpTimer);
+    goTo(hitIndex + 1);
+  });
+  next.addEventListener("click", () => goTo(hitIndex + 1));
+
+  // Eine Gruppe (Abschnitt oder Unterpunkt) als aufklappbares Menü bauen
+  function buildGroup(def, titles, level) {
+    const chain = titles.concat(def.title);
+    const group = { node: null, children: [], text: "" };
+    const parts = [def.title];
+    const summary = el("summary", { text: def.title });
+    const body = el("div", { class: "rule-body" });
+    units.push({ node: summary, text: searchForm(plainText(def.title)), ctx: searchForm(plainText(titles.join(" "))), kind: "title" });
+    for (const block of def.blocks || []) {
+      if (block.t === "group") {
+        const sub = buildGroup(block, chain, level + 1);
+        group.children.push(sub);
+        parts.push(sub.text);
+        body.append(sub.node);
+      } else {
+        const node = blockNode(block);
+        body.append(node);
+        for (const u of leafUnits(block, node)) {
+          units.push({ node: u.node, text: searchForm(plainText(u.text)), ctx: searchForm(plainText(chain.join(" "))), kind: u.kind });
+        }
+        parts.push(...blockTexts(block));
+      }
+    }
+    group.node = el("details", { class: level === 1 ? "rule-section" : "rule-group", id: def.id ? `${config.container.slice(1)}-${def.id}` : null }, summary, body);
+    group.text = searchForm(plainText(parts.join(" ")));
+    allGroups.push(group);
+    return group;
+  }
+
+  function render(guideData) {
+    const defs = Array.isArray(guideData && guideData.sections) ? guideData.sections : [];
+    units = []; allGroups = [];
+    sections = defs.map((def) => buildGroup(def, [], 1));
+    list.replaceChildren(...sections.map((s) => s.node));
+    const note = guideData && guideData.meta && guideData.meta.note;
+    foot.textContent = note || "";
+    foot.hidden = !note || !sections.length;
+    if (!sections.length) list.replaceChildren(el("p", { class: "empty", text: config.empty }));
+    search.hidden = !sections.length;
+    apply();
+  }
+
+  return {
+    async load() {
+      if (loadState !== "idle") return;
+      loadState = "loading";
+      status.textContent = "Loading…";
+      try {
+        const response = await fetch(config.url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        render(await response.json());
+        loadState = "done";
+      } catch (err) {
+        loadState = "idle";   // beim nächsten Öffnen nochmal versuchen
+        status.textContent = "";
+        list.replaceChildren(el("p", { class: "empty", text: `This page could not be loaded (${err.message}). Please check your connection and try again.` }));
+      }
+    },
+  };
+}
+
+
 /* ---------- Ansichten wechseln ---------- */
 
 let lastTab = "compendium";
@@ -1430,6 +1754,9 @@ function showView(name) {
   $("#view-troupes").hidden = name !== "troupes";
   $("#view-editor").hidden = name !== "editor";
   $("#view-game").hidden = name !== "game";
+  $("#view-rules").hidden = name !== "rules";
+  $("#view-faqs").hidden = name !== "faqs";
+  if (name === "rules" || name === "faqs") openGuide(name);
   document.body.classList.toggle("editing", name === "editor" || name === "game");
   // Spielansicht: immer dunkel (Nacht), mit eigenem Hintergrund
   document.body.classList.toggle("in-game", name === "game");
