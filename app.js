@@ -1688,7 +1688,7 @@ function createGuide(container, config) {
     const chain = titles.concat(def.title);
     const group = { node: null, children: [], text: "" };
     const parts = [def.title];
-    const summary = el("summary", { text: def.title });
+    const summary = el("summary", {}, el("span", { class: "summary-text", text: def.title }));   // eigenes span, damit Markierungen im Titel keine Lücken bekommen
     const body = el("div", { class: "rule-body" });
     units.push({ node: summary, text: searchForm(plainText(def.title)), ctx: searchForm(plainText(titles.join(" "))), kind: "title" });
     for (const block of def.blocks || []) {
