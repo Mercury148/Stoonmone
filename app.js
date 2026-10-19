@@ -287,7 +287,7 @@ function createFilterPanel(container, onChange) {
   const state = { query: "", factions: new Set(), keywords: new Set(), synergies: new Set() };
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
-  const search = el("input", { type: "search", placeholder: "Search (name, keyword)", "aria-label": "Search", autocomplete: "off" });
+  const search = el("input", { type: "search", placeholder: "Search (name, keyword, synergy)", "aria-label": "Search", autocomplete: "off" });
   const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
   const summary = el("summary", {});
   const chips = el("div", { class: "chips" });
@@ -404,6 +404,7 @@ function createFilterPanel(container, onChange) {
           const text = [
             c.name,
             ...c.keywords,
+            ...(c.synergies || []),
             ...c.factions.map((id) => factionById.get(id).name),
           ].join(" ").toLowerCase();
           if (!text.includes(query)) return false;

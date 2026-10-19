@@ -5,7 +5,7 @@
 // WICHTIG: Wenn du Dateien änderst (zum Beispiel characters.json),
 // erhöhe die Zahl bei CACHE_NAME, sonst zeigt das Handy noch die alte Version.
 
-const CACHE_NAME = "TTG-v1.0.5";
+const CACHE_NAME = "TTG-v1.0.6";
 const DATEIEN = [
   "./",
   "index.html",

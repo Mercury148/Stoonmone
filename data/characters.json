@@ -1195,7 +1195,7 @@
       "keywords": ["Faun","Cultist","Rogue"],
       "synergies": ["Set Aside Arcane Cards"],
       "health": [1,0,1,0,1,0,0,0],
-      "image": "portraits/skaggi.webp",
+      "image": "portraits/skuggy.webp",
       "card": "images/Skuggi_front.webp",
       "cardBack": "images/Skuggi_back.webp"
     },
