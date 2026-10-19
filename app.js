@@ -88,7 +88,8 @@ function toast(message) {
   box.textContent = message;
   box.hidden = false;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (box.hidden = true), 2600);
+  // Längere Meldungen bleiben etwas länger stehen
+  toastTimer = setTimeout(() => (box.hidden = true), Math.max(2600, message.length * 55));
 }
 
 // Ein Knopf, der zwei Tipper braucht (erst "Wirklich?", dann die Aktion).
@@ -583,29 +584,204 @@ function deleteButton(t) {
   return button;
 }
 
-// Ein eingefügter Code wird als neue Troupe angelegt und überschreibt nichts.
-function importTroupe(code) {
+/* ---------- Import, Export und Backup ---------- */
+
+// Ein eingefügter Code (oder Link) wird erst geprüft und dann als neue Troupe angelegt. Nichts wird überschrieben.
+
+// Aus einem eingefügten Text den Code holen: entweder der Code selbst oder ein Link mit #t=<Code>.
+function extractCode(text) {
+  text = text.trim();
+  const match = text.match(/#t=(\S+)/);
+  if (!match) return text;
+  try { return decodeURIComponent(match[1]); } catch { return match[1]; }
+}
+
+// Link, der die Troupe in der App öffnet (die Daten stehen nach dem #, werden also nie an einen Server geschickt).
+function shareUrl(t) {
+  return `${location.origin}${location.pathname}#t=${encodeURIComponent(encodeTroupe(t))}`;
+}
+
+// Baut aus dem Code eine neue Troupe (noch nicht gespeichert). skipped: Einträge, die nicht passen, mit Grund.
+// Wirft einen Fehler, wenn der Code nicht lesbar ist.
+function buildImport(code) {
+  const parsed = decodeTroupe(extractCode(code));
+  const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, format: validFormat(parsed.format), ids: [] };
+  const skipped = [];
+  for (const id of Array.isArray(parsed.ids) ? parsed.ids : []) {
+    const character = characterById.get(id);
+    if (!character) { skipped.push("Unknown model (the code may come from a newer version)."); continue; }
+    if (isSummoned(character)) { skipped.push(`${character.name} is summoned and is added automatically.`); continue; }
+    const problem = checkAdd(created, id);
+    if (problem) skipped.push(problem);
+    else created.ids.push(id);
+  }
+  return { created, skipped };
+}
+
+let pendingImport = null;
+
+function showImportStep(step) {
+  $("#import-step-code").hidden = step !== "code";
+  $("#import-step-preview").hidden = step !== "preview";
+}
+
+// Zeigt, was importiert würde, und wartet auf "Add troupe".
+function openImportPreview(code) {
   if (troupes.length >= MAX_TROUPES) {
     return toast(`You can save at most ${MAX_TROUPES} troupes. Delete one first.`);
   }
-  let parsed;
+  let result;
   try {
-    parsed = decodeTroupe(code);
+    result = buildImport(code);
   } catch {
     return toast("The code could not be read.");
   }
-  const created = { id: newId(), name: sanitize({ name: parsed.name, ids: [] }).name, format: validFormat(parsed.format), ids: [] };
-  let skipped = 0;
-  for (const id of Array.isArray(parsed.ids) ? parsed.ids : []) {
-    if (!characterById.has(id) || isSummoned(characterById.get(id)) || checkAdd(created, id)) skipped++;
-    else created.ids.push(id);
+  const { created, skipped } = result;
+  pendingImport = created;
+
+  $("#preview-name").textContent = troupeLabel(created);
+  const count = created.ids.length;
+  $("#preview-meta").textContent = `Format: ${formatOf(created).label}`;
+  $("#preview-list").replaceChildren(...created.ids.map((id) => {
+    const c = characterById.get(id);
+    return el("li", {}, portrait(c, "mini"),
+      el("div", { class: "preview-info" }, el("span", { class: "preview-model", text: c.name }), factionLine(c)));
+  }));
+
+  const note = $("#preview-skipped");
+  if (skipped.length) {
+    const shown = skipped.slice(0, 4);
+    note.replaceChildren(
+      el("strong", { text: `${skipped.length} entr${skipped.length === 1 ? "y" : "ies"} will be left out:` }),
+      el("ul", {}, ...shown.map((s) => el("li", { text: s })),
+        skipped.length > shown.length ? el("li", { text: `…and ${skipped.length - shown.length} more.` }) : null)
+    );
+    note.hidden = false;
+  } else {
+    note.hidden = true;
   }
+  $("#preview-add").disabled = count === 0;
+
+  showImportStep("preview");
+  const dialog = $("#import-dialog");
+  if (!dialog.open) dialog.showModal();
+}
+
+function confirmImport() {
+  if (!pendingImport) return;
+  if (troupes.length >= MAX_TROUPES) {
+    return toast(`You can save at most ${MAX_TROUPES} troupes. Delete one first.`);
+  }
+  const created = pendingImport;
+  pendingImport = null;
   troupes.push(created);
   saveTroupes();
   renderTroupes();
-  toast(skipped
-    ? `"${troupeLabel(created)}" loaded. ${skipped} entr${skipped === 1 ? "y" : "ies"} did not fit and ${skipped === 1 ? "was" : "were"} skipped.`
-    : `"${troupeLabel(created)}" loaded.`);
+  $("#import-dialog").close();
+  if (!current) showView("troupes");
+  toast(`"${troupeLabel(created)}" added.`);
+}
+
+// Öffnet die Vorschau, wenn die Seite über einen geteilten Link (…/#t=Code) aufgerufen wurde.
+function checkIncomingLink() {
+  const hash = location.hash;
+  if (!hash.startsWith("#t=")) return;
+  history.replaceState(null, "", location.pathname + location.search);
+  openImportPreview(hash);
+}
+
+// Text in die Zwischenablage kopieren (mit Ausweichlösung für ältere Browser)
+async function copyText(text, okMessage) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast(okMessage);
+    return true;
+  } catch {
+    const tmp = el("textarea", { readonly: "", style: "position:fixed;left:-9999px;top:0;opacity:0" });
+    tmp.value = text;
+    document.body.append(tmp);
+    tmp.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch { /* ignorieren */ }
+    tmp.remove();
+    toast(ok ? okMessage : "Copying failed. Please try again.");
+    return ok;
+  }
+}
+
+// Datei speichern. Auf dem Handy über das Teilen-Menü ("In Dateien sichern"), sonst als normaler Download.
+async function saveFile(filename, blob) {
+  const file = new File([blob], filename, { type: blob.type });
+  const touch = window.matchMedia("(pointer: coarse)").matches;
+  if (touch && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: filename });
+      return true;
+    } catch (err) {
+      if (err && err.name === "AbortError") return false;   // der Nutzer hat abgebrochen
+      // sonst weiter mit dem normalen Download
+    }
+  }
+  const url = URL.createObjectURL(blob);
+  const link = el("a", { href: url, download: filename });
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  return true;
+}
+
+// Backup: alle Troupen in einer Datei
+const BACKUP_TYPE = "ttg-backup";
+
+async function exportBackup() {
+  if (!troupes.length) return toast("There are no troupes to back up yet.");
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const payload = {
+    type: BACKUP_TYPE,
+    v: 1,
+    exported: now.toISOString(),
+    troupes: troupes.map(({ name, format, ids }) => ({ name, format, ids })),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  if (await saveFile(`ttg-troupes-${stamp}.json`, blob)) toast("Backup created.");
+}
+
+// Backup einlesen: die Troupen werden zu den vorhandenen hinzugefügt. Was schon genau so da ist, wird übersprungen.
+async function importBackup(file) {
+  if (file.size > 1000000) return toast("This file is too large to be a backup.");
+  let obj;
+  try {
+    obj = JSON.parse(await file.text());
+  } catch {
+    return toast("The file could not be read.");
+  }
+  if (!obj || obj.type !== BACKUP_TYPE || !Array.isArray(obj.troupes)) {
+    return toast("This is not a TTG backup file.");
+  }
+  const keyOf = (t) => `${t.format}|${t.ids.join(",")}|${t.name}`;
+  const have = new Set(troupes.map(keyOf));
+  let added = 0, same = 0, full = 0, dropped = 0;
+  for (const item of obj.troupes) {
+    if (!item || typeof item !== "object") continue;
+    const clean = sanitize(item);
+    dropped += Math.max(0, (Array.isArray(item.ids) ? item.ids.length : 0) - clean.ids.length);
+    if (have.has(keyOf(clean))) { same++; continue; }
+    if (troupes.length >= MAX_TROUPES) { full++; continue; }
+    troupes.push({ id: newId(), ...clean });
+    have.add(keyOf(clean));
+    added++;
+  }
+  saveTroupes();
+  renderTroupes();
+  const parts = [`${added} troupe${added === 1 ? "" : "s"} restored`];
+  if (same) parts.push(`${same} already there`);
+  if (full) parts.push(`${full} skipped (limit ${MAX_TROUPES})`);
+  let message = parts.join(", ") + ".";
+  if (dropped) message += ` ${dropped} unknown model${dropped === 1 ? "" : "s"} left out.`;
+  toast(message);
 }
 
 
@@ -1328,34 +1504,51 @@ function wireEvents() {
     saveTroupes();
   });
 
-  // Export: Code direkt in die Zwischenablage
-  $("#copy").addEventListener("click", async () => {
+  // Export: ein kleines Fenster mit Teilen, Link kopieren und Code kopieren
+  const exportDialog = $("#export-dialog");
+  $("#copy").addEventListener("click", () => {
     if (!current || !current.ids.length) return toast("Add some models to the troupe first.");
-    const code = encodeTroupe(current);
+    const n = current.ids.length;
+    $("#export-summary").textContent = `${troupeLabel(current)} · ${n} model${n === 1 ? "" : "s"}`;
+    $("#export-share").hidden = typeof navigator.share !== "function";
+    exportDialog.showModal();
+  });
+  $("#export-close").addEventListener("click", () => exportDialog.close());
+  exportDialog.addEventListener("click", (e) => { if (e.target === exportDialog) exportDialog.close(); });
+  $("#export-share").addEventListener("click", async () => {
+    if (!current) return;
     try {
-      await navigator.clipboard.writeText(code);
-      toast("Troupe code successfully copied to clipboard.");
-    } catch {
-      // Ältere Browser: über ein unsichtbares Textfeld kopieren
-      const tmp = el("textarea", { readonly: "", style: "position:fixed;left:-9999px;top:0;opacity:0" });
-      tmp.value = code;
-      document.body.append(tmp);
-      tmp.select();
-      let ok = false;
-      try { ok = document.execCommand("copy"); } catch { /* ignorieren */ }
-      tmp.remove();
-      toast(ok ? "Troupe code successfully copied to clipboard." : "Copying failed. Please try again.");
+      await navigator.share({
+        title: troupeLabel(current),
+        text: `${troupeLabel(current)}: my troupe in the Tauber Tourist Guide`,
+        url: shareUrl(current),
+      });
+      exportDialog.close();
+    } catch (err) {
+      if (!err || err.name !== "AbortError") toast("Sharing did not work. Try copying the link instead.");
     }
   });
+  $("#export-link").addEventListener("click", async () => {
+    if (!current) return;
+    if (await copyText(shareUrl(current), "Link copied to clipboard.")) exportDialog.close();
+  });
+  $("#export-code").addEventListener("click", async () => {
+    if (!current) return;
+    if (await copyText(encodeTroupe(current), "Troupe code successfully copied to clipboard.")) exportDialog.close();
+  });
 
-  // Import: Knopf in der Übersicht öffnet ein kleines Fenster zum Einfügen
+  // Import: Knopf in der Übersicht öffnet ein kleines Fenster zum Einfügen, danach folgt die Vorschau
+  const importDialog = $("#import-dialog");
   $("#import-open").addEventListener("click", () => {
     $("#import-code").value = "";
-    $("#import-dialog").showModal();
+    pendingImport = null;
+    showImportStep("code");
+    importDialog.showModal();
   });
-  $("#import-cancel").addEventListener("click", () => $("#import-dialog").close());
-  $("#import-dialog").addEventListener("click", (e) => { if (e.target === $("#import-dialog")) $("#import-dialog").close(); });
-  // Enter im Eingabefeld startet den Import (Shift+Enter wäre ein Zeilenumbruch)
+  $("#import-cancel").addEventListener("click", () => importDialog.close());
+  importDialog.addEventListener("click", (e) => { if (e.target === importDialog) importDialog.close(); });
+  importDialog.addEventListener("close", () => { pendingImport = null; $("#import-code").value = ""; });
+  // Enter im Eingabefeld geht zur Vorschau (Shift+Enter wäre ein Zeilenumbruch)
   $("#import-code").addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
@@ -1364,10 +1557,19 @@ function wireEvents() {
   });
   $("#import").addEventListener("click", () => {
     const code = $("#import-code").value;
-    if (!code.trim()) return toast("Please paste a code first.");
-    $("#import-dialog").close();
-    importTroupe(code);
-    $("#import-code").value = "";
+    if (!code.trim()) return toast("Please paste a code or link first.");
+    openImportPreview(code);
+  });
+  $("#preview-back").addEventListener("click", () => { pendingImport = null; showImportStep("code"); });
+  $("#preview-add").addEventListener("click", confirmImport);
+
+  // Backup aller Troupen
+  $("#backup-export").addEventListener("click", exportBackup);
+  $("#backup-import").addEventListener("click", () => $("#backup-file").click());
+  $("#backup-file").addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = "";   // damit dieselbe Datei später nochmal gewählt werden kann
+    if (file) importBackup(file);
   });
 
   // Klick auf den abgedunkelten Rand schließt das Detailfenster
@@ -1417,15 +1619,16 @@ async function boot() {
 
   data.factions.forEach((f) => factionById.set(f.id, f));
   // Alte Einträge mit nur einer Fraktion ("faction") funktionieren weiter
+  const codeProblems = [];
   data.characters.forEach((c) => {
     if (!c.factions) c.factions = [c.faction];
     characterById.set(c.id, c);
     const short = idCode(c.id);
-    if (idByCode.has(short)) problems.push(`The troupe code cannot tell "${c.id}" and "${idByCode.get(short)}" apart. Rename one of the ids slightly.`);
+    if (idByCode.has(short)) codeProblems.push(`The troupe code cannot tell "${c.id}" and "${idByCode.get(short)}" apart. Rename one of the ids slightly.`);
     else idByCode.set(short, c.id);
   });
 
-  const problems = checkData();
+  const problems = [...codeProblems, ...checkData()];
   if (problems.length) {
     $("#cards").replaceChildren(
       el("p", { class: "empty", text: "Something is wrong in data/characters.json:" }),
@@ -1445,6 +1648,10 @@ async function boot() {
   foePanel = createFilterPanel($("#game-foe-filters"), renderGame);
   renderCards();
   renderTroupes();
+
+  // Geteilter Link (…/#t=Code): Vorschau zum Importieren öffnen
+  checkIncomingLink();
+  window.addEventListener("hashchange", checkIncomingLink);
 
   // Offline-Funktion einschalten. Wenn das nicht klappt, läuft die App einfach ohne.
   try {

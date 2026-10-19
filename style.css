@@ -422,9 +422,25 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
 .icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .export-btn { margin-top: 0.75rem; }
-#import-dialog { width: min(92vw, 28rem); }
-#import-dialog textarea { width: 100%; box-sizing: border-box; font-size: 16px; }   /* mindestens 16px, sonst zoomt iOS beim Antippen hinein */
+#import-dialog, #export-dialog { width: min(92vw, 28rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#import-dialog textarea { width: 100%; box-sizing: border-box; font-size: 16px; margin-top: 0.6rem; }   /* mindestens 16px, sonst zoomt iOS beim Antippen hinein */
+#import-dialog .section-label, #export-dialog .section-label { margin-top: 0; }
 .dialog-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.dialog-stack { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
+.dialog-stack button[hidden] { display: none; }
+
+/* Vorschau beim Import */
+.preview-title { margin: 0.5rem 0 0; font: 600 1.2rem/1.25 var(--font-display); overflow-wrap: anywhere; }
+.preview-list { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.35rem; max-height: 40vh; overflow-y: auto; }
+.preview-list li { display: flex; align-items: center; gap: 0.6rem; }
+.preview-list .portrait { flex: none; }
+.preview-info { display: grid; min-width: 0; }
+.preview-model { font-weight: 600; }
+#preview-skipped { margin: 0.75rem 0 0; }
+#preview-skipped ul { margin: 0.35rem 0 0; padding-left: 1.1rem; }
+
+/* Backup-Zeile unter der Troupe-Liste */
+.backup-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
 .troupe-name { font: 600 1.15rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .troupe-meta { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .mini-row { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.9rem; }

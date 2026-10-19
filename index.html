@@ -50,6 +50,13 @@
         No troupe yet. Tap the plus to create one.
       </p>
 
+      <!-- Sicherung aller Troupen in einer Datei -->
+      <div class="backup-row">
+        <button id="backup-export" class="ghost" type="button">Back up all troupes</button>
+        <button id="backup-import" class="ghost" type="button">Restore from file</button>
+        <input id="backup-file" type="file" accept=".json,application/json" hidden>
+      </div>
+
       <!-- Runder Knopf unten rechts; auf dem Handy mit bis zu 3 Troupes sieht er aus wie eine Troupe-Karte (siehe renderTroupes) -->
       <div id="new-wrap" class="new-wrap">
         <button id="new-troupe" class="add-btn" type="button" aria-label="Create new troupe"><span class="add-text"><span class="troupe-name">New troupe</span><span class="troupe-meta">Tap to create one</span><span class="mini-row"></span></span><span class="plus" aria-hidden="true"></span></button>
@@ -162,12 +169,40 @@
   </dialog>
 
   <dialog id="import-dialog" aria-label="Import troupe">
-    <h3 class="section-label">Import troupe</h3>
-    <p class="hint">Paste a troupe code. It is added as a new troupe.</p>
-    <textarea id="import-code" rows="4" placeholder="Paste code here" aria-label="Troupe code"></textarea>
+    <!-- Schritt 1: Code oder Link einfügen -->
+    <div id="import-step-code">
+      <h3 class="section-label">Import troupe</h3>
+      <p class="hint">Paste a troupe code or link. You can check it before it is added as a new troupe.</p>
+      <textarea id="import-code" rows="4" placeholder="Paste code or link here" aria-label="Troupe code or link"></textarea>
+      <div class="dialog-actions">
+        <button id="import" type="button">Continue</button>
+        <button id="import-cancel" class="ghost" type="button">Cancel</button>
+      </div>
+    </div>
+    <!-- Schritt 2: Vorschau -->
+    <div id="import-step-preview" hidden>
+      <h3 class="section-label">Check troupe</h3>
+      <p class="preview-title" id="preview-name"></p>
+      <p class="hint" id="preview-meta"></p>
+      <ul id="preview-list" class="preview-list"></ul>
+      <div id="preview-skipped" class="note" hidden></div>
+      <div class="dialog-actions">
+        <button id="preview-add" type="button">Add troupe</button>
+        <button id="preview-back" class="ghost" type="button">Back</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="export-dialog" aria-label="Export troupe">
+    <h3 class="section-label">Export troupe</h3>
+    <p class="hint" id="export-summary"></p>
+    <div class="dialog-stack">
+      <button id="export-share" type="button">Share…</button>
+      <button id="export-link" class="ghost" type="button">Copy link</button>
+      <button id="export-code" class="ghost" type="button">Copy code</button>
+    </div>
     <div class="dialog-actions">
-      <button id="import" type="button">Import</button>
-      <button id="import-cancel" class="ghost" type="button">Cancel</button>
+      <button id="export-close" class="ghost" type="button">Close</button>
     </div>
   </dialog>
 
