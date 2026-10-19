@@ -911,7 +911,7 @@ function renderEditor() {
         el("button", { class: "slot-open", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
           portraitCard(c),
           el("span", { class: "tile-factions" },
-            ...c.factions.map((fid) => factionBadge(factionById.get(fid)))
+            ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
           ),
           el("span", { class: "tile-label" },
             el("span", { class: "tile-name", text: c.name })
@@ -959,7 +959,7 @@ function renderSummons() {
         el("button", { class: "slot-open", type: "button", "aria-label": `${c.name} (summoned): open details`, onclick: () => openDetail(c.id) },
           portraitCard(c),
           el("span", { class: "tile-factions" },
-            ...c.factions.map((fid) => factionBadge(factionById.get(fid)))
+            ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
           ),
           el("span", { class: "tile-label" },
             el("span", { class: "tile-name", text: c.name })
@@ -1232,7 +1232,7 @@ function tileFor(c, selected, onclick, extraClass = "") {
     portraitCard(c),
     // Fraktionssymbole oben links in der Ecke (mit dunklem Verlauf), der Name bleibt unten
     el("span", { class: "tile-factions" },
-      ...c.factions.map((id) => factionBadge(factionById.get(id)))
+      ...c.factions.map((id) => el("span", { class: "dot", style: factionStyle(factionById.get(id)), title: factionById.get(id).name }))
     ),
     el("span", { class: "tile-label" },
       el("span", { class: "tile-name", text: c.name })
