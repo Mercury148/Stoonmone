@@ -19,6 +19,7 @@
   --danger: #a3262a;
 
   /* Fraktionsfarbe = Farbton (--h, kommt aus der JSON) + Sättigung + Helligkeit */
+  --portrait-bg: #383838;   /* neutraler Hintergrund hinter den (transparenten) Charakter-Portraits */
   --fac-s: 55%;
   --fac-l: 38%;
   --portrait-fg: #ffffff;
@@ -249,7 +250,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   letter-spacing: 0.02em;
   overflow: hidden;
 }
-.portrait img { width: 100%; height: 100%; object-fit: cover; }
+.portrait img { width: 100%; height: 100%; object-fit: cover; background: var(--portrait-bg); }
 .portrait.big { width: 4.5rem; height: 4.5rem; font-size: 1.5rem; }
 .portrait.small { width: 2.75rem; height: 2.75rem; font-size: 0.95rem; }
 .portrait.mini { width: 1.9rem; height: 1.9rem; font-size: 0.7rem; }
@@ -477,7 +478,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 .pcard svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .pcard svg circle, .pcard svg path { fill: hsl(var(--h) var(--fac-s) 44%); }
-.pcard img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pcard img { width: 100%; height: 100%; object-fit: cover; display: block; background: var(--portrait-bg); }
 
 /* Die acht Plätze oben: Portraits, Tipp = Karte ansehen */
 .slots { display: grid; gap: 0.5rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0.6rem 0 0.5rem; }   /* Handy: 4 pro Reihe, also 2 x 4 */

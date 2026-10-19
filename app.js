@@ -433,6 +433,8 @@ const FORMATS = [
   { id: "4",         label: "4 models",       max: 4,        play: 4 },
   { id: "5-8",       label: "5 of 8 models",  max: 8,        play: 5 },
   { id: "6-9",       label: "6 of 9 models",  max: 9,        play: 6 },
+  { id: "6-10",      label: "6 of 10 models", max: 10,       play: 6 },    
+  
   { id: "unlimited", label: "Unlimited",      max: Infinity, play: Infinity },
 ];
 const DEFAULT_FORMAT = "5-8";
