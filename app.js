@@ -322,14 +322,11 @@ function factionBadge(faction) {
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 function createFilterPanel(container, onChange) {
-  const state = { query: "", factions: new Set(), keywords: new Set(), synergies: new Set() };
+  const state = { query: "", factions: new Set(), synergies: new Set() };   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
   const search = el("input", { type: "search", placeholder: "Search (name, keyword, synergy)", "aria-label": "Search", autocomplete: "off" });
   const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
-  const summary = el("summary", {});
-  const chips = el("div", { class: "chips" });
-  const box = el("details", { class: "keyword-box" }, summary, chips);
   // Synergien: zusätzliche Schlagwörter pro Charakter ("synergies" in characters.json), die NICHT auf der Karte stehen
   const synSummary = el("summary", {});
   const synChips = el("div", { class: "chips" });
@@ -338,11 +335,10 @@ function createFilterPanel(container, onChange) {
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, search, box, synBox, factionRow, meta));
+  container.replaceChildren(el("div", { class: "filters" }, search, synBox, factionRow, meta));
 
-  const allKeywords = [...new Set(data.characters.flatMap((c) => c.keywords))].sort((a, b) => a.localeCompare(b, "en"));
-
-  const allSynergies = [...new Set(data.characters.flatMap((c) => c.synergies || []))].sort((a, b) => a.localeCompare(b, "en"));
+  // Keywords und Synergien werden zusammengeführt (jeder Begriff nur einmal)
+  const allSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))].sort((a, b) => a.localeCompare(b, "en"));
   synBox.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
 
   // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
@@ -369,27 +365,6 @@ function createFilterPanel(container, onChange) {
     );
   }
 
-  function renderKeywords() {
-    chips.replaceChildren(
-      ...allKeywords.map((keyword) =>
-        el("button", {
-          class: "chip",
-          type: "button",
-          "aria-pressed": String(state.keywords.has(keyword)),
-          text: keyword,
-          onclick: () => {
-            if (state.keywords.has(keyword)) state.keywords.delete(keyword);
-            else state.keywords.add(keyword);
-            renderKeywords();
-            onChange();
-          },
-        })
-      )
-    );
-    summary.textContent = "Keywords";
-    if (state.keywords.size) summary.append(el("span", { class: "keyword-selected", text: [...state.keywords].join(", ") }));
-  }
-
   function renderSynergies() {
     synChips.replaceChildren(
       ...allSynergies.map((tag) =>
@@ -411,17 +386,41 @@ function createFilterPanel(container, onChange) {
     if (state.synergies.size) synSummary.append(el("span", { class: "keyword-selected", text: [...state.synergies].join(", ") }));
   }
 
-  search.addEventListener("input", () => { state.query = search.value; onChange(); });
-  reset.addEventListener("click", () => {
-    state.query = ""; state.factions.clear(); state.keywords.clear(); state.synergies.clear();
+  // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff gleich angewählt und die Zeile geleert
+  function matchTag(text) {
+    const t = text.trim().toLowerCase();
+    if (!t) return null;
+    const variants = [t, t.replace(/ies$/, "y"), t.replace(/es$/, ""), t.replace(/s$/, "")];
+    return allSynergies.find((tag) => variants.includes(tag.toLowerCase())) || null;
+  }
+  // Kurze Tippvorsicht: erst wenn man einen Moment nicht tippt (oder Enter drückt), wird der Begriff angewählt.
+  // So wird aus "rogues" nicht erst "rogue" + "s".
+  let tagTimer = null;
+  function applyTagMatch() {
+    clearTimeout(tagTimer);
+    const tag = matchTag(search.value);
+    if (!tag) return;
+    state.synergies.add(tag);
     search.value = "";
-    renderKeywords();
+    state.query = "";
+    renderSynergies();
+    onChange();
+  }
+  search.addEventListener("input", () => {
+    state.query = search.value;
+    onChange();
+    clearTimeout(tagTimer);
+    tagTimer = setTimeout(applyTagMatch, 1000);
+  });
+  search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(); });
+  reset.addEventListener("click", () => {
+    state.query = ""; state.factions.clear(); state.synergies.clear();
+    search.value = "";
     renderSynergies();
     renderFactions();
     onChange();
   });
 
-  renderKeywords();
   renderSynergies();
   renderFactions();
 
@@ -433,11 +432,8 @@ function createFilterPanel(container, onChange) {
         if (state.factions.size && !c.factions.some((f) => state.factions.has(f))) return false;
         // Keywords und Synergien addieren sich: gezeigt wird, wer ein gewähltes Keyword ODER eine gewählte Synergie hat.
         // Innerhalb jeder Gruppe genügt ebenfalls eines davon. Ist nur eine Gruppe gewählt, gilt nur diese.
-        if (state.keywords.size || state.synergies.size) {
-          const byKeyword = state.keywords.size > 0 && c.keywords.some((k) => state.keywords.has(k));
-          const bySynergy = state.synergies.size > 0 && (c.synergies || []).some((k) => state.synergies.has(k));
-          if (!byKeyword && !bySynergy) return false;
-        }
+        // Gezeigt wird, wer mindestens einen der gewählten Begriffe als Keyword oder Synergie hat
+        if (state.synergies.size && ![...c.keywords, ...(c.synergies || [])].some((k) => state.synergies.has(k))) return false;
         if (query) {
           const text = [
             c.name,
@@ -452,21 +448,19 @@ function createFilterPanel(container, onChange) {
     },
     // Ist gerade eine Suche oder ein Filter aktiv?
     isFiltering() {
-      return Boolean(state.query.trim() || state.factions.size || state.keywords.size || state.synergies.size);
+      return Boolean(state.query.trim() || state.factions.size || state.synergies.size);
     },
     // Zählzeile aktualisieren
     showCount(shown, total = data.characters.length) {
       count.textContent = `${shown} of ${total} characters`;
-      reset.hidden = !(state.query || state.factions.size || state.keywords.size || state.synergies.size);
+      reset.hidden = !(state.query || state.factions.size || state.synergies.size);
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
-      state.query = ""; state.factions.clear(); state.keywords.clear(); state.synergies.clear();
+      state.query = ""; state.factions.clear(); state.synergies.clear();
       search.value = "";
-      renderKeywords();
-      renderSynergies();
+        renderSynergies();
       renderFactions();
-      box.open = false;
       synBox.open = false;
     },
     // Fraktionen, die nicht mehr möglich sind, werden abgedunkelt (null = alle möglich)
