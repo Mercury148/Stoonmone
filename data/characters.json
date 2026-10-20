@@ -114,7 +114,7 @@
       "name": "Barnakelle",
       "factions": ["dominion","shades"],
       "keywords": ["Troll","Spirit","Pirate"],
-      "synergies": ["Reanimation"],
+      "synergies": ["Reanimation","Water Features"],
       "health": [1,0,0,0,0,1,0,0,0,0,0,0],
       "image": "portraits/barnakelle.webp",
       "card": "images/Barnakelle_front.webp",

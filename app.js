@@ -450,6 +450,10 @@ function createFilterPanel(container, onChange) {
         return true;
       });
     },
+    // Ist gerade eine Suche oder ein Filter aktiv?
+    isFiltering() {
+      return Boolean(state.query.trim() || state.factions.size || state.keywords.size || state.synergies.size);
+    },
     // Zählzeile aktualisieren
     showCount(shown, total = data.characters.length) {
       count.textContent = `${shown} of ${total} characters`;
@@ -510,6 +514,7 @@ function fitsFactions(t, character) {
 // Formate: so viele Modelle hat die Troupe (max) und so viele davon treten im Spiel an (play).
 // Math.max/min kommen mit Infinity klar: "unlimited" hat keine Grenze.
 const FORMATS = [
+  { id: "3",         label: "3 models",       max: 3,        play: 3 },
   { id: "4",         label: "4 models",       max: 4,        play: 4 },
   { id: "5-8",       label: "5 of 8 models",  max: 8,        play: 5 },
   { id: "6-9",       label: "6 of 9 models",  max: 9,        play: 6 },
@@ -1108,7 +1113,25 @@ function openDetail(id) {
 // 1 = blauer Punkt (erzeugt Energy), 0 = leerer Punkt. Wunden werden von rechts gestrichen.
 const GAME_KEY = "ttg-game-v1";
 function gameSize() { return formatOf(current).play; }   // so viele Modelle treten im Spiel an (Infinity = beliebig viele)
-let game = null;          // { troupeId, stage, round, own: [ids], foe: [ids], models: { "side:id": { wounds, energy } } }
+let game = null;          // { troupeId, stage, round, own: [ids], opps: [{ key, name, ids }], models: { "side:id": { wounds, energy } } }
+const MAX_OPPONENTS = 4;  // höchstens 5 Spieler: du und bis zu 4 Gegner
+
+// Die Modell-Liste einer Seite: "own" = du, sonst der Schlüssel eines Gegners ("foe", "foe2", …)
+function sideIds(side) {
+  if (side === "own") return game.own;
+  const o = game.opps.find((x) => x.key === side);
+  return o ? o.ids : [];
+}
+function oppLabel(o) {
+  const i = game.opps.indexOf(o);
+  return o.name.trim() || (game.opps.length > 1 ? `Opponent ${i + 1}` : "Opponent");
+}
+function nextOppKey() {
+  for (let n = 1; ; n++) {
+    const key = n === 1 ? "foe" : `foe${n}`;
+    if (!game.opps.some((o) => o.key === key)) return key;
+  }
+}
 let foePanel;
 
 function saveGame() {
@@ -1120,7 +1143,15 @@ const MAX_ROUNDS = 5;   // Runde 5 ist "Sudden Death" (Sonnenaufgang)
 function loadGame() {
   try {
     const g = JSON.parse(localStorage.getItem(GAME_KEY));
-    if (g && typeof g === "object" && Array.isArray(g.own) && Array.isArray(g.foe) && g.models) {
+    if (g && typeof g === "object" && Array.isArray(g.own) && (Array.isArray(g.foe) || Array.isArray(g.opps)) && g.models) {
+      // Ältere Spielstände hatten genau einen Gegner in "foe"
+      if (!Array.isArray(g.opps)) g.opps = [{ key: "foe", name: "", ids: g.foe }];
+      delete g.foe;
+      g.opps = g.opps
+        .filter((o) => o && typeof o.key === "string" && Array.isArray(o.ids))
+        .map((o) => ({ key: o.key, name: typeof o.name === "string" ? o.name : "", ids: o.ids }))
+        .slice(0, MAX_OPPONENTS);
+      if (g.opps.length === 0) g.opps = [{ key: "foe", name: "", ids: [] }];
       g.round = Math.min(MAX_ROUNDS, Math.max(1, Number(g.round) || 1));
       return g;
     }
@@ -1129,7 +1160,7 @@ function loadGame() {
 }
 
 function newGame(troupeId) {
-  return { troupeId, stage: "setup", round: 1, own: [], foe: [], models: {} };
+  return { troupeId, stage: "setup", round: 1, own: [], opps: [{ key: "foe", name: "", ids: [] }], models: {} };
 }
 
 function gameModel(side, id) {
@@ -1162,7 +1193,7 @@ function twinOf(c) {
 
 // Die zweite Zeile: Beschworene, deren Beschwörer im Spiel ist, und der gerade nicht aktive Zwilling
 function gameSummons(side) {
-  const active = game[side];
+  const active = sideIds(side);
   return data.characters.filter((c) => {
     if (active.includes(c.id)) return false;
     const twin = twinOf(c);
@@ -1174,13 +1205,14 @@ function gameSummons(side) {
 // Verwandeln: Der Zwilling nimmt den Platz ein, Lebenspunkte und Energy bleiben erhalten
 function transformModel(side, c) {
   const twin = twinOf(c);
-  const i = game[side].indexOf(c.id);
+  const list = sideIds(side);
+  const i = list.indexOf(c.id);
   if (!twin || i < 0) return;
   const old = gameModel(side, c.id);
   const total = healthOf(twin) ? healthOf(twin).length : 30;
   game.models[`${side}:${twin.id}`] = { wounds: Math.min(old.wounds, total), energy: old.energy, summoned: true };
   game.models[`${side}:${c.id}`] = { wounds: 0, energy: 0 };
-  game[side][i] = twin.id;
+  list[i] = twin.id;
   saveGame();
   renderGamePlay();
 }
@@ -1195,26 +1227,30 @@ function openGame() {
     const twin = twinOf(c);   // ein verwandeltes Modell darf an seinem Platz bleiben
     return current.ids.includes(id) || (twin && current.ids.includes(twin.id));
   }).slice(0, gameSize());
-  game.foe = game.foe.filter((id) => characterById.has(id)).slice(0, gameSize());
-  if (game.own.length === 0 || game.foe.length === 0) game.stage = "setup";
+  for (const o of game.opps) o.ids = o.ids.filter((id) => characterById.has(id)).slice(0, gameSize());
+  if (game.own.length === 0 || game.opps.some((o) => o.ids.length === 0)) game.stage = "setup";
   foePanel.clear();
-  foeListOpen = !(Number.isFinite(gameSize()) && game.foe.length >= gameSize());
+  foeListOpen = false;   // die Charakterliste ist erst einmal ausgeblendet (Suche und Filter bleiben offen)
   foeSummonsOpen = false;
+  for (const k of Object.keys(summonMenuOpen)) delete summonMenuOpen[k];
   renderGame();
   showView("game");
+  // Frisches Spiel: gleich nach dem Namen des Gegners fragen (überspringbar)
+  if (game.stage === "setup" && game.opps.length === 1 && !game.opps[0].name.trim() && game.opps[0].ids.length === 0) openAddOpponent("name");
 }
 
+const summonMenuOpen = {};   // Summon-Menü pro Seite aufgeklappt? (standardmäßig nicht)
 let foeSummonsOpen = false;   // Liste der möglichen Beschwörungen des Gegners aufgeklappt?
 let foeListOpen = true;   // Liste der Gegner-Modelle aufgeklappt?
 
 function toggleGamePick(side, id) {
-  const list = game[side];
+  const list = sideIds(side);
   const i = list.indexOf(id);
   if (i >= 0) list.splice(i, 1);
   else if (list.length >= gameSize()) return toast(`Only ${gameSize()} models play in this format.`);
   else list.push(id);
-  // Sind alle Gegner-Modelle gewählt, klappt die Liste ein. Wird eines wieder entfernt, klappt sie auf.
-  if (side === "foe" && Number.isFinite(gameSize())) foeListOpen = list.length < gameSize();
+  // Sind alle Modelle dieses Gegners gewählt, klappt die Liste wieder ein
+  if (side !== "own" && Number.isFinite(gameSize()) && list.length >= gameSize()) foeListOpen = false;
   saveGame();
   renderGame();
 }
@@ -1278,14 +1314,13 @@ function gameCell(side, c) {
 
   // Beschworene Charaktere starten ausgegraut. Erst "Summon" bringt sie mit vollen Lebenspunkten und ohne Energy ins Spiel.
   // Der gerade nicht aktive Zwilling steht ausgegraut in der Beschworenen-Zeile (kein Summon-Knopf)
-  if (twinOf(c) && !game[side].includes(c.id)) {
+  if (twinOf(c) && !sideIds(side).includes(c.id)) {
     return el("div", { class: "gcell unsummoned" },
       el("div", { class: "gcell-media" },
         el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
         el("div", { class: "summon-note", text: "Transformed" })
       ),
-      el("div", { class: "gcell-name", text: c.name }),
-      el("div", { class: "hboxes none", text: "not in play" })
+      el("div", { class: "gcell-name", text: c.name })
     );
   }
 
@@ -1297,8 +1332,7 @@ function gameCell(side, c) {
         el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
         el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) })
       ),
-      el("div", { class: "gcell-name", text: c.name }),
-      el("div", { class: "hboxes none", text: "not in play" })
+      el("div", { class: "gcell-name", text: c.name })
     );
   }
 
@@ -1330,25 +1364,59 @@ function gameCell(side, c) {
 }
 
 function renderGamePlay() {
-  const fill = (side, rowId, summonId, summonWrap) => {
-    $(rowId).replaceChildren(...game[side].map((id) => gameCell(side, characterById.get(id))));
-    // Reihenfolge: aktuell beschworene Modelle zuerst, dann die übrigen in der normalen Reihenfolge,
-    // Zwillinge (z. B. Striga Anya, wird nie aktiv beschworen) ganz am Ende
+  // Reihenfolge der Beschworenen: aktuell beschworene Modelle zuerst, dann die übrigen in der normalen Reihenfolge,
+  // Zwillinge (z. B. Striga Anya, wird nie aktiv beschworen) ganz am Ende
+  const orderedSummons = (side) => {
     const rank = (c) => {
       if (twinOf(c)) return 2;
       const m = gameModel(side, c.id);
       const h = healthOf(c);
       return m.summoned && !(h && m.wounds >= h.length) ? 0 : 1;
     };
-    const summons = gameSummons(side)
+    return gameSummons(side)
       .map((c, i) => ({ c, i, r: rank(c) }))
       .sort((a, b) => a.r - b.r || a.i - b.i)
       .map((x) => x.c);
-    $(summonWrap).hidden = summons.length === 0;
-    $(summonId).replaceChildren(...summons.map((c) => gameCell(side, c)));
   };
-  fill("foe", "#game-foe-row", "#game-foe-summons", "#game-foe-summon-wrap");
-  fill("own", "#game-own-row", "#game-own-summons", "#game-own-summon-wrap");
+  // Beschworene: aktuell beschworene Modelle stehen immer sichtbar da. Alle übrigen möglichen Beschwörungen
+  // (und der inaktive Zwilling) verstecken sich in einem Menü, das standardmäßig eingeklappt ist.
+  const isActiveSummon = (side, c) => {
+    if (twinOf(c)) return false;
+    const m = gameModel(side, c.id);
+    const h = healthOf(c);
+    return Boolean(m.summoned) && !(h && m.wounds >= h.length);
+  };
+  const summonArea = (side, label) => {
+    const all = orderedSummons(side);
+    const active = all.filter((c) => isActiveSummon(side, c));
+    const idle = all.filter((c) => !isActiveSummon(side, c));
+    const menu = idle.length
+      ? el("details", { class: "summon-menu", open: Boolean(summonMenuOpen[side]), ontoggle: (e) => { summonMenuOpen[side] = e.target.open; } },
+          el("summary", { text: `Summons (${idle.length})` }),
+          el("div", { class: "grow summons" }, ...idle.map((c) => gameCell(side, c))))
+      : null;
+    if (!active.length && !menu) return null;
+    return el("div", { class: "summon-area" },
+      active.length
+        ? el("div", {},
+            el("h3", { class: "section-label", text: `${label}, summoned` }),
+            el("div", { class: "grow summons" }, ...active.map((c) => gameCell(side, c))))
+        : null,
+      menu
+    );
+  };
+  // Jeder Gegner bekommt einen eigenen Abschnitt mit seinem Namen
+  $("#game-foes-play").replaceChildren(
+    ...game.opps.map((o) =>
+      el("div", { class: "foe-play" },
+        el("h3", { class: "section-label", text: oppLabel(o) }),
+        el("div", { class: "grow" }, ...o.ids.map((id) => gameCell(o.key, characterById.get(id)))),
+        summonArea(o.key, oppLabel(o))
+      )
+    )
+  );
+  $("#game-own-row").replaceChildren(...game.own.map((id) => gameCell("own", characterById.get(id))));
+  $("#game-own-summon-area").replaceChildren(...[summonArea("own", "You")].filter(Boolean));
   const last = game.round >= MAX_ROUNDS;
   $("#game-round").textContent = last ? "Sudden Death" : `Round ${game.round}`;
   // Die Kopfzeile wird von Runde zu Runde röter: die Nacht geht zu Ende, in Runde 5 geht die Sonne auf
@@ -1361,10 +1429,10 @@ function renderGamePlay() {
 
 // Jedes Modell bekommt die Energy, die es laut Lebensleiste erzeugt. Übrige Energy verfällt dabei.
 function generateEnergy() {
-  for (const side of ["own", "foe"]) {
-    for (const c of [...game[side].map((id) => characterById.get(id)), ...gameSummons(side)]) {
+  for (const side of ["own", ...game.opps.map((o) => o.key)]) {
+    for (const c of [...sideIds(side).map((id) => characterById.get(id)), ...gameSummons(side)]) {
       const m = gameModel(side, c.id);
-      if (twinOf(c) && !game[side].includes(c.id)) continue;   // inaktiver Zwilling: nicht im Spiel
+      if (twinOf(c) && !sideIds(side).includes(c.id)) continue;   // inaktiver Zwilling: nicht im Spiel
       if (isSummoned(c) && !twinOf(c) && (!m.summoned || (healthOf(c) && m.wounds >= healthOf(c).length))) continue;   // nicht im Spiel
       m.energy = energyGenerated(c, m.wounds) || 0;
     }
@@ -1400,7 +1468,87 @@ function resetGame() {
 }
 
 // Spalten der Spielansicht: 4 Modelle in 4 Spalten, 5 in 5, 6 als 3x2, sonst 5 nebeneinander
-const GAME_COLUMNS = { 4: 4, 5: 5, 6: 3 };
+const GAME_COLUMNS = { 3: 3, 4: 4, 5: 5, 6: 3 };
+
+// Ein Modell aus der Gegnerliste: bei einem Gegner direkt (antippen = hinzufügen/entfernen).
+// Bei mehreren: kann nur ein Gegner das Modell nehmen, bekommt er es sofort, sonst fragen wir, für wen.
+function addToOpponent(o, id) {
+  const size = gameSize();
+  o.ids.push(id);
+  if (Number.isFinite(size) && o.ids.length >= size) foeListOpen = false;
+  saveGame();
+  renderGame();
+}
+// Warum ein Gegner das Modell nicht nehmen kann (null = kann es nehmen)
+function oppBlocked(o, c) {
+  const size = gameSize();
+  if (o.ids.includes(c.id)) return "already in";
+  if (Number.isFinite(size) && o.ids.length >= size) return "full";
+  if (RULES.sameFaction && o.ids.length > 0 && !fitsFactions({ ids: o.ids }, c)) return "other faction";
+  return null;
+}
+function pickFoe(id) {
+  if (game.opps.length === 1) return toggleGamePick(game.opps[0].key, id);
+  const c = characterById.get(id);
+  const size = gameSize();
+  const blocked = (o) => oppBlocked(o, c);
+  const eligible = game.opps.filter((o) => !blocked(o));
+  if (eligible.length === 0) return toast(`${c.name} fits none of the opponents.`);
+  if (eligible.length === 1) return addToOpponent(eligible[0], id);
+  const dlg = $("#opp-pick-dialog");
+  $("#opp-pick-title").textContent = `Add ${c.name} to which opponent?`;
+  $("#opp-pick-list").replaceChildren(
+    ...game.opps.map((o) => {
+      const why = blocked(o);
+      return el("button", { type: "button", class: "opp-choice", disabled: Boolean(why),
+        onclick: () => { dlg.close(); addToOpponent(o, id); } },
+        el("span", { text: oppLabel(o) }),
+        el("span", { class: "opp-note", text: why || shownCount(o.ids.length) })
+      );
+    })
+  );
+  dlg.showModal();
+}
+function shownCount(n) {
+  const size = gameSize();
+  return Number.isFinite(size) ? `${n}/${size}` : String(n);
+}
+
+function removeOpponent(key) {
+  if (game.opps.length <= 1) return;
+  game.opps = game.opps.filter((o) => o.key !== key);
+  for (const k of Object.keys(game.models)) if (k.startsWith(`${key}:`)) delete game.models[k];
+  saveGame();
+  renderGame();
+}
+
+// "Add opponent": erst ein Name (Pflicht), dann wird der Gegner angelegt
+let oppDialogMode = "add";   // "add" = neuer Gegner, "name" = den ersten Gegner benennen (nach "Play with this troupe")
+function openAddOpponent(mode = "add") {
+  if (mode === "add" && game.opps.length >= MAX_OPPONENTS) return toast(`At most ${MAX_OPPONENTS + 1} players can take part (you and ${MAX_OPPONENTS} opponents).`);
+  oppDialogMode = mode;
+  $("#opp-add-title").textContent = mode === "name" ? "Name your opponent" : "Add opponent";
+  $("#opp-add-hint").textContent = mode === "name" ? "Who are you playing against? You can change the name later." : "Give the new opponent a name first.";
+  $("#opp-add-ok").textContent = mode === "name" ? "OK" : "Add";
+  $("#opp-add-cancel").textContent = mode === "name" ? "Skip" : "Cancel";
+  const dlg = $("#opp-add-dialog");
+  $("#opp-add-name").value = "";
+  $("#opp-add-ok").disabled = true;
+  dlg.showModal();
+  $("#opp-add-name").focus();
+}
+function confirmAddOpponent() {
+  const name = $("#opp-add-name").value.trim();
+  if (!name) return;
+  if (oppDialogMode === "name") game.opps[0].name = name;
+  else {
+    if (game.opps.length >= MAX_OPPONENTS) return;
+    game.opps.push({ key: nextOppKey(), name, ids: [] });
+  }
+  saveGame();
+  $("#opp-add-dialog").close();
+  renderGame();
+}
 
 function renderGame() {
   $("#view-game").style.setProperty("--gcols", GAME_COLUMNS[gameSize()] || 5);
@@ -1409,37 +1557,69 @@ function renderGame() {
   $("#game-play").hidden = setup;
   $("#game-title").textContent = setup ? "Choose models" : "Game";
   $("#game-round").hidden = setup;
+  $("#game-add-foe").hidden = !setup;
   if (setup) { delete $("#view-game .editor-bar").dataset.round; delete document.body.dataset.round; }
 
   if (setup) {
     const size = gameSize();
     const shown = (n) => (Number.isFinite(size) ? `${n}/${size}` : String(n));
-    $("#game-own-count").textContent = shown(game.own.length);
-    $("#game-foe-count").textContent = shown(game.foe.length);
     $("#game-own-hint").textContent = Number.isFinite(size) ? `Choose the ${size} models you play this game.` : "Choose the models you play this game.";
     $("#game-own-tiles").replaceChildren(
       ...current.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, game.own.includes(c.id), () => toggleGamePick("own", c.id)))
     );
-    // Gewählte Gegner-Modelle stehen oben in leeren Plätzen, damit beim Auswählen nichts springt
-    const chosen = game.foe.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick("foe", c.id)));
-    const slots = Number.isFinite(size) ? Math.max(0, size - chosen.length) : 1;   // voll: kein leerer Platz mehr
-    $("#game-foe-chosen").replaceChildren(...chosen, ...Array.from({ length: slots }, () => el("div", { class: "tile-empty", "aria-hidden": "true" })));
+    $("#game-own-count").textContent = shown(game.own.length);
+
+    // Ein Block pro Gegner: links das Namensfeld, daneben die Anzahl. Gewählte Modelle stehen oben in leeren Plätzen, damit beim Auswählen nichts springt.
+    const multi = game.opps.length > 1;
+    $("#game-foes").replaceChildren(
+      ...game.opps.map((o, n) => {
+        const chosen = o.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick(o.key, c.id)));
+        const slots = Number.isFinite(size) ? Math.max(0, size - chosen.length) : 1;   // voll: kein leerer Platz mehr
+        const name = el("input", { class: "foe-name", type: "text", maxlength: "30", autocomplete: "off", placeholder: multi ? `Opponent ${n + 1}` : "Opponent", "aria-label": "Opponent name", value: o.name });
+        name.addEventListener("input", () => { o.name = name.value; saveGame(); });
+        return el("div", { class: "foe-block" },
+          el("div", { class: "foe-head" },
+            name,
+            el("span", { class: "badge", text: shown(o.ids.length) }),
+            multi ? el("button", { class: "ghost foe-remove", type: "button", "aria-label": `Remove ${oppLabel(o)}`, text: "✕", onclick: () => removeOpponent(o.key) }) : null
+          ),
+          el("div", { class: "tiles" }, ...chosen, ...Array.from({ length: slots }, () => el("div", { class: "tile-empty", "aria-hidden": "true" })))
+        );
+      })
+    );
+    const addBtn = $("#game-add-foe");
+    addBtn.hidden = false;
+    addBtn.classList.toggle("is-full", game.opps.length >= MAX_OPPONENTS);
+
     // Wie im Troupe-Builder: Fraktionen und Modelle, die nicht zu den schon gewählten Gegner-Modellen passen, werden abgedunkelt bzw. ausgeblendet
-    const foeTroupe = { ids: game.foe };
-    foePanel.setAllowed(RULES.sameFaction && game.foe.length > 0 ? allowedFactions(foeTroupe) : null);
-    const list = foePanel.list().filter((c) => !isSummoned(c) && (game.foe.includes(c.id) || fitsFactions(foeTroupe, c)));
+    // (nur bei einem Gegner; bei mehreren entscheidet die Abfrage "für wen?")
+    const solo = game.opps.length === 1 ? { ids: game.opps[0].ids } : null;
+    let allowedSet = null;
+    if (RULES.sameFaction) {
+      if (solo) allowedSet = solo.ids.length > 0 ? allowedFactions(solo) : null;
+      else {
+        // Mehrere Gegner: erlaubt ist, was mindestens ein noch nicht voller Gegner nehmen kann
+        const open = game.opps.filter((o) => !(Number.isFinite(size) && o.ids.length >= size));
+        allowedSet = open.some((o) => o.ids.length === 0) ? null : new Set(open.flatMap((o) => [...allowedFactions({ ids: o.ids })]));
+      }
+    }
+    foePanel.setAllowed(allowedSet);
+    const allFoeIds = game.opps.flatMap((o) => o.ids);
+    // Ein Gegner: Modelle, die nicht passen, verschwinden. Mehrere: Modelle, die zu keinem Gegner passen, verschwinden.
+    const list = foePanel.list().filter((c) => !isSummoned(c) && (solo
+      ? allFoeIds.includes(c.id) || fitsFactions(solo, c)
+      : game.opps.some((o) => !oppBlocked(o, c))));
     foePanel.showCount(list.length, data.characters.filter((c) => !isSummoned(c)).length);
-    $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, game.foe.includes(c.id), () => toggleGamePick("foe", c.id))));
-    // Alle Gegner-Modelle gewählt: Liste einklappen, per Knopf wieder aufklappbar
-    const foeFull = Number.isFinite(size) && game.foe.length >= size;
-    const collapsed = !foeListOpen;
-    $("#game-foe-picker").hidden = collapsed;
+    $("#game-foe-tiles").replaceChildren(...list.map((c) => tileFor(c, allFoeIds.includes(c.id), () => pickFoe(c.id))));
+    // Suche und Filter bleiben immer offen; die Charakterliste selbst nur per Knopf oder sobald gesucht/gefiltert wird
+    const listShown = foeListOpen || foePanel.isFiltering();
+    $("#game-foe-tiles").hidden = !listShown;
     const toggle = $("#game-foe-toggle");
     toggle.hidden = false;   // immer da, damit das Layout gleich bleibt
-    toggle.textContent = !collapsed ? "Hide list" : foeFull ? "Change opponent models" : "Show list";
-    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.textContent = foeListOpen ? "Hide list" : "Show all Characters";
+    toggle.setAttribute("aria-expanded", String(listShown));
     // Mögliche Beschwörungen der gewählten Gegner-Modelle (nur zum Anschauen, Tippen öffnet die Karte)
-    const possible = gameSummons("foe");
+    const possible = [...new Map(game.opps.flatMap((o) => gameSummons(o.key)).map((c) => [c.id, c])).values()];
     const sumToggle = $("#game-foe-summons-toggle");
     sumToggle.textContent = foeSummonsOpen ? "Hide summons" : "Show summons";
     sumToggle.setAttribute("aria-expanded", String(foeSummonsOpen));
@@ -1447,7 +1627,7 @@ function renderGame() {
     $("#game-foe-summons-none").hidden = possible.length > 0;
     $("#game-foe-summons-hint").hidden = possible.length === 0;
     $("#game-foe-summons-list").replaceChildren(...possible.map((c) => tileFor(c, false, () => openDetail(c.id))));
-    $("#game-start").disabled = game.own.length === 0 || game.foe.length === 0;
+    $("#game-start").disabled = game.own.length === 0 || game.opps.some((o) => o.ids.length === 0);
   } else {
     renderGamePlay();
   }
@@ -1854,6 +2034,17 @@ function wireEvents() {
   $("#game-back").addEventListener("click", () => { renderEditor(); showView("editor"); });
   $("#game-foe-summons-toggle").addEventListener("click", () => { foeSummonsOpen = !foeSummonsOpen; renderGame(); });
   $("#game-foe-toggle").addEventListener("click", () => { foeListOpen = !foeListOpen; renderGame(); });
+  $("#game-add-foe").addEventListener("click", () => openAddOpponent("add"));
+  const addName = $("#opp-add-name");
+  addName.addEventListener("input", () => { $("#opp-add-ok").disabled = !addName.value.trim(); });
+  addName.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); confirmAddOpponent(); } });
+  $("#opp-add-ok").addEventListener("click", confirmAddOpponent);
+  $("#opp-add-cancel").addEventListener("click", () => $("#opp-add-dialog").close());
+  $("#opp-pick-cancel").addEventListener("click", () => $("#opp-pick-dialog").close());
+  for (const id of ["#opp-add-dialog", "#opp-pick-dialog"]) {
+    const d = $(id);
+    d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
+  }
   $("#game-start").addEventListener("click", startGame);
   $("#game-next-round").addEventListener("click", nextRound);
   twoTap($("#game-reset"), "Really reset?", resetGame);

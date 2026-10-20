@@ -100,13 +100,13 @@
         <button id="game-back" class="ghost back" type="button">Back</button>
         <h2 id="game-title" class="game-title">Game</h2>
         <span id="game-round" class="badge big"></span>
+        <button id="game-add-foe" class="ghost add-foe" type="button" hidden>Add opponent</button>
       </div>
 
       <!-- Auswahl: 5 Modelle der eigenen Troupe, 5 des Gegners -->
       <div id="game-setup" hidden>
         <!-- Zuerst der Gegner (wird beim Aufstellen laufend angeklickt), darunter die eigenen Modelle -->
-        <h3 class="section-label">Opponent <span class="badge" id="game-foe-count"></span></h3>
-        <div id="game-foe-chosen" class="tiles"></div>
+        <div id="game-foes"></div>
         <div class="foe-actions">
           <button id="game-foe-toggle" class="ghost" type="button"></button>
           <button id="game-foe-summons-toggle" class="ghost" type="button"></button>
@@ -137,19 +137,11 @@
           <button id="game-reset" class="ghost" type="button">Reset game</button>
         </div>
 
-        <h3 class="section-label">Opponent</h3>
-        <div id="game-foe-row" class="grow"></div>
-        <div id="game-foe-summon-wrap" hidden>
-          <h3 class="section-label">Opponent, summoned</h3>
-          <div id="game-foe-summons" class="grow"></div>
-        </div>
+        <div id="game-foes-play"></div>
 
         <h3 class="section-label">You</h3>
         <div id="game-own-row" class="grow"></div>
-        <div id="game-own-summon-wrap" hidden>
-          <h3 class="section-label">You, summoned</h3>
-          <div id="game-own-summons" class="grow"></div>
-        </div>
+        <div id="game-own-summon-area"></div>
       </div>
     </section>
 
@@ -216,6 +208,24 @@
     </div>
     <div class="dialog-actions">
       <button id="export-close" class="ghost" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <dialog id="opp-add-dialog" aria-label="Add opponent">
+    <h3 class="section-label" id="opp-add-title">Add opponent</h3>
+    <p class="hint" id="opp-add-hint">Give the new opponent a name first.</p>
+    <input id="opp-add-name" type="text" maxlength="30" autocomplete="off" placeholder="Opponent name" aria-label="Opponent name">
+    <div class="dialog-actions">
+      <button id="opp-add-ok" type="button" disabled>Add</button>
+      <button id="opp-add-cancel" class="ghost" type="button">Cancel</button>
+    </div>
+  </dialog>
+
+  <dialog id="opp-pick-dialog" aria-label="Choose opponent">
+    <h3 class="section-label" id="opp-pick-title"></h3>
+    <div id="opp-pick-list" class="dialog-stack"></div>
+    <div class="dialog-actions">
+      <button id="opp-pick-cancel" class="ghost" type="button">Cancel</button>
     </div>
   </dialog>
 

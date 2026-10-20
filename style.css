@@ -1220,3 +1220,42 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 
 /* Alle Kacheln im Kompendium gleich groß: alle Zeilen so hoch wie die höchste Kachel */
 .cards { grid-auto-rows: 1fr; }
+
+/* ---------- 3 Modelle: Plätze im Editor ---------- */
+#editor-slots[data-format="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (min-width: 720px) { #editor-slots[data-format="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 28rem; } }
+
+/* ---------- Gegner in der Gameview ---------- */
+.add-foe { flex: none; padding: 0.35rem 0.7rem; font-size: 0.85rem; white-space: nowrap; }
+.add-foe.is-full { opacity: 0.45; }
+.foe-block { margin-top: 0.75rem; }
+.foe-head { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem; }
+.foe-name { flex: 1; min-width: 0; font: 600 1rem/1.3 var(--font-display); }
+.foe-head .badge { margin: 0; flex: none; }
+.foe-remove { flex: none; min-height: 36px; padding: 0 0.6rem; }
+.foe-play + .foe-play { margin-top: 0.5rem; }
+#opp-add-dialog, #opp-pick-dialog { width: min(92vw, 24rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#opp-add-dialog .section-label, #opp-pick-dialog .section-label { margin-top: 0; text-transform: none; letter-spacing: 0; font-size: 1rem; }
+#opp-add-name { width: 100%; box-sizing: border-box; font-size: 16px; margin-top: 0.4rem; }
+.opp-choice { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; text-align: left; }
+.opp-choice:disabled { opacity: 0.45; }
+.opp-note { font-size: 0.8rem; font-weight: 400; opacity: 0.8; white-space: nowrap; }
+
+/* Abstand über den Knöpfen "Show all Characters / Show summons" so groß wie darunter */
+.foe-actions { margin-top: 0.5rem; }
+
+/* ---------- Beschworene in der Spielansicht ---------- */
+/* Schmaler: 5 pro Reihe, damit höchstens 9 Beschwörungen in 2 Reihen passen */
+.grow.summons { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.summon-area { margin-top: 0.4rem; }
+.summon-menu { margin-top: 0.5rem; }
+.summon-menu > summary { cursor: pointer; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-weight: 600; font-size: 0.9rem; list-style: none; }
+.summon-menu > summary::-webkit-details-marker { display: none; }
+.summon-menu > summary::before { content: "›"; display: inline-block; margin-right: 0.5rem; transition: transform 0.15s; }
+.summon-menu[open] > summary::before { transform: rotate(90deg); }
+.summon-menu > .grow { margin-top: 0.4rem; }
+
+/* Nicht beschworene Summons: ca. 30 % flacher. Unter dem Namen steht nichts mehr, der Rest wird mittig (oben und unten gleich viel) vom Bild abgeschnitten */
+.gcell.unsummoned .gcell-portrait { aspect-ratio: 11 / 10; }
+.gcell.unsummoned .pcard img, .gcell.unsummoned .pcard svg { object-fit: cover; object-position: center; }
+@media (min-width: 720px) { .gcell.unsummoned .gcell-portrait { aspect-ratio: 59 / 50; } }
