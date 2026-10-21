@@ -2,5 +2,1114 @@
  "meta": {
   "title": "FAQs"
  },
- "sections": []
+ "sections": [
+  {
+   "id": "general-gameplay",
+   "title": "General Gameplay",
+   "blocks": [
+    {
+     "t": "group",
+     "title": "Is pre-measuring allowed?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can line of sight between two 30mm models be blocked solely by one intervening 30mm model?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No (the same is true for two 40mm models and another intervening 40mm model)."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Do models ignore friendly characters within 1\" for line of sight?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No, they are only ignored for the purpose of cover, not line of sight."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Is a model that is exactly 1” away from another model considered to be within 1” of that model (i.e. two models which were in base contact, then one stepped 1” directly away)?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can a model squeeze through a gap that is smaller than its base size, like an open door?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes. Open doors or are considered as Open Ground with the two walls either sided considered as Barriers. Models can squeeze through gaps between two items of terrain, or between an item of terrain and a friendly model, or between two friendly models, as long they can end the move with sufficient room for their base to be placed flat on the table without overlapping another model’s base."
+      },
+      {
+       "t": "p",
+       "x": "You may not squeeze through gaps created by enemy models or enemy models and terrain."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can a model be 'squeezed' through a gap outside it's activation?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No"
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can I squeeze through two terrain features, such as Wooded Patches and Water Features, in a similar way to other pieces of terrain?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes"
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "How do I measure distances when 'Squeezing' through a gap?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "When ‘Squeezing’ through gaps, the centre of the model’s base must pass directly through the exact centre of the gap. Measure the model’s movement directly along this path."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Are the Arcane Deck and Melee Deck shared by all players?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "What happens to moonstones carried by models when they are slain?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "The active player (usually the player who just caused the model to be slain) places any moonstones the slain model was carrying in base contact with the model, displaying a depth value of ‘1’ and then removes the slain model from the board."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "How is a 'place' effect different from a 'move' effect?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "‘Place’ effects don't require a path of movement, unlike move effects, and so can be done over obstacles, barriers and other models."
+      },
+      {
+       "t": "p",
+       "x": "Additionally, ‘place’ effects can be done nearest base edge to nearest base edge, unlike movements, and may therefore result in further repositioning."
+      },
+      {
+       "t": "p",
+       "x": "Finally, as this isn't a movement it doesn't trigger abilities based on movement (such as ‘Quite Terrifying’)."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can you use a place ability to place a character off the table and remove them from play?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No, a model which is ‘placed’ must be placed on the table and not off it."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "What is the ‘O’ symbol after ‘Once Per Game’?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "The round symbol is a space for players to mark in a dot with a dry wipe marker once the ability has been used. In testing, we have found this a useful way of tracking abilities, for example if a weapon requires reloading or is ready to fire."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "How much terrain do I need for a game?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "A 'medium' amount, split the table into a grid, avoid symmetrical layouts, and have a variety of terrain. Read Mick's article to find out more."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "What happens if a character has the same ability multiple times (aka do things stack)?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Abilities and stat modifying effects stack in Moonstone so they would all be used:"
+      },
+      {
+       "t": "p",
+       "x": "For example, if a character with ‘Weakling’ gained ‘Weakling’ again then effects would stack, so they would deal -1-1(=-2) damage in melee and harvest actions would cost +1+1(=+2) more."
+      },
+      {
+       "t": "p",
+       "x": "Some abilities are worded such that despite stacking they have no additional effect. This includes ‘Slow’ which doesn’t reduce or increase Jogs but limits them to 2” and ‘Protection’ which triggers (including all ‘stacks’) immediately upon receiving damage."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "When performing a Jog or otherwise making another movement, do I have to move the full distance?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No, if you had a Jog of 4”, you can move up to a maximum of that distance, you could move 3 and a half inches if desired."
+      },
+      {
+       "t": "p",
+       "x": "The only exception is moves which are made directly towards or directly away from something. In these cases, the maximum possible distance must be moved."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can I climb on top of obstacles?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, if in base contact with a terrain piece that could be traversed, you may perform a traverse action to be placed on top of it. This can only be done if the top of the surface is flat and there is room for the model’s base."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Does a pulse ability need line of sight to a model within range to effect them?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No, however, in order for a model to be affected you must be able to draw a path from the originator to the model. This path need not be straight, but it cannot leave the pulse area or cross anything that normally blocks line of sight."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "What is meant by 'Evade Stat -1 or lower' & 'Evade Stat +1 or higher'?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "An ‘Evade Stat of -1 or lower’ is an Evade Stat which is numerically lower than -1, e.g. -1, -2, -3..."
+      },
+      {
+       "t": "p",
+       "x": "Similarly, an ‘Evade Stat of +1 or higher’ is an Evade Stat which is numerically higher than +1, e.g. +1, +2, +3..."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "When a model gets or gains +1 Evade Stat, is there evade set at +1 or increased by +1?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Increased, so if a character with +2 Evade Stat gets/gains +1 Evade Stat, they will end up with an Evade Stat of +3.\nSimilarly, a character with -2 Evade Stat losing -1 Evade Stat will end up with -3 Evade Stat."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "How should pulse abilities be resolved if multiple characters are affected or if the ability has several affects?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Simultaneously if at all possible. E.g. if Kalista uses 'Paroxysm' on multiple characters, all characters should simultaneously suffer and resolve wounds, removing any models if they are slain. Then the second part of the ability should be resolved on all remaining models, simultaneously if possible. If it is not possible to resolve the moves simultaneously (for example these moves might cause an affected model to bump into another affected model), then the user of the pulse ability (Kalista in this case) should resolve in an order of their choosing."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can a character that was summoned still Jog the turn it was summoned?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes"
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "If a character is base-to-base with a terrain feature, are they considered to be within it?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No"
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "When a character with a Moonstone is slain and no-one is the active character, such as during the discard step when curses deal Wds, who places the Moonstone?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "The player who controls the slain model places the Moonstone."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can characters with an ability which allows them to Jog over models, such as Faeries and The Jackalope, Jog over enemy models?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, but the Jog must end in base contact with any enemies jogged over so that the character doesn’t Jog further away from an engaging character. (The jogging character counts as being in base to base contact whilst jogging over the enemy, and so must end in base to base contact)"
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "When a character drains and redistributes energy, such as Creep's 'Incubus' or Diana's 'Feed on Fear', does the recipient of the energy gain energy equal to the value of the card played, or equal to the energy lost?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "The recipient of the energy would gain energy equal to energy lost. I.e. If Gotchgut with 2 energy was targeted by Creep’s ‘Incubus’ and a Pink 3 was played, 2 energy would be lost by Gotchgut and 2 energy would be gained by another model."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "When a character swaps position with a nearby friendly character, may it 'swap' with itself, thereby not actually changing its position?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "No, effects that swap positions with a character must be done on another character"
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "How many Reactions Steps can you take against actions which generate additional actions (i.e. a character using Mind Control forces a character to take a Harvest action)?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "You may take one Reaction Step for the original action only. I.e. One for the Mind Control action, but none for the additional Harvest action taken during the resolution of Mind Control."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "combat",
+   "title": "Combat",
+   "blocks": [
+    {
+     "t": "group",
+     "title": "What is the order of resolution in full for melee?",
+     "blocks": [
+      {
+       "t": "ul",
+       "ordered": true,
+       "items": [
+        "Choose a target for the melee attack which is in melee range and can have line of sight drawn to it",
+        "If the target has any abilities that trigger upon being targeted (such as ‘Look of Innocence’ on Natty or 'Foreboding' on The Duchess) they are resolved now",
+        "The attacker draws melee cards (equal to Melee Stat, plus / minus any modifiers - including +2 Melee Stat for being the attacker) and this is always at least 1 card",
+        "The defender draws melee cards (equal to their Melee Stat’ plus / minus any modifiers), which is always at least 1 card",
+        "The attacker may ‘go for it’",
+        "The defender may ‘go for it’",
+        "If an ability which requires a players melee hand to be revealed (such as ‘Predictable Combatant’ on Loubard or ‘Seen It All Before’ on Old Calders), players reveal hand their hand now",
+        "Both players play a melee card facedown",
+        "Players reveal cards simultaneously",
+        "If an ability gives the option to change which melee card was played (such as ‘Two Heads are Better than One’ on Dim & Dimmer or ‘Perfect Form’ on Iris & Hellebore), players make that choice now (if both players have such an ability, the attacker chooses who has to choose first)",
+        "Both players may play any critical hits if they have them",
+        "The attacker may choose to upgrade to their Signature Move if applicable",
+        "The defender may choose to upgrade to their Signature Move if applicable",
+        "Resolve damage on the cards plus/minus any modifiers (if a character is slain here, do not remove their miniature from the table yet as their position may be relevant for resolving possible end-step effects. If the slain character was holding any Moonstones, they are dropped now as usual.)",
+        "If a character has an ability which is triggered off dealing Wds (such as ‘Spiteful’ on The Fencer) it is resolved now",
+        "Resolve any follow-up attacks or, if both players have follow-up attacks, instead return to Step 8 (in the rare case a character has a follow up attack but has been slain they do not get the follow up attack, similarly if a character has a follow up attack but their enemy has already been slain they do not get a follow up attack)",
+        "Resolve any end-step effects - the attacker chooses the order if the order of resolution is relevant",
+        "If a character was slain their miniature is now removed from the table"
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Does it matter whether attackers or defenders draw their combat and arcane cards first?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes. Attackers always draw their cards first."
+      },
+      {
+       "t": "p",
+       "x": "In most cases this will make no difference but occasionally, such as after Young Jack has used his ‘Lucky’ ability, it could be important."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can you target models with Active or Arcane Abilities (such as ‘Shoot Pistol’ or ‘Healing’) if they are engaged in Melee?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, unless the ability specifically says otherwise, you are not restricted from targeting engaged models provided you can draw line of sight as normal."
+      },
+      {
+       "t": "p",
+       "x": "Note, however, that intervening models (friendly and enemy) do block line of sight and do provide cover. So if there are intervening models between the active model and the target, then the active model will have a reduced hand, or if the scene is so crowned that line of sight cannot be drawn at all then the target cannot be chosen."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "What happens if you play a Critical Hit in Melee and then upgrade to your Signature Move?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "The damage on the Signature Move is multiplied (x2 or x3 accordingly) as are any other effects printed on the Signature Move, including damage or wounds dealt, damage or wounds reduced, wounds restored, distances moved, stats modified, energy gained, energy lost, abilities gained. Any other numbers are not multiplied, including: ranges and area of effects in inches, Moonstones lost and gained, and numbers listed as criteria for effects to occur. If an effect states a character loses 'half' of their wounds or energy, then these are applied sequentially for each Critical Hit - halve, then halve again. You do not add two halves to make a whole."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Do Signature Move End Step effects still occur if the character that played the move was slain in the melee round?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, unless specified otherwise in the effect, they still occur even if the controlling character died."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Do follow-up attacks happen before End Step effects?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes. There is only ever one End Step, which occurs after damage has been dealt from both initial and follow up attacks. Any End Step effects from either the initial exchange or the Follow-Up attack happen simultaneously, after all damage has been applied."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can a model use a Step action to get out of engagement?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can you lay down a Critical Defence (such as a double High Guard)?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "The Critical Hit rule only duplicates damage, so there is no reason to lay down duplicates if they do not deal damage. Holding duplicate defensive cards can be quite useful in its own right as it gives you information about what cards your opponent doesn’t have, allowing you to often make attacks you know can’t be defended."
+      },
+      {
+       "t": "p",
+       "x": "However, some Defences can be upgraded to Signature Moves which have damage values or other effects, which can be multiplied with a Critical Hit."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "If I am the Defender and my opponent is outside of my Melee Range and I play a Signature Move, do I still get my End Step effects?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "A character who is Out of Range can never deal damage. While Out of Range, any damage reduction abilities printed on a Signature ove can still be applied by the defender. However, only End Step Effects that affect the Out of Range character themselves occur. The End Step Effects that affect the enemy character are ignored."
+      },
+      {
+       "t": "p",
+       "x": "It should also be noted that unless an End Step Effect specifies otherwise, they still occur if possible, even if the character playing the ability was Slain during this round of Melee."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Does an elevated position effect melee?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, when determining engagements a character is only engaging another if they are within their melee range measured horizontally and their opponent’s base (ignoring the miniature itself) is within their melee range +1” above or below vertically."
+      },
+      {
+       "t": "p",
+       "x": "Additionally, the attacker does not gain +2 melee stat during a round of melee between two models on different elevations. Instead the +2 melee stat bonus goes to the character in the higher elevated position."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "arcane",
+   "title": "Arcane",
+   "blocks": [
+    {
+     "t": "group",
+     "title": "What is the order of resolution in full for arcane?",
+     "blocks": [
+      {
+       "t": "ul",
+       "ordered": true,
+       "items": [
+        "Choose a valid target (if the arcane ability mentions a target)",
+        "If the target has any abilities that trigger upon being targeted (such as ‘Look of Innocence’) they are resolved now",
+        "The player who is using the arcane ability draws arcane cards, equal to their Arcane Stat minus the target’s Evade Stat (unless they are targeting an ally, in which case there is no modification), to a minimum of 1 card",
+        "The resisting player draws six arcane cards",
+        "If an ability reveals resist hand cards (such as ‘Divine Intervention’) it is revealed now",
+        "The player using the arcane ability places a card face down",
+        "The resisting player may call “Bluff” or “OK”",
+        "There are three potential resolutions:"
+       ]
+      },
+      {
+       "t": "ul",
+       "plain": true,
+       "items": [
+        "8.1. If the resisting player called OK: Resolve the ability with the called card (without revealing the drawn card, unless wanted) then the arcane action has ‘resolved’ (resolve abilities such as ‘Trickster’ after the ‘resolution’)",
+        "8.2. If the resisting player called “Bluff” and the active player was lying: The resisting player may replace the played card with a card from their resist hand, then resolve the ability with the played / replaced card, then the arcane action has finished resolving",
+        "8.3. If the resisting player called “Bluff” and the active player was telling the truth: Resolve the ability with the played card, then the player who played the arcane ability may choose a new target for the ability (if applicable) then return to step 6. with their original arcane hand"
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Does it matter whether attackers of defenders draw their combat and arcane cards first?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes. Attackers always draw their cards first."
+      },
+      {
+       "t": "p",
+       "x": "In most cases this will make no difference but occasionally such as after Young Jack has used his ‘Lucky’ ability it could be important."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Are Arcane Cards drawn after choosing a target or before?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Targets must be declared before Arcane Cards are drawn as the target’s Evade stat and cover can affect the hand size drawn."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "What happens if modifiers would reduce a Melee or Arcane hand size to 0 cards or less?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "You always get to draw at least one card, no matter how many negative modifiers are applied."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Does a player have the choice to back out of playing an Arcane Ability if they don’t like their hand?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, a player can simply declare that they are not going to play a card. Their energy is wasted and the action ends."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Can an active player choose to play a Catastrophe card?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "Yes, Catastrophe cards can be played as normal."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "If I am shooting at someone out of a window do I measure horizontally, or at an angle between the two models?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "All measurements are made horizontally. If you are in an Elevated Position you may also benefit from increased Range and Arcane (see the Elevated Positions rule in the Basic Rules or The Arising for a more in-depth explanation)."
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Where can I place terrain features with Verdant Growth & Torrential Surge?",
+     "blocks": [
+      {
+       "t": "p",
+       "x": "In open ground only. This means they cannot be placed over or under existing items of terrain, models, Moonstones or Objective Markers."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "character-specific",
+   "title": "Character Specific",
+   "blocks": [
+    {
+     "t": "group",
+     "title": "Charging Distances",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Does a charging character (or a character using another similar ability that says they must move directly towards or away) have to move the full distance stated?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes - this must be a straight line and cannot be shorter than the distance listed."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Critical Signature Moves",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Page 33 of the Rulebook says that End Step effects are multiplied if Critical Hits are played. How does the timing work when the End Step Effect includes both a move effect and a damage effect based on distance - such as Ribald's 'Short Fuse' End Step Effect?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "All numeric values are multiplied by the number of cards played. In the case of Ribald's ‘Short Fuse’, if two High Guards are played and upgraded then all models within 2\" (including Ribald!) suffer 6 Magical Damage and are moved 2\" directly away."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Harvesting Abilities",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "For abilities like Doug's 'Digger' that can reduce the depth of a Moonstone multiple levels at once, can they be used to pick up a moonstone that started at depth greater than 1?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, if Doug performs a Harvest Action on a stone with a depth value of say ‘2’ and manages to flip a 2 or 3, then he gains possession of the stone. Getting a moonstone to 0 or less while in base contact and performing a Harvest Action is the requirement to gain possession."
+        },
+        {
+         "t": "p",
+         "x": "To give another example, the Jackalope reduces a moonstone’s depth value by 2 instead of 1 on the first Harvest Action they make in a turn, so they too could also gain possession of a stone that was showing a value greater than 1 at the start of the action."
+        },
+        {
+         "t": "p",
+         "x": "Note that Boulders ‘Stone Song’ is not a Harvest Action and so only ever drops a stone to a minimum of 1, and so can never result in him gaining possession even if he was in base contact at the time, since it’s an Arcane Ability and not a Harvest Action."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Mind Control/Puppeteer",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If a character uses the 'Mind Control' or 'Puppeteer' Abilities to have another character initiate a Melee Attack, can they 'Go For It' and if so which character pays the 1 energy cost?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Melee Attacks initiated in this way may 'Go For It' by discarding the required energy from the controlling character (e.g. Danica, Wendigo or Silvertongue)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Spiteful",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "At what point does the 'Spiteful' ability cause the owner to restore the Wd?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Spiteful causes the owner of the ability to regain a Wd immediately after causing one or more Wd’s to an enemy as a new game step. The ability cannot be used if the owner was already slain in the previous step, for example in Melee where Wd’s to both parties are resolved simultaneously. However, it can be used after initial Wd’s are scored but before any follow-up attacks are made."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Agatha",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "On Agatha’s 'Drink your Fill', can you give a model more energy than its number of energy pips?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes you can – it’s one of a number of abilities in the game that let you overload on energy. Basically the term ‘gains’ allows you to exceed the usual maximums, while ‘restore’ only allows you to get back up to your usual maximum but not exceed it."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Airships",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "What happens if the Gnomish or Gobin Airships lose the 'Up, up and Away' ability, for example due to Swiggarty Swooty's 'Plunder' ? Can the grounded airship attack and be attacked in Melee.",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "The airships have no Melee Range and so cannot declare Melee Attacks and cannot deal Dmg when attacked. If they are attacked in Melee they only ever receive one Melee Card. Note that since they have no Melee Range, they do not engage enemies but they can be engaged while 'Up, up and Away' is absent. Grounded Airships can perform harvest actions as normal."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Bodyguard",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "What happens when a character suffers no damage from an ability due to 'Bodyguard' with two effects? (e.g. Using Fizzlepop or Insatiable Hunger on Fancyhat with Gotchgut nearby)",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "In these cases, the target is still the original target model. So if Baron Von Fancyhat was hit by Fraya's ‘Fizzlepop’ but passed the damage off to Gotchgut with ‘Bodyguard’, Fancyhat would still be pushed back 1\" as he is the original target. In cases where the target suffering Wds triggers the second part of the ability, the second part of the ability would not trigger. E.g. if Poppycock used his signature (if the enemy suffered 1 or more Wds … it cannot jog) on Baron Von Fancyhat, but the Baron passed the damage off to Gotchgut, Fancyhat will suffer no Wds and therefore not lose his jog."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Boom Boom",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If you are using McBooms 'Blunderbuss' ability and your opponent calls \"Bluff\" incorrectly can you fire again, even though the ability has not been reloaded?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "In this situation, just like any other arcane ability, you can replay the ability with the remaining cards in your hand, selecting a new target if you wish (provided you have LOS to them). There is no need to reload as this is all going on within a single action, and represents a single shot. Hitting multiple targets (should you choose this option) could be thought of as representing a ricochet from the rifle or the natural spread of blunderbuss shot."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Boris",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "When Boris the Bunny Summoner activates, do all his Murder Bunnies get a free Jog move?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, Boris can 'spend' (0) energy to let each one of them take a Jog action during his activation."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Brigid",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Can Brigid use 'Souls of the Deep' to use a once per turn ability the character previously used before being slain?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, as once per turn restriction are on a per model/ability basis and so Brigid wouldn’t have used it yet this turn."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Commodore Delahaye & Peggy",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Can Commodore Delahaye’s ‘Worlds Old & New’ be used to ignore Peggy's 'Slow' if she uses 'Treasure Map' on herself?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, as ‘Worlds Old & New’’ may only be done once per turn, and this move is done out of turn."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Danica",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If Danica, Dusk Witch successfully uses her ‘Puppeteer’ ability on Boris, the Bunny Summoner, can she move Murder Bunnies previously summoned by Boris?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, the Bunnies are always friendly to Boris and so Danica can use her energy to have bunnies perform actions (excluding Jog, as normal for Puppeteer)."
+        }
+       ]
+      },
+      {
+       "t": "group",
+       "title": "If Danica, Dusk Witch successfully uses her ‘Puppeteer’ ability on Boris, the Bunny Summoner, can she summon a Murder Bunny and if so who controls it?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "There is nothing stopping Danica from using Boris’s ‘Summon Murder Bunny’ ability. The Bunny will be friendly to Boris, so Danica can go on to force it to take actions by spending her energy during her activations. At all other times it is a normal Bunny, friendly to the Boris player's troupe and able to take actions during Boris's activation as normal."
+        }
+       ]
+      },
+      {
+       "t": "group",
+       "title": "If Danica, Dusk Witch successfully uses her ‘Puppeteer’ ability on Boris, the Bunny Summoner, can she summon a Jackalope and if so who controls it?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "If Danica uses her energy to summon a Jackalope via Boris’ Summon the Jackalope ability, then the Jackalope is placed in base contact with Boris but is a permanent member of Danica’s troupe for the remainder of the game! This can be done even if there is already a Jackalope in the Boris player’s troupe since during the Summon the Jackalope action that Jackalope will not be considered friendly to Boris. However for the same reason, the action cannot be taken if there is already a Jackalope in the Danica player’s troupe. A Jackalope added to Danica’s troupe in this was does not prevent Boris from using the Summon the Jackalope ability again in his own activation. If the Danica player does not have a suitable model to represent the Jackalope then they cannot take this action."
+        }
+       ]
+      },
+      {
+       "t": "group",
+       "title": "If Danica, Dusk Witch successfully uses her ‘Puppeteer’ ability on Gwendoline or Kavanagh after they have removed a card from the Arcane deck using 'Scry' or 'Juggling Fate' respectively, can the Danica player look at and use the card(s)?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, the removed card belongs to the player, rather than the character. It is simply placed besides the character to avoid mix-ups and confusion, since if the character is slain it is returned to the deck."
+        }
+       ]
+      },
+      {
+       "t": "group",
+       "title": "If Danica, Dusk Witch successfully uses her ‘Puppeteer’ ability on Gwendoline or Kavanagh can she use 'Scry' or 'Juggling Fate' respectively, and if so what happens to the card(s) removed from the deck?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "This is perfectly allowed, the card is removed and placed besides Danica’s stat card. The Danica player can now make use of the card during any arcane action for the remainder of the game, or until she is slain, as normal."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Doug",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Does Doug the Flatulent suffer Dmg from his own 'Foul Gases' ability?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, area effects always include the active model that originated the effect, unless the phrase 'other models' is used."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Elrich",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "How do I use my Elrich models in game?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Eldritch characters can be used in friendly games, but take up more character slots than usual. They can be used alongside any faction:"
+        },
+        {
+         "t": "ul",
+         "items": [
+          "Etherbex: 2 characters",
+          "Voth and Homunculus: 3 character for the pair (Must be used together)"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Flintlock",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Can Flintlock really only Shoot his Musket Once Per Game?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Flintlock can only use his Shoot Musket Ability once before needing to use his Reload ability. The reload ability resets the Musket to be used again."
+        }
+       ]
+      },
+      {
+       "t": "group",
+       "title": "If you are using Flintlock’s 'Shoot Musket' ability and your opponent calls \"Bluff\" incorrectly can you fire again, even though the ability has not been reloaded?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "In this situation, just like any other arcane ability, you can replay the ability with the remaining cards in your hand, selecting a new target if you wish (provided you have LOS to them). There is no need to reload as this is all going on within a single action, and represents a single shot – hitting multiple targets should you choose this option could be thought of as representing a ricochet from the rifle."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Gotchgut",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If a 'Mind Controlled' enemy Gotchgut is used to hit an enemy Noble in Melee, can the owner of the Noble move the Dmg back onto Gotchgut using his Bodyguard ability?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, during the action Gotchgut is controlled by the Mind Controlling player and since ‘Bodyguard’ is Gotchgut's ability, it is the Mind Controlling player's decision whether to use the ability of not."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Kaufman",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Can I use a reaction Step to Move away from a 'Bag of Gold Token'?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes. Reaction Steps are not Step actions (or 'Actions' at all) and so are unaffected by the ‘Bag of Gold’ rules."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Loci",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Page 21 of the Rule Book 'Moving Through Gaps' says that models can move through gaps between terrain or Friendly Models that are smaller than their base provided they don’t overlap at the end of the move. What happens if Loci places 2 wooded patches 1mm apart?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Characters can move through the gap no matter how small it is. The only way to prevent it it to place the two wooded patches touching so that there is no gap. Note that it is not usually possible to Step through very small gaps, as bases will end up overlapping, but Jog actions will usually be fine."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Mortician",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "When The Mortician uses 'Reanimate' (or 'Reanimate Jobie'), are States and Effects carried over?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "All states and effects are cleared when a character is slain and all energy is removed. The re-animated character is in all ways a ‘fresh’ instance of the character."
+        },
+        {
+         "t": "p",
+         "x": "For example, if a weapon was 'unloaded ' when the character was slain or has previously exploded, the character previously gained energy, jogged or has a stat modification etc."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Muridae",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "When Muridae uses 'Sewer Rat' and has a Moonstone, does he 'bank' it like other models leaving play would?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, Muridae doesn't bank the Moonstone as he is Returned to the board. So unlike other such ways of exiting and re-entering play he is still the same model and not a new instance. Hence he retains all Wds, modifications, and any Moonstones he's in possession of when he is Returned to play."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Raegan",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "What passive abilities does Malachite Ritual ignore?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Everything, including abilities which work when targeted and drawing Arcane cards such as Look of innocence, Marley’s Resonance, Snag’s Accursed, etc. All other character cards are essentially treated as blank as soon as Raegan declares she is using ‘Malichite Ritual’ and remain blank until she has finished using it."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Reanimate & Reanimate Jobie",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Does 'Reanimate Jobie' count as 'Reanimate' or vice versa?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, they are separate abilities. If an ability applies to ‘Reanimate’ it only applies to ‘Reanimate’ and not ‘Reanimate Jobie’. If there is an exception it will be noted (such as on Viktor's card)"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Ruwt & Jobie",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Do Ruwt and Jobie need a Moonstone in order to use 'We are Ruwt' and 'A Cunning Plan' respectively?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, losing a Moonstone is an effect of the ability but not a requirement"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Shabaroon",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "What happens if Shabaroon uses 'Goblin Luck' on Belladonna?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Shabroon's ‘Goblin Luck’ ability allows him to cause a Catastrophe result on a target model. Any targets of the Catastrophe are chosen by the Shabroon player, but they must be valid targets of the arcane ability that the Catastrophe belongs to. In the case of Belladonna's ‘Drop of Nightshade’, the ability only targets enemies within 1\", and so in order for Shabaroon to use ‘Goblin Luck’ against Belladonna's ‘Drop of Nightshade’ Catastrophe she must have an enemy within 1\". If she does, then ‘Goblin Luck’ can be used to Slay both Belladonna and the Enemy model (which will be a friendly model of Shabaroon in a 2-player game)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Silvertongue",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "How does Silvertongue's 'Mind Control' ability work?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "First discard 3 energy from Silver Tongue to pay for the ability and select a target (Friendly or Enemy). Then select an action that is available to the target that would cost them (1) energy, for example a Step, Melee Attack, Harvest (non-weaklings) or an Arcane or Active ability printed on the target character's card, such as ‘Shoot Musket’. Now take that action as if the target were the active model and you its controller. The target counts as friendly during the action, so you could make a character Melee Attack a character that is normally friendly to them. The target of ‘Mind Control’ does not discard energy to take the action, however abilities which are ‘Once per turn’ or ‘Once per game’ are considered used (and cannot be chosen by the Silver Tongue player if already used)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Striga Anya",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If Striga Anya is slain, does Anya Bartol or Striga Anya enter play when the character is reanimated?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Anya Bartol would enter play when reanimated and not Striga Anya."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Swigarty Swooty",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If Swigarty Swooty uses 'Plunder' to gain an ability with a once per turn/game restriction that has already been used, can he use it?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, once per turn/game restrictions are on a per model basis. The only exception would be if Swigarty plundered a once per game ability, used it, then plundered it again later in the game. As Swigarty has already previously used that once per game ability, he wouldn't be able to use it the second time he plundered it."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Young Jack",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Why isn’t the deck shuffled after Young Jack uses his 'Luck' ability?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "The only time the Arcane Deck is shuffled is immediately after an arcane action has been resolved. Since ‘Lucky’ is an active ability, there is no shuffling."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
 }

@@ -322,7 +322,7 @@ function factionBadge(faction) {
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 function createFilterPanel(container, onChange) {
-  const state = { query: "", factions: new Set(), synergies: new Set() };   // "Synergies" = Keywords und Synergien in einem Filter
+  const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
   const search = el("input", { type: "search", placeholder: "Search (name, keyword, synergy)", "aria-label": "Search", autocomplete: "off" });
@@ -330,16 +330,32 @@ function createFilterPanel(container, onChange) {
   // Synergien: zusätzliche Schlagwörter pro Charakter ("synergies" in characters.json), die NICHT auf der Karte stehen
   const synSummary = el("summary", {});
   const synChips = el("div", { class: "chips" });
+  // Schalter oben rechts im Synergies-Feld: ODER (mindestens ein gewählter Begriff) oder UND (alle gewählten Begriffe)
+  const modeBtn = el("button", { class: "mode-btn", type: "button" },
+    el("span", { class: "mode-thumb", "aria-hidden": "true" }),
+    el("span", { class: "mode-opt", text: "OR" }),
+    el("span", { class: "mode-opt", text: "AND" })
+  );
+  function renderMode() {
+    modeBtn.classList.toggle("is-and", state.all);
+    modeBtn.title = state.all ? "Character must match ALL selected synergies and factions. Tap to switch to OR." : "Character needs to match at least ONE selected synergy or faction. Tap to switch to AND.";
+    modeBtn.setAttribute("aria-label", modeBtn.title);
+    modeBtn.setAttribute("aria-pressed", String(state.all));
+  }
+  modeBtn.addEventListener("click", () => { state.all = !state.all; renderMode(); onChange(); });
+  renderMode();
   const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
+  // Der Schalter liegt über der Kopfzeile des Feldes und bleibt auch bei eingeklapptem Feld sichtbar
+  const synWrap = el("div", { class: "synergy-wrap" }, synBox, modeBtn);
   const count = el("span", {});
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, search, synBox, factionRow, meta));
+  container.replaceChildren(el("div", { class: "filters" }, search, synWrap, factionRow, meta));
 
   // Keywords und Synergien werden zusammengeführt (jeder Begriff nur einmal)
   const allSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))].sort((a, b) => a.localeCompare(b, "en"));
-  synBox.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
+  synWrap.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
 
   // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
   function renderFactions() {
@@ -386,20 +402,38 @@ function createFilterPanel(container, onChange) {
     if (state.synergies.size) synSummary.append(el("span", { class: "keyword-selected", text: [...state.synergies].join(", ") }));
   }
 
-  // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff gleich angewählt und die Zeile geleert
-  function matchTag(text) {
+  // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff angewählt und die Zeile geleert.
+  // Mit Enter (partial = true) reicht auch ein Teil: erst Wortanfang des Begriffs ("summon" -> Summoning), dann Wortanfang
+  // eines Wortes im Begriff ("feat" -> Water Feature), dann irgendein Teil. Es zählt die erste Stufe mit genau einem Treffer.
+  function matchTag(text, partial = false) {
     const t = text.trim().toLowerCase();
-    if (!t) return null;
+    if (!t) return { tag: null, many: [] };
     const variants = [t, t.replace(/ies$/, "y"), t.replace(/es$/, ""), t.replace(/s$/, "")];
-    return allSynergies.find((tag) => variants.includes(tag.toLowerCase())) || null;
+    const exact = allSynergies.find((tag) => variants.includes(tag.toLowerCase()));
+    if (exact) return { tag: exact, many: [] };
+    if (!partial) return { tag: null, many: [] };
+    const levels = [
+      (tag) => tag.toLowerCase().startsWith(t),
+      (tag) => tag.toLowerCase().split(/[\s-]+/).some((w) => w.startsWith(t)),
+      (tag) => tag.toLowerCase().includes(t),
+    ];
+    for (const test of levels) {
+      const found = allSynergies.filter(test);
+      if (found.length === 1) return { tag: found[0], many: [] };
+      if (found.length > 1) return { tag: null, many: found };
+    }
+    return { tag: null, many: [] };
   }
   // Kurze Tippvorsicht: erst wenn man einen Moment nicht tippt (oder Enter drückt), wird der Begriff angewählt.
   // So wird aus "rogues" nicht erst "rogue" + "s".
   let tagTimer = null;
-  function applyTagMatch() {
+  function applyTagMatch(partial = false) {
     clearTimeout(tagTimer);
-    const tag = matchTag(search.value);
-    if (!tag) return;
+    const { tag, many } = matchTag(search.value, partial);
+    if (!tag) {
+      if (many.length) toast(`Several synergies match: ${many.slice(0, 4).join(", ")}${many.length > 4 ? "…" : ""}`);
+      return;
+    }
     state.synergies.add(tag);
     search.value = "";
     state.query = "";
@@ -410,11 +444,11 @@ function createFilterPanel(container, onChange) {
     state.query = search.value;
     onChange();
     clearTimeout(tagTimer);
-    tagTimer = setTimeout(applyTagMatch, 1000);
+    tagTimer = setTimeout(() => applyTagMatch(false), 1000);
   });
-  search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(); });
+  search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(true); });
   reset.addEventListener("click", () => {
-    state.query = ""; state.factions.clear(); state.synergies.clear();
+    state.query = ""; state.factions.clear(); state.synergies.clear(); state.all = false; renderMode();
     search.value = "";
     renderSynergies();
     renderFactions();
@@ -429,11 +463,19 @@ function createFilterPanel(container, onChange) {
     list() {
       const query = state.query.trim().toLowerCase();
       return data.characters.filter((c) => {
-        if (state.factions.size && !c.factions.some((f) => state.factions.has(f))) return false;
+        // Der OR/AND-Schalter gilt auch für die Fraktionen: AND = der Charakter gehört zu allen gewählten Fraktionen
+        if (state.factions.size) {
+          const picked = [...state.factions];
+          if (!(state.all ? picked.every((f) => c.factions.includes(f)) : picked.some((f) => c.factions.includes(f)))) return false;
+        }
         // Keywords und Synergien addieren sich: gezeigt wird, wer ein gewähltes Keyword ODER eine gewählte Synergie hat.
         // Innerhalb jeder Gruppe genügt ebenfalls eines davon. Ist nur eine Gruppe gewählt, gilt nur diese.
         // Gezeigt wird, wer mindestens einen der gewählten Begriffe als Keyword oder Synergie hat
-        if (state.synergies.size && ![...c.keywords, ...(c.synergies || [])].some((k) => state.synergies.has(k))) return false;
+        if (state.synergies.size) {
+          const tags = new Set([...c.keywords, ...(c.synergies || [])]);
+          const picked = [...state.synergies];
+          if (!(state.all ? picked.every((k) => tags.has(k)) : picked.some((k) => tags.has(k)))) return false;
+        }
         if (query) {
           const text = [
             c.name,
@@ -444,7 +486,17 @@ function createFilterPanel(container, onChange) {
           if (!text.includes(query)) return false;
         }
         return true;
-      });
+      }).sort((x, y) => Number(this.isPrimary(y)) - Number(this.isPrimary(x)));
+    },
+    // Ist dieser Begriff im Synergie-Filter gewählt?
+    isPicked(tag) {
+      return state.synergies.has(tag);
+    },
+    // Hat der Charakter die gewählten Synergie-Begriffe selbst als Keyword (statt nur als Synergie)?
+    isPrimary(c) {
+      if (!state.synergies.size) return false;
+      const picked = [...state.synergies];
+      return state.all ? picked.every((k) => c.keywords.includes(k)) : picked.some((k) => c.keywords.includes(k));
     },
     // Ist gerade eine Suche oder ein Filter aktiv?
     isFiltering() {
@@ -457,7 +509,7 @@ function createFilterPanel(container, onChange) {
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
-      state.query = ""; state.factions.clear(); state.synergies.clear();
+      state.query = ""; state.factions.clear(); state.synergies.clear(); state.all = false; renderMode();
       search.value = "";
         renderSynergies();
       renderFactions();
@@ -824,6 +876,18 @@ async function importBackup(file) {
 /* ---------- 7. Anzeige ---------- */
 
 // --- Kompendium: nur Nachschlagen ---
+// Fraktionssymbol für die Kompendiums-Kachel (nur in der schmalen Handy-Ansicht sichtbar, siehe style.css)
+function cardCrest(c) {
+  const icon = c.factions.length === 2
+    ? factionsIcon(c.factions.map((id) => factionById.get(id)))
+    : factionIcon(factionById.get(c.factions[0]));
+  if (icon) {
+    icon.classList.add("card-crest");
+    icon.dataset.fac = [...c.factions].sort().join("+");   // für die Feinjustierung der Wappen in style.css
+  }
+  return icon;
+}
+
 function renderCards() {
   // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
   const list = compendiumPanel.list().filter((c) => c.compendium !== false);
@@ -834,20 +898,36 @@ function renderCards() {
     return;
   }
 
-  $("#cards").replaceChildren(
-    ...list.map((c) =>
+  const cardEl = (c) =>
       el("article", { class: "card" },
         el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
+          cardCrest(c),
           el("div", { class: "card-text" },
             el("span", { class: "card-name", text: c.name }),
             factionLine(c),
-            c.keywords.length ? el("span", { class: "card-kw", text: c.keywords.join(" · ") }) : null
+            c.keywords.length ? el("span", { class: "card-kw" },
+              ...c.keywords.flatMap((k, i) => [
+                i ? " · " : null,
+                el("span", { class: compendiumPanel.isPicked(k) ? "kw-hit" : null, text: k })
+              ])
+            ) : null
           )
         )
-      )
-    )
-  );
+      );
+  // Bei einem Synergie-Filter: erst Modelle mit dem Keyword selbst, dann (neue Zeile) Modelle, die nur eine Synergie damit haben
+  const primary = list.filter((c) => compendiumPanel.isPrimary(c));
+  const rest = list.filter((c) => !compendiumPanel.isPrimary(c));
+  const grouped = primary.length > 0 && rest.length > 0;
+  $("#cards").classList.toggle("grouped", grouped);
+  if (grouped) {
+    $("#cards").replaceChildren(
+      el("div", { class: "cards-sub" }, ...primary.map(cardEl)),
+      el("div", { class: "cards-sub" }, ...rest.map(cardEl))
+    );
+  } else {
+    $("#cards").replaceChildren(...list.map(cardEl));
+  }
 }
 
 // --- Troupen-Übersicht ---
@@ -1632,7 +1712,7 @@ function renderGame() {
 // Eine Seite mit Suche und aufklappbaren Abschnitten. Der Inhalt steht in einer JSON-Datei
 // (data/rules.json für die Regeln, data/faq.json für die FAQs). Aufbau der Datei:
 //   { "meta": { "note": "…" }, "sections": [ { "id": "…", "title": "…", "blocks": [ … ] } ] }
-// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), ul (Liste), note (Kasten),
+// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), ul (Liste; "ordered": true = nummeriert, "plain": true = ohne Aufzählungszeichen), note (Kasten),
 //         figure (Bild), gallery (Bilderreihe mit Beschriftung), example (Kasten mit Bild und Text),
 //         group (aufklappbarer Unterpunkt: { "t": "group", "title": "…", "blocks": [ … ] }, beliebig tief verschachtelbar),
 //         annotated (Bild mit nummerierten Punkten: src, alt, w, pins [[x%, y%], …], items ["Erklärung 1", …]).
@@ -1682,7 +1762,8 @@ function blockNode(block) {
     case "h":
       return el(block.l === 3 ? "h4" : "h3", { class: block.l === 3 ? "rule-h3" : "rule-h2" }, ...inlineNodes(block.x));
     case "ul":
-      return el("ul", {}, ...block.items.map((item) => el("li", {}, ...inlineNodes(item))));
+      // ordered: true = nummerierte Liste, plain: true = Liste ohne Aufzählungszeichen (der Text enthält die Nummer selbst, z. B. "8.1.")
+      return el(block.ordered ? "ol" : "ul", { class: block.plain ? "plain-list" : null }, ...block.items.map((item) => el("li", {}, ...inlineNodes(item))));
     case "note":
       return el("div", { class: "rule-note" }, ...inlineNodes(block.x));
     case "figure":

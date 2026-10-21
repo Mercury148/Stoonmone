@@ -1259,3 +1259,55 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .gcell.unsummoned .gcell-portrait { aspect-ratio: 11 / 10; }
 .gcell.unsummoned .pcard img, .gcell.unsummoned .pcard svg { object-fit: cover; object-position: center; }
 @media (min-width: 720px) { .gcell.unsummoned .gcell-portrait { aspect-ratio: 59 / 50; } }
+
+/* Schalter ODER / UND oben rechts im Synergies-Feld */
+.synergy-wrap { position: relative; }
+.mode-btn { position: absolute; top: 0.4rem; right: 0.6rem; min-height: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; align-items: center; border-radius: 99px; overflow: hidden; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; }
+.mode-opt { position: relative; z-index: 1; min-width: 2.6rem; padding: 0.22rem 0.55rem; text-align: center; transition: color 0.25s; }
+.mode-thumb { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; border-radius: 99px; background: var(--accent); transition: transform 0.25s ease; }
+.mode-btn:not(.is-and) .mode-opt:nth-of-type(2), .mode-btn.is-and .mode-opt:nth-of-type(3) { color: var(--accent-fg); }
+.mode-btn.is-and .mode-thumb { transform: translateX(100%); }
+@media (prefers-reduced-motion: reduce) { .mode-thumb, .mode-opt { transition: none; } }
+.synergy-box summary { padding-right: 7.4rem; }
+
+/* Unterpunkte einer nummerierten Liste (z. B. 8.1 bis 8.3 in den FAQs) */
+.guide-list .rule-group ul.sub-list { margin: -0.9rem 0 0.6rem; padding-left: 3.1rem; }
+
+/* Liste ohne Aufzählungszeichen (z. B. die Unterpunkte 8.1 bis 8.3 in den FAQs) */
+ul.plain-list { list-style: none; padding-left: 1.4rem; }
+.guide-list .rule-group ul.plain-list { margin: -0.9rem 0 0.6rem; padding-left: 3.1rem; }   /* wie die Unterpunkte bei den Regeln: rückt dicht an den übergeordneten Punkt */
+ul.plain-list li + li { margin-top: 0.35rem; }
+/* Synergie-Filter: Modelle mit dem Keyword selbst, darunter Modelle mit nur der Synergie */
+.cards.grouped { display: block; }
+.cards-sub { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); grid-auto-rows: 1fr; }
+.cards-sub + .cards-sub { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 2px dashed var(--accent); }
+
+.card-kw .kw-hit { color: var(--accent); font-weight: 700; }
+
+/* Handy-Ansicht des Kompendiums: zwei Kacheln nebeneinander, Portrait links oben, Wappen rechts oben */
+.card-crest { display: none; }
+@media (max-width: 599px) {
+  .cards, .cards-sub { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  .card-main { position: relative; flex-direction: column; align-items: stretch; gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
+  .card-main .portrait { width: 3.6rem; height: 3.6rem; }
+  .card-main .card-crest { display: grid; position: absolute; top: 1.05rem; right: 1rem; width: 1.9rem; height: 1.9rem; }
+  .card-text { width: 100%; justify-items: center; gap: 0.2rem; }
+  .card-name { font-size: 0.92rem; text-align: center; line-height: 1.2; }
+  .card-main .card-faction { display: none; }
+  /* Geweih und Sonnenstrahlen ragen weiter über die Scheibe hinaus: leicht nach unten/innen schieben, damit oben und rechts gleich viel Rand bleibt */
+  .card-crest[data-fac="leshavult"] { transform: translate(0.28rem, 0.28rem); }
+  .card-crest[data-fac="dominion+leshavult"] { transform: translate(0.21rem, 0.21rem); }
+  .card-crest[data-fac="commonwealth+leshavult"] { transform: translate(0.125rem, 0.125rem); }
+  .card-crest[data-fac="leshavult+shades"] { transform: translate(0.11rem, 0.11rem); }
+  .card-kw { font-size: 0.72rem; line-height: 1.25; text-align: center; }
+}
+
+/* Handy: vier Auswahlkacheln pro Reihe im Troupe Builder (Seitenverhältnis bleibt 5:6) */
+@media (max-width: 599px) {
+  .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.4rem; }
+  .tiles .tile-label { padding: 0.9rem 0.3rem 0.3rem; }
+  .tiles .tile-name { font-size: 0.62rem; line-height: 1.15; }
+  .tiles .tile-factions { padding: 0.3rem 1rem 1rem 0.35rem; }
+  .tiles .tile-factions .faction-icon { width: 1.05rem; height: 1.05rem; }
+  .tiles .tile-check { top: 0.3rem; right: 0.3rem; width: 1.1rem; height: 1.1rem; font-size: 0.7rem; }
+}
