@@ -876,6 +876,18 @@ async function importBackup(file) {
 /* ---------- 7. Anzeige ---------- */
 
 // --- Kompendium: nur Nachschlagen ---
+// Fraktionssymbol für die Kompendiums-Kachel (nur in der schmalen Handy-Ansicht sichtbar, siehe style.css)
+function cardCrest(c) {
+  const icon = c.factions.length === 2
+    ? factionsIcon(c.factions.map((id) => factionById.get(id)))
+    : factionIcon(factionById.get(c.factions[0]));
+  if (icon) {
+    icon.classList.add("card-crest");
+    icon.dataset.fac = [...c.factions].sort().join("+");   // für die Feinjustierung der Wappen in style.css
+  }
+  return icon;
+}
+
 function renderCards() {
   // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
   const list = compendiumPanel.list().filter((c) => c.compendium !== false);
@@ -890,6 +902,7 @@ function renderCards() {
       el("article", { class: "card" },
         el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
+          cardCrest(c),
           el("div", { class: "card-text" },
             el("span", { class: "card-name", text: c.name }),
             factionLine(c),
