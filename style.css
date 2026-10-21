@@ -144,26 +144,52 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 /* ---------- Filter (Kompendium und Editor) ---------- */
 .filters { display: grid; gap: 0.6rem; margin-bottom: 1.25rem; }
 
-/* Fraktionssymbole: mehrere gleichzeitig wählbar */
-.faction-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr)); gap: 0.5rem; }
-.faction-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  min-height: 64px;
-  padding: 0.45rem 0.1rem;
+/* Fraktionssymbole: mehrere gleichzeitig wählbar. Nur das Wappen, ohne Kasten und Namen */
+/* Gemeinsames Feld wie die Synergien darüber; hinter jedem Wappen ein schwacher Schein in der Fraktionsfarbe */
+.faction-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+  gap: 0.5rem;
+  padding: 0.95rem 0.5rem 0.3rem;   /* oben etwas mehr Platz für das Geweih von Leshavult */
   background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.faction-btn {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  padding: 0.35rem 0;
+  background: none;
   color: hsl(var(--h) var(--fac-s) var(--fac-l));
-  border: 2px solid var(--line);
+  border: none;
   border-radius: var(--radius);
   font-weight: 500;
+  transition: opacity 0.15s, filter 0.15s;
 }
 .faction-icon { width: 1.7rem; height: 1.7rem; display: grid; place-items: center; font: 600 0.8rem/1 var(--font-display); }
 .faction-icon svg, .faction-icon img { width: 100%; height: 100%; }
-.faction-name { color: var(--fg); font-size: 0.64rem; line-height: 1.15; text-align: center; overflow-wrap: break-word; }
-.faction-btn[aria-pressed="true"] { border-color: hsl(var(--h) var(--fac-s) var(--fac-l)); background: hsl(var(--h) var(--fac-s) var(--fac-l) / 0.18); }
-.faction-btn.blocked { opacity: 0.4; }
+.faction-btn::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: clamp(3.2rem, 10.5vw, 4rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.22) 0%, transparent 70%);
+  transition: background 0.15s;
+}
+/* Gewählt: kräftiges Leuchten in der Fraktionsfarbe; ist etwas gewählt, treten die anderen Wappen zurück */
+.faction-btn[aria-pressed="true"]::before {
+  background: radial-gradient(circle, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.6) 0%, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.25) 45%, transparent 72%);
+}
+.faction-btn[aria-pressed="true"] .faction-icon { filter: drop-shadow(0 0 0.5rem hsl(var(--h) var(--fac-s) var(--fac-l))) drop-shadow(0 0 0.2rem hsl(var(--h) var(--fac-s) var(--fac-l) / 0.8)); }
+.faction-row:has([aria-pressed="true"]) .faction-btn[aria-pressed="false"] { opacity: 0.45; }
+.faction-btn.blocked { opacity: 0.3; filter: grayscale(1); }
 
 /* Aufklappbares Keyword-Feld */
 .keyword-box { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
@@ -204,7 +230,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
-.filter-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; color: var(--muted); font-size: 0.9rem; }
+.filter-meta { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; color: var(--muted); font-size: 0.9rem; }
+.filter-meta[hidden] { display: none; }
+/* Anzahl der Treffer rechts im Suchfeld */
+.search-wrap { position: relative; }
+.search-wrap input[type="search"] { padding-right: 10rem; }
+.search-count { position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; white-space: nowrap; pointer-events: none; }
+@media (max-width: 599px) {
+  .search-wrap input[type="search"] { padding-right: 5.5rem; }
+  .search-count-word { display: none; }   /* auf dem Handy nur "141 of 141" */
+}
 
 /* ---------- Karten im Kompendium ---------- */
 .cards { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
@@ -1274,8 +1309,10 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 /* Wappen: die runde Scheibe füllt die Box, Strahlen und Geweih ragen darüber hinaus */
 .faction-icon { position: relative; }
 .faction-icon img { position: absolute; left: 50%; top: 50%; width: 218.6%; height: 218.6%; max-width: none; transform: translate(-50%, -50%); pointer-events: none; }
+/* Im Leshavult-Bild ist die Scheibe kleiner (das Geweih braucht Platz): größer zeigen, damit die Scheiben gleich groß wirken */
+.faction-icon[data-fac="leshavult"] img { width: 252.7%; height: 252.7%; }
 .faction-btn { overflow: visible; }
-.faction-btn .faction-icon { width: 1.5rem; height: 1.5rem; margin: 0.55rem 0 0.45rem; }
+.faction-btn .faction-icon { width: clamp(2rem, 6.5vw, 2.5rem); height: clamp(2rem, 6.5vw, 2.5rem); margin: 0.9rem 0; }
 
 /* Fraktionswappen neben dem Namensfeld des Troupe Builders */
 .editor-faction { flex: none; width: 2.4rem; height: 2.4rem; display: grid; place-items: center; }

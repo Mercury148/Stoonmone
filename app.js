@@ -298,7 +298,7 @@ function factionsIcon(factions) {
 }
 
 function factionIcon(faction) {
-  const box = el("span", { class: "faction-icon", "aria-hidden": "true" });
+  const box = el("span", { class: "faction-icon", "aria-hidden": "true", "data-fac": faction.id });   // data-fac: Größenausgleich in style.css
   const image = faction.icon || FACTION_IMAGES[faction.id];
   if (image) {
     box.append(el("img", { src: image, alt: "", draggable: "false" }));
@@ -350,11 +350,13 @@ function createFilterPanel(container, onChange) {
   const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
   // Der Schalter liegt über der Kopfzeile des Feldes und bleibt auch bei eingeklapptem Feld sichtbar
   const synWrap = el("div", { class: "synergy-wrap" }, synBox, modeBtn);
-  const count = el("span", {});
+  // Anzahl rechts im Suchfeld; "Reset filters" darunter nur, wenn etwas gefiltert ist
+  const count = el("span", { class: "search-count" });
+  const searchWrap = el("div", { class: "search-wrap" }, search, count);
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
-  const meta = el("div", { class: "filter-meta" }, count, reset);
+  const meta = el("div", { class: "filter-meta" }, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, search, synWrap, factionRow, meta));
+  container.replaceChildren(el("div", { class: "filters" }, searchWrap, synWrap, factionRow, meta));
 
   // Keywords und Synergien werden zusammengeführt (jeder Begriff nur einmal)
   const allSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))].sort((a, b) => a.localeCompare(b, "en"));
@@ -369,6 +371,7 @@ function createFilterPanel(container, onChange) {
           type: "button",
           style: factionStyle(f),
           title: f.name,
+          "aria-label": f.name,   // nur das Wappen ist sichtbar, der Name kommt aus Tooltip und aria-label
           "aria-pressed": String(state.factions.has(f.id)),
           onclick: () => {
             if (state.factions.has(f.id)) state.factions.delete(f.id);
@@ -377,8 +380,7 @@ function createFilterPanel(container, onChange) {
             onChange();
           },
         },
-          factionIcon(f),
-          el("span", { class: "faction-name", text: f.name })
+          factionIcon(f)
         )
       )
     );
@@ -507,8 +509,8 @@ function createFilterPanel(container, onChange) {
     },
     // Zählzeile aktualisieren
     showCount(shown, total = data.characters.length) {
-      count.textContent = `${shown} of ${total} characters`;
-      reset.hidden = !(state.query || state.factions.size || state.synergies.size);
+      count.replaceChildren(`${shown} of ${total}`, el("span", { class: "search-count-word", text: " characters" }));
+      meta.hidden = !(state.query || state.factions.size || state.synergies.size);
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
