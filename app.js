@@ -1712,7 +1712,7 @@ function renderGame() {
 // Eine Seite mit Suche und aufklappbaren Abschnitten. Der Inhalt steht in einer JSON-Datei
 // (data/rules.json für die Regeln, data/faq.json für die FAQs). Aufbau der Datei:
 //   { "meta": { "note": "…" }, "sections": [ { "id": "…", "title": "…", "blocks": [ … ] } ] }
-// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), ul (Liste; "ordered": true = nummeriert, "plain": true = ohne Aufzählungszeichen), note (Kasten),
+// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), q (Frage über der Antwort), ul (Liste; "ordered": true = nummeriert, "plain": true = ohne Aufzählungszeichen), note (Kasten),
 //         figure (Bild), gallery (Bilderreihe mit Beschriftung), example (Kasten mit Bild und Text),
 //         group (aufklappbarer Unterpunkt: { "t": "group", "title": "…", "blocks": [ … ] }, beliebig tief verschachtelbar),
 //         annotated (Bild mit nummerierten Punkten: src, alt, w, pins [[x%, y%], …], items ["Erklärung 1", …]).
@@ -1764,6 +1764,8 @@ function blockNode(block) {
     case "ul":
       // ordered: true = nummerierte Liste, plain: true = Liste ohne Aufzählungszeichen (der Text enthält die Nummer selbst, z. B. "8.1.")
       return el(block.ordered ? "ol" : "ul", { class: block.plain ? "plain-list" : null }, ...block.items.map((item) => el("li", {}, ...inlineNodes(item))));
+    case "q":
+      return el("p", { class: "rule-q" }, ...inlineNodes(block.x));
     case "note":
       return el("div", { class: "rule-note" }, ...inlineNodes(block.x));
     case "figure":
@@ -1822,7 +1824,8 @@ function annotatedNode(block) {
 // Suchbare Einheiten eines Blocks (für Treffer und Sprung)
 function leafUnits(block, node) {
   switch (block.t) {
-    case "h": return [{ node, text: block.x, kind: "title" }];
+    case "h":
+    case "q": return [{ node, text: block.x, kind: "title" }];
     case "ul": return block.items.map((t, i) => ({ node: node.children[i], text: t, kind: "text" }));
     case "gallery": return block.items.map((it, i) => ({ node: node.children[i], text: it.caption || "", kind: "text" }));
     case "annotated": return block.items.map((t, i) => ({ node: node.querySelectorAll("li")[i], text: t, kind: "text" }));
@@ -1847,7 +1850,14 @@ function createGuide(container, config) {
   const next = el("button", { class: "ghost guide-next", type: "button", hidden: "", text: "Next hit ↓" });
   const list = el("div", { class: "guide-list" });
   const foot = el("p", { class: "guide-note", hidden: "" });
-  container.replaceChildren(el("div", { class: "guide-bar" }, search, el("div", { class: "guide-row" }, status, next)), list, foot);
+  const row = el("div", { class: "guide-row", hidden: "" }, status, next);
+  container.replaceChildren(el("div", { class: "guide-bar" }, search, row), list, foot);
+
+  // Statuszeile nur zeigen, wenn es etwas zu melden gibt
+  function setStatus(text) {
+    status.textContent = text;
+    row.hidden = !text && next.hidden;
+  }
 
   let sections = [];       // oberste Abschnitte: { node, text, children }
   let allGroups = [];      // alle aufklappbaren Gruppen (auch verschachtelte)
@@ -1914,16 +1924,15 @@ function createGuide(container, config) {
   }
 
   function updateStatus(terms) {
-    const total = sections.length;
     if (!terms.length) {
-      status.textContent = total ? `${total} section${total === 1 ? "" : "s"}` : "";
       next.hidden = true;
+      setStatus("");
     } else if (!hits.length) {
-      status.textContent = `Nothing found for "${search.value.trim()}".`;
       next.hidden = true;
+      setStatus(`Nothing found for "${search.value.trim()}".`);
     } else {
-      status.textContent = hitIndex < 0 ? `${hits.length} hit${hits.length === 1 ? "" : "s"}` : `Hit ${hitIndex + 1} of ${hits.length}`;
       next.hidden = hits.length < 2;
+      setStatus(hitIndex < 0 ? `${hits.length} hit${hits.length === 1 ? "" : "s"}` : `Hit ${hitIndex + 1} of ${hits.length}`);
     }
   }
 
@@ -1978,7 +1987,10 @@ function createGuide(container, config) {
     const summary = el("summary", {}, el("span", { class: "summary-text", text: def.title }));   // eigenes span, damit Markierungen im Titel keine Lücken bekommen
     const body = el("div", { class: "rule-body" });
     units.push({ node: summary, text: searchForm(plainText(def.title)), ctx: searchForm(plainText(titles.join(" "))), kind: "title" });
-    for (const block of def.blocks || []) {
+    let blocks = def.blocks || [];
+    // Nur eine Frage im Thema: kein zweites Aufklappen, die Frage steht direkt über der Antwort
+    if (blocks.length === 1 && blocks[0].t === "group") blocks = [{ t: "q", x: blocks[0].title }, ...(blocks[0].blocks || [])];
+    for (const block of blocks) {
       if (block.t === "group") {
         const sub = buildGroup(block, chain, level + 1);
         group.children.push(sub);
@@ -2016,7 +2028,7 @@ function createGuide(container, config) {
     async load() {
       if (loadState !== "idle") return;
       loadState = "loading";
-      status.textContent = "Loading…";
+      setStatus("Loading…");
       try {
         const response = await fetch(config.url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -2024,7 +2036,7 @@ function createGuide(container, config) {
         loadState = "done";
       } catch (err) {
         loadState = "idle";   // beim nächsten Öffnen nochmal versuchen
-        status.textContent = "";
+        setStatus("");
         list.replaceChildren(el("p", { class: "empty", text: `This page could not be loaded (${err.message}). Please check your connection and try again.` }));
       }
     },

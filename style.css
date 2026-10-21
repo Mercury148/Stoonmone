@@ -1073,6 +1073,9 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 
 /* ---------- Regeln und FAQs ---------- */
 .guide-bar { position: sticky; top: 0; z-index: 20; display: grid; gap: 0.35rem; margin: 0 0 0.75rem; padding: 0.5rem 0 0.4rem; background: var(--bg); }
+/* Suchfeld als Einstieg: größer und deutlicher als die übrigen Felder */
+.guide-bar input[type="search"] { min-height: 52px; padding: 0.7rem 1rem; font-size: 1.1rem; border: 2px solid var(--accent); }
+.guide-row[hidden] { display: none; }
 .guide-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 2rem; }
 .guide-status { margin: 0; min-height: 1.2em; }
 .guide-next { min-height: 36px; padding: 0 0.8rem; font-size: 0.85rem; white-space: nowrap; }
@@ -1101,7 +1104,7 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
   border-bottom: 2px solid var(--muted);
   transform: rotate(-45deg);
 }
-.rule-section[open] > summary::before { transform: rotate(45deg); }
+.rule-section[open] > summary::before { transform: rotate(45deg); border-color: var(--accent); }
 .rule-body { padding: 0.1rem 0.9rem 1.1rem; display: grid; gap: 0.75rem; line-height: 1.55; }
 .rule-body p, .rule-body ul, .rule-body figure { margin: 0; }
 .rule-body ul { padding-left: 1.2rem; display: grid; gap: 0.3rem; }
@@ -1120,15 +1123,17 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 .rule-example img { flex: 0 1 11rem; width: 11rem; max-width: 100%; height: auto; }
 .rule-example p { flex: 1 1 13rem; margin: 0; }
 .guide-note { margin: 1.25rem 0 0; font-size: 0.8rem; color: var(--muted); text-align: center; }
-/* Verschachtelte Unterpunkte */
-.rule-group { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+/* Verschachtelte Unterpunkte: schlichte Zeilen mit Trennlinie statt eigener Kästen */
+.rule-group { border-top: 1px solid var(--line); }
+.rule-body > .rule-group + .rule-group { margin-top: -0.75rem; }   /* Zeilen direkt untereinander, ohne Lücke aus dem Grid */
+.rule-group:last-child { border-bottom: 1px solid var(--line); }
 .rule-group[hidden] { display: none; }
 .rule-group > summary {
   min-height: 44px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;   /* Pfeil bleibt bei langen Fragen neben der ersten Zeile */
   gap: 0.6rem;
-  padding: 0 0.75rem;
+  padding: 0.7rem 0;
   cursor: pointer;
   font: 600 1rem/1.3 var(--font-display);
   list-style: none;
@@ -1141,10 +1146,22 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
   height: 0.45rem;
   border-right: 2px solid var(--muted);
   border-bottom: 2px solid var(--muted);
+  margin-top: 0.45rem;
   transform: rotate(-45deg);
 }
-.rule-group[open] > summary::before { transform: rotate(45deg); }
-.rule-group > .rule-body { padding: 0.1rem 0.75rem 0.9rem; }
+.rule-group[open] > summary::before { transform: rotate(45deg); border-color: var(--accent); }
+.rule-group > .rule-body { padding: 0.1rem 0 0.9rem 1.05rem; }   /* bündig unter dem Titel, nicht unter dem Pfeil */
+
+/* Fragen innerhalb eines Themas: Fließtext-Schrift statt Überschrift, damit Thema, Frage und Antwort
+   klar unterscheidbar bleiben; Trennlinie nur zwischen Fragen, keine doppelten Linien am Ende */
+.rule-group .rule-group { border-top: 0; }
+.rule-group .rule-group + .rule-group { border-top: 1px solid var(--line); }
+.rule-group .rule-group:last-child { border-bottom: 0; }
+.rule-group .rule-group > summary { font: 600 0.95rem/1.4 var(--font-body); }
+.rule-group .rule-group > summary::before { margin-top: 0.5rem; }
+.rule-group .rule-group[open] > summary { color: var(--accent); }
+/* Einzelne Frage ohne eigenes Aufklappen: sieht aus wie eine geöffnete Frage */
+.rule-q { font: 600 0.95rem/1.4 var(--font-body); color: var(--accent); }
 .rule-body > details { margin: 0; }
 
 /* Farbige Arcane-Symbole im Text */
