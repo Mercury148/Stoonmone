@@ -402,20 +402,38 @@ function createFilterPanel(container, onChange) {
     if (state.synergies.size) synSummary.append(el("span", { class: "keyword-selected", text: [...state.synergies].join(", ") }));
   }
 
-  // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff gleich angewählt und die Zeile geleert
-  function matchTag(text) {
+  // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff angewählt und die Zeile geleert.
+  // Mit Enter (partial = true) reicht auch ein Teil: erst Wortanfang des Begriffs ("summon" -> Summoning), dann Wortanfang
+  // eines Wortes im Begriff ("feat" -> Water Feature), dann irgendein Teil. Es zählt die erste Stufe mit genau einem Treffer.
+  function matchTag(text, partial = false) {
     const t = text.trim().toLowerCase();
-    if (!t) return null;
+    if (!t) return { tag: null, many: [] };
     const variants = [t, t.replace(/ies$/, "y"), t.replace(/es$/, ""), t.replace(/s$/, "")];
-    return allSynergies.find((tag) => variants.includes(tag.toLowerCase())) || null;
+    const exact = allSynergies.find((tag) => variants.includes(tag.toLowerCase()));
+    if (exact) return { tag: exact, many: [] };
+    if (!partial) return { tag: null, many: [] };
+    const levels = [
+      (tag) => tag.toLowerCase().startsWith(t),
+      (tag) => tag.toLowerCase().split(/[\s-]+/).some((w) => w.startsWith(t)),
+      (tag) => tag.toLowerCase().includes(t),
+    ];
+    for (const test of levels) {
+      const found = allSynergies.filter(test);
+      if (found.length === 1) return { tag: found[0], many: [] };
+      if (found.length > 1) return { tag: null, many: found };
+    }
+    return { tag: null, many: [] };
   }
   // Kurze Tippvorsicht: erst wenn man einen Moment nicht tippt (oder Enter drückt), wird der Begriff angewählt.
   // So wird aus "rogues" nicht erst "rogue" + "s".
   let tagTimer = null;
-  function applyTagMatch() {
+  function applyTagMatch(partial = false) {
     clearTimeout(tagTimer);
-    const tag = matchTag(search.value);
-    if (!tag) return;
+    const { tag, many } = matchTag(search.value, partial);
+    if (!tag) {
+      if (many.length) toast(`Several synergies match: ${many.slice(0, 4).join(", ")}${many.length > 4 ? "…" : ""}`);
+      return;
+    }
     state.synergies.add(tag);
     search.value = "";
     state.query = "";
@@ -426,9 +444,9 @@ function createFilterPanel(container, onChange) {
     state.query = search.value;
     onChange();
     clearTimeout(tagTimer);
-    tagTimer = setTimeout(applyTagMatch, 1000);
+    tagTimer = setTimeout(() => applyTagMatch(false), 1000);
   });
-  search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(); });
+  search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(true); });
   reset.addEventListener("click", () => {
     state.query = ""; state.factions.clear(); state.synergies.clear(); state.all = false; renderMode();
     search.value = "";
