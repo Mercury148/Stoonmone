@@ -578,6 +578,94 @@
    "blocks": [
     {
      "t": "group",
+     "title": "Charging Distances",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Does a charging character (or a character using another similar ability that says they must move directly towards or away) have to move the full distance stated?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes - this must be a straight line and cannot be shorter than the distance listed."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Critical Signature Moves",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "Page 33 of the Rulebook says that End Step effects are multiplied if Critical Hits are played. How does the timing work when the End Step Effect includes both a move effect and a damage effect based on distance - such as Ribald's 'Short Fuse' End Step Effect?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "All numeric values are multiplied by the number of cards played. In the case of Ribald's ‘Short Fuse’, if two High Guards are played and upgraded then all models within 2\" (including Ribald!) suffer 6 Magical Damage and are moved 2\" directly away."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Harvesting Abilities",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "For abilities like Doug's 'Digger' that can reduce the depth of a Moonstone multiple levels at once, can they be used to pick up a moonstone that started at depth greater than 1?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Yes, if Doug performs a Harvest Action on a stone with a depth value of say ‘2’ and manages to flip a 2 or 3, then he gains possession of the stone. Getting a moonstone to 0 or less while in base contact and performing a Harvest Action is the requirement to gain possession."
+        },
+        {
+         "t": "p",
+         "x": "To give another example, the Jackalope reduces a moonstone’s depth value by 2 instead of 1 on the first Harvest Action they make in a turn, so they too could also gain possession of a stone that was showing a value greater than 1 at the start of the action."
+        },
+        {
+         "t": "p",
+         "x": "Note that Boulders ‘Stone Song’ is not a Harvest Action and so only ever drops a stone to a minimum of 1, and so can never result in him gaining possession even if he was in base contact at the time, since it’s an Arcane Ability and not a Harvest Action."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Mind Control/Puppeteer",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If a character uses the 'Mind Control' or 'Puppeteer' Abilities to have another character initiate a Melee Attack, can they 'Go For It' and if so which character pays the 1 energy cost?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Melee Attacks initiated in this way may 'Go For It' by discarding the required energy from the controlling character (e.g. Danica, Wendigo or Silvertongue)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
+     "title": "Spiteful",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "At what point does the 'Spiteful' ability cause the owner to restore the Wd?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "Spiteful causes the owner of the ability to regain a Wd immediately after causing one or more Wd’s to an enemy as a new game step. The ability cannot be used if the owner was already slain in the previous step, for example in Melee where Wd’s to both parties are resolved simultaneously. However, it can be used after initial Wd’s are scored but before any follow-up attacks are made."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
      "title": "Agatha",
      "blocks": [
       {
@@ -683,22 +771,6 @@
         {
          "t": "p",
          "x": "No, as ‘Worlds Old & New’’ may only be done once per turn, and this move is done out of turn."
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "t": "group",
-     "title": "Critical Signature Moves",
-     "blocks": [
-      {
-       "t": "group",
-       "title": "Page 33 of the Rulebook says that End Step effects are multiplied if Critical Hits are played. How does the timing work when the End Step Effect includes both a move effect and a damage effect based on distance - such as Ribald's 'Short Fuse' End Step Effect?",
-       "blocks": [
-        {
-         "t": "p",
-         "x": "All numeric values are multiplied by the number of cards played. In the case of Ribald's ‘Short Fuse’, if two High Guards are played and upgraded then all models within 2\" (including Ribald!) suffer 6 Magical Damage and are moved 2\" directly away."
         }
        ]
       }
@@ -843,30 +915,6 @@
     },
     {
      "t": "group",
-     "title": "Harvesting Abilities",
-     "blocks": [
-      {
-       "t": "group",
-       "title": "For abilities like Doug's 'Digger' that can reduce the depth of a Moonstone multiple levels at once, can they be used to pick up a moonstone that started at depth greater than 1?",
-       "blocks": [
-        {
-         "t": "p",
-         "x": "Yes, if Doug performs a Harvest Action on a stone with a depth value of say ‘2’ and manages to flip a 2 or 3, then he gains possession of the stone. Getting a moonstone to 0 or less while in base contact and performing a Harvest Action is the requirement to gain possession."
-        },
-        {
-         "t": "p",
-         "x": "To give another example, the Jackalope reduces a moonstone’s depth value by 2 instead of 1 on the first Harvest Action they make in a turn, so they too could also gain possession of a stone that was showing a value greater than 1 at the start of the action."
-        },
-        {
-         "t": "p",
-         "x": "Note that Boulders ‘Stone Song’ is not a Harvest Action and so only ever drops a stone to a minimum of 1, and so can never result in him gaining possession even if he was in base contact at the time, since it’s an Arcane Ability and not a Harvest Action."
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "t": "group",
      "title": "Kaufman",
      "blocks": [
       {
@@ -892,22 +940,6 @@
         {
          "t": "p",
          "x": "Characters can move through the gap no matter how small it is. The only way to prevent it it to place the two wooded patches touching so that there is no gap. Note that it is not usually possible to Step through very small gaps, as bases will end up overlapping, but Jog actions will usually be fine."
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "t": "group",
-     "title": "Mind Control/Puppeteer",
-     "blocks": [
-      {
-       "t": "group",
-       "title": "If a character uses the 'Mind Control' or 'Puppeteer' Abilities to have another character initiate a Melee Attack, can they 'Go For It' and if so which character pays the 1 energy cost?",
-       "blocks": [
-        {
-         "t": "p",
-         "x": "Melee Attacks initiated in this way may 'Go For It' by discarding the required energy from the controlling character (e.g. Danica, Wendigo or Silvertongue)."
         }
        ]
       }
@@ -1031,22 +1063,6 @@
     },
     {
      "t": "group",
-     "title": "Spiteful",
-     "blocks": [
-      {
-       "t": "group",
-       "title": "At what point does the 'Spiteful' ability cause the owner to restore the Wd?",
-       "blocks": [
-        {
-         "t": "p",
-         "x": "Spiteful causes the owner of the ability to regain a Wd immediately after causing one or more Wd’s to an enemy as a new game step. The ability cannot be used if the owner was already slain in the previous step, for example in Melee where Wd’s to both parties are resolved simultaneously. However, it can be used after initial Wd’s are scored but before any follow-up attacks are made."
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "t": "group",
      "title": "Striga Anya",
      "blocks": [
       {
@@ -1088,22 +1104,6 @@
         {
          "t": "p",
          "x": "The only time the Arcane Deck is shuffled is immediately after an arcane action has been resolved. Since ‘Lucky’ is an active ability, there is no shuffling."
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "t": "group",
-     "title": "General",
-     "blocks": [
-      {
-       "t": "group",
-       "title": "Does a charging character (or a character using another similar ability that says they must move directly towards or away) have to move the full distance stated?",
-       "blocks": [
-        {
-         "t": "p",
-         "x": "Yes - this must be a straight line and cannot be shorter than the distance listed."
         }
        ]
       }
