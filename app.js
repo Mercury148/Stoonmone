@@ -322,7 +322,7 @@ function factionBadge(faction) {
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 function createFilterPanel(container, onChange) {
-  const state = { query: "", factions: new Set(), synergies: new Set() };   // "Synergies" = Keywords und Synergien in einem Filter
+  const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
   const search = el("input", { type: "search", placeholder: "Search (name, keyword, synergy)", "aria-label": "Search", autocomplete: "off" });
@@ -330,7 +330,17 @@ function createFilterPanel(container, onChange) {
   // Synergien: zusätzliche Schlagwörter pro Charakter ("synergies" in characters.json), die NICHT auf der Karte stehen
   const synSummary = el("summary", {});
   const synChips = el("div", { class: "chips" });
-  const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
+  // Schalter oben rechts im Synergies-Feld: ODER (mindestens ein gewählter Begriff) oder UND (alle gewählten Begriffe)
+  const modeBtn = el("button", { class: "mode-btn", type: "button", "aria-live": "polite" });
+  function renderMode() {
+    modeBtn.textContent = state.all ? "AND" : "OR";
+    modeBtn.title = state.all ? "Character must have ALL selected synergies. Tap to switch to OR." : "Character needs at least ONE selected synergy. Tap to switch to AND.";
+    modeBtn.setAttribute("aria-label", modeBtn.title);
+    modeBtn.setAttribute("aria-pressed", String(state.all));
+  }
+  modeBtn.addEventListener("click", () => { state.all = !state.all; renderMode(); onChange(); });
+  renderMode();
+  const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, modeBtn, synChips);
   const count = el("span", {});
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
@@ -414,7 +424,7 @@ function createFilterPanel(container, onChange) {
   });
   search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(); });
   reset.addEventListener("click", () => {
-    state.query = ""; state.factions.clear(); state.synergies.clear();
+    state.query = ""; state.factions.clear(); state.synergies.clear(); state.all = false; renderMode();
     search.value = "";
     renderSynergies();
     renderFactions();
@@ -433,7 +443,11 @@ function createFilterPanel(container, onChange) {
         // Keywords und Synergien addieren sich: gezeigt wird, wer ein gewähltes Keyword ODER eine gewählte Synergie hat.
         // Innerhalb jeder Gruppe genügt ebenfalls eines davon. Ist nur eine Gruppe gewählt, gilt nur diese.
         // Gezeigt wird, wer mindestens einen der gewählten Begriffe als Keyword oder Synergie hat
-        if (state.synergies.size && ![...c.keywords, ...(c.synergies || [])].some((k) => state.synergies.has(k))) return false;
+        if (state.synergies.size) {
+          const tags = new Set([...c.keywords, ...(c.synergies || [])]);
+          const picked = [...state.synergies];
+          if (!(state.all ? picked.every((k) => tags.has(k)) : picked.some((k) => tags.has(k)))) return false;
+        }
         if (query) {
           const text = [
             c.name,
@@ -457,7 +471,7 @@ function createFilterPanel(container, onChange) {
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
-      state.query = ""; state.factions.clear(); state.synergies.clear();
+      state.query = ""; state.factions.clear(); state.synergies.clear(); state.all = false; renderMode();
       search.value = "";
         renderSynergies();
       renderFactions();

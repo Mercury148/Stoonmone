@@ -1259,3 +1259,9 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .gcell.unsummoned .gcell-portrait { aspect-ratio: 11 / 10; }
 .gcell.unsummoned .pcard img, .gcell.unsummoned .pcard svg { object-fit: cover; object-position: center; }
 @media (min-width: 720px) { .gcell.unsummoned .gcell-portrait { aspect-ratio: 59 / 50; } }
+
+/* Schalter ODER / UND oben rechts im Synergies-Feld */
+.synergy-box { position: relative; }
+.mode-btn { position: absolute; top: 0.45rem; right: 0.6rem; min-height: 0; padding: 0.2rem 0.7rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
+.mode-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.synergy-box summary { padding-right: 4.8rem; }
