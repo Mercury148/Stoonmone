@@ -1674,7 +1674,7 @@ function renderGame() {
 // Eine Seite mit Suche und aufklappbaren Abschnitten. Der Inhalt steht in einer JSON-Datei
 // (data/rules.json für die Regeln, data/faq.json für die FAQs). Aufbau der Datei:
 //   { "meta": { "note": "…" }, "sections": [ { "id": "…", "title": "…", "blocks": [ … ] } ] }
-// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), ul (Liste), note (Kasten),
+// Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), ul (Liste; "ordered": true = nummeriert, "plain": true = ohne Aufzählungszeichen), note (Kasten),
 //         figure (Bild), gallery (Bilderreihe mit Beschriftung), example (Kasten mit Bild und Text),
 //         group (aufklappbarer Unterpunkt: { "t": "group", "title": "…", "blocks": [ … ] }, beliebig tief verschachtelbar),
 //         annotated (Bild mit nummerierten Punkten: src, alt, w, pins [[x%, y%], …], items ["Erklärung 1", …]).
@@ -1724,7 +1724,8 @@ function blockNode(block) {
     case "h":
       return el(block.l === 3 ? "h4" : "h3", { class: block.l === 3 ? "rule-h3" : "rule-h2" }, ...inlineNodes(block.x));
     case "ul":
-      return el("ul", {}, ...block.items.map((item) => el("li", {}, ...inlineNodes(item))));
+      // ordered: true = nummerierte Liste, plain: true = Liste ohne Aufzählungszeichen (der Text enthält die Nummer selbst, z. B. "8.1.")
+      return el(block.ordered ? "ol" : "ul", { class: block.plain ? "plain-list" : null }, ...block.items.map((item) => el("li", {}, ...inlineNodes(item))));
     case "note":
       return el("div", { class: "rule-note" }, ...inlineNodes(block.x));
     case "figure":

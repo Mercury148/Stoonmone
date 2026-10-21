@@ -1269,3 +1269,11 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .mode-btn.is-and .mode-thumb { transform: translateX(100%); }
 @media (prefers-reduced-motion: reduce) { .mode-thumb, .mode-opt { transition: none; } }
 .synergy-box summary { padding-right: 7.4rem; }
+
+/* Unterpunkte einer nummerierten Liste (z. B. 8.1 bis 8.3 in den FAQs) */
+.guide-list .rule-group ul.sub-list { margin: -0.9rem 0 0.6rem; padding-left: 3.1rem; }
+
+/* Liste ohne Aufzählungszeichen (z. B. die Unterpunkte 8.1 bis 8.3 in den FAQs) */
+ul.plain-list { list-style: none; padding-left: 1.4rem; }
+.guide-list .rule-group ul.plain-list { margin: -0.9rem 0 0.6rem; padding-left: 3.1rem; }   /* wie die Unterpunkte bei den Regeln: rückt dicht an den übergeordneten Punkt */
+ul.plain-list li + li { margin-top: 0.35rem; }
