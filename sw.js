@@ -1,13 +1,20 @@
 // Service Worker: speichert die App-Dateien im Gerät, damit die App auch ohne Netz startet.
-// Strategie "erst Cache, dann im Hintergrund aktualisieren":
-// Die App ist sofort da, und beim nächsten Start ist die neue Version geladen.
+// Strategie:
+// - Code und Daten (html, js, css, json): erst Netz, bei Offline oder nach
+//   3 Sekunden ohne Antwort aus dem Cache.
+//   Änderungen sind also sofort beim nächsten Öffnen da.
+// - Bilder: erst Cache, dann im Hintergrund aktualisieren.
 //
-// WICHTIG: Wenn du Dateien änderst (zum Beispiel characters.json),
-// erhöhe die Zahl bei CACHE_NAME, sonst zeigt das Handy noch die alte Version.
+// CACHE_NAME nur erhöhen, wenn sich die Liste DATEIEN ändert.
 
-const CACHE_NAME = "TTG-v0.8.8.2";
+const CACHE_NAME = "TTG-v0.9.0";
 const DATEIEN = [
   "./",
+  "index.html",
+  "app.js",
+  "style.css",
+  "manifest.webmanifest",
+  "data/characters.json",
   "images/rules/arcane-deck.webp",
     "images/rules/board.webp",
     "images/rules/card-flintlock.webp",
@@ -81,8 +88,37 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Code und Daten: erst Netz, bei Offline oder langsamem Netz aus dem Cache.
+const NETZ_TIMEOUT_MS = 3000;
+
+function istNetzZuerst(url) {
+  return url.origin === location.origin &&
+    (/\.(html|js|css|json|webmanifest)$/.test(url.pathname) || url.pathname.endsWith("/"));
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+
+  if (istNetzZuerst(new URL(event.request.url))) {
+    const ausNetz = fetch(event.request).then((antwort) => {
+      if (antwort.ok) {
+        const kopie = antwort.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, kopie));
+      }
+      return antwort;
+    });
+    const ausCache = caches.match(event.request);
+    // Antwortet das Netz nicht rechtzeitig, die gespeicherte Version nehmen.
+    // Das Netz lädt im Hintergrund weiter und aktualisiert den Cache.
+    const nachTimeout = new Promise((r) => setTimeout(r, NETZ_TIMEOUT_MS))
+      .then(() => ausCache)
+      .then((gespeichert) => gespeichert || ausNetz);
+    event.respondWith(Promise.race([ausNetz, nachTimeout]).catch(() => ausCache));
+    event.waitUntil(ausNetz.catch(() => {}));
+    return;
+  }
+
+  // Bilder: erst Cache, dann im Hintergrund aktualisieren
   event.respondWith(
     caches.match(event.request).then((gespeichert) => {
       const ausNetz = fetch(event.request)
