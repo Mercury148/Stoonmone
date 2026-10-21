@@ -210,6 +210,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .cards { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
 
 .card {
+  position: relative;
+  isolation: isolate;   /* z-index des Inhalts bleibt in der Kachel (sonst über der unteren Leiste) */
   display: flex;
   align-items: stretch;
   background: var(--surface);
@@ -231,6 +233,18 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-radius: 0;
 }
 .card-text { min-width: 0; display: grid; gap: 0.15rem; }
+/* Blasses Fraktionswappen, zur Hälfte über den rechten Rand hinaus (wie oben rechts auf den Charakterkarten) */
+.card-watermark {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  height: 135%;
+  width: auto;
+  transform: translate(45%, -50%);
+  opacity: 0.25;
+  pointer-events: none;
+}
+.card-main { position: relative; z-index: 1; }   /* Text und Klickfläche über dem Wappen */
 .card-name { font: 600 1.05rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .card-faction { display: flex; align-items: center; flex-wrap: wrap; column-gap: 0.75rem; row-gap: 0.1rem; font-size: 0.85rem; color: var(--muted); }
 .faction-tag { display: inline-flex; align-items: center; gap: 0.35rem; }
@@ -1074,7 +1088,7 @@ body.in-game[data-round]::before {
 body.editing .site-foot { display: none; }
 
 /* Bilder nicht ziehbar und nicht markierbar (Charakterkarten, Portraits, Icons) */
-img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-select: none; }
+img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
 
 /* Fraktionszeile im Editor: feste Höhe und immer sichtbar (nichts springt) */
 #editor-rule { min-height: 1.5rem; display: flex; align-items: center; margin: 0.25rem 0 0.4rem; }
@@ -1341,6 +1355,7 @@ ul.plain-list li + li { margin-top: 0.35rem; }
   .cards, .cards-sub { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
   .card-main { position: relative; flex-direction: column; align-items: stretch; gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
   .card-main .portrait { width: 3.6rem; height: 3.6rem; }
+  .card-watermark { display: none; }   /* auf dem Handy steht das Wappen schon klein oben rechts */
   .card-main .card-crest { display: grid; position: absolute; top: 1.05rem; right: 1rem; width: 1.9rem; height: 1.9rem; }
   .card-text { flex: 1; width: 100%; justify-items: center; align-content: center; gap: 0.2rem; }   /* Text mittig im Rest der Kachel, statt leerer Fläche unten */
   .card-name { font-size: 0.92rem; text-align: center; line-height: 1.2; }

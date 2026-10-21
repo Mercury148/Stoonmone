@@ -891,6 +891,14 @@ function cardCrest(c) {
   return icon;
 }
 
+// Großes, blasses Wappen am rechten Rand der Kachel, halb abgeschnitten wie auf den Charakterkarten (nur breite Ansicht)
+function cardWatermark(c) {
+  const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
+  const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
+  if (!image) return null;
+  return el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true" });
+}
+
 function renderCards() {
   // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
   const list = compendiumPanel.list().filter((c) => c.compendium !== false);
@@ -903,7 +911,8 @@ function renderCards() {
 
   const cardEl = (c) =>
       el("article", { class: "card" },
-        el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
+        cardWatermark(c),
+        el("button",{ class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
           cardCrest(c),
           el("div", { class: "card-text" },
