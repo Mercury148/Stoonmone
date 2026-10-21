@@ -1261,7 +1261,7 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 @media (min-width: 720px) { .gcell.unsummoned .gcell-portrait { aspect-ratio: 59 / 50; } }
 
 /* Schalter ODER / UND oben rechts im Synergies-Feld */
-.synergy-box { position: relative; }
+.synergy-wrap { position: relative; }
 .mode-btn { position: absolute; top: 0.4rem; right: 0.6rem; min-height: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; align-items: center; border-radius: 99px; overflow: hidden; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; }
 .mode-opt { position: relative; z-index: 1; min-width: 2.6rem; padding: 0.22rem 0.55rem; text-align: center; transition: color 0.25s; }
 .mode-thumb { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; border-radius: 99px; background: var(--accent); transition: transform 0.25s ease; }

@@ -338,22 +338,24 @@ function createFilterPanel(container, onChange) {
   );
   function renderMode() {
     modeBtn.classList.toggle("is-and", state.all);
-    modeBtn.title = state.all ? "Character must have ALL selected synergies. Tap to switch to OR." : "Character needs at least ONE selected synergy. Tap to switch to AND.";
+    modeBtn.title = state.all ? "Character must match ALL selected synergies and factions. Tap to switch to OR." : "Character needs to match at least ONE selected synergy or faction. Tap to switch to AND.";
     modeBtn.setAttribute("aria-label", modeBtn.title);
     modeBtn.setAttribute("aria-pressed", String(state.all));
   }
   modeBtn.addEventListener("click", () => { state.all = !state.all; renderMode(); onChange(); });
   renderMode();
-  const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, modeBtn, synChips);
+  const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
+  // Der Schalter liegt über der Kopfzeile des Feldes und bleibt auch bei eingeklapptem Feld sichtbar
+  const synWrap = el("div", { class: "synergy-wrap" }, synBox, modeBtn);
   const count = el("span", {});
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, count, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, search, synBox, factionRow, meta));
+  container.replaceChildren(el("div", { class: "filters" }, search, synWrap, factionRow, meta));
 
   // Keywords und Synergien werden zusammengeführt (jeder Begriff nur einmal)
   const allSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))].sort((a, b) => a.localeCompare(b, "en"));
-  synBox.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
+  synWrap.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
 
   // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
   function renderFactions() {
@@ -443,7 +445,11 @@ function createFilterPanel(container, onChange) {
     list() {
       const query = state.query.trim().toLowerCase();
       return data.characters.filter((c) => {
-        if (state.factions.size && !c.factions.some((f) => state.factions.has(f))) return false;
+        // Der OR/AND-Schalter gilt auch für die Fraktionen: AND = der Charakter gehört zu allen gewählten Fraktionen
+        if (state.factions.size) {
+          const picked = [...state.factions];
+          if (!(state.all ? picked.every((f) => c.factions.includes(f)) : picked.some((f) => c.factions.includes(f)))) return false;
+        }
         // Keywords und Synergien addieren sich: gezeigt wird, wer ein gewähltes Keyword ODER eine gewählte Synergie hat.
         // Innerhalb jeder Gruppe genügt ebenfalls eines davon. Ist nur eine Gruppe gewählt, gilt nur diese.
         // Gezeigt wird, wer mindestens einen der gewählten Begriffe als Keyword oder Synergie hat
