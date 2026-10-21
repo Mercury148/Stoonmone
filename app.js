@@ -141,7 +141,10 @@ function factionLine(character) {
 // Porträt: Bild, falls vorhanden, sonst Kreis mit Initialen. extraClass: "big", "small" oder "mini".
 function portrait(character, extraClass = "") {
   const faction = primaryFaction(character);
-  const box = el("div", { class: `portrait ${extraClass}`, style: factionStyle(faction), "aria-hidden": "true" });
+  // Zweite Fraktion für den Verlauf im Ring; bei nur einer Fraktion dieselbe Farbe
+  const second = factionById.get(character.factions[1]) || faction;
+  const ring = `--h2:${second.hue}; --fac-s2:${second.sat ?? 55}%`;
+  const box = el("div", { class: `portrait ${extraClass}`, style: `${factionStyle(faction)}; ${ring}`, "aria-hidden": "true" });
   if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy" }));
   else box.textContent = initials(character.name);
   return box;
@@ -1713,9 +1716,9 @@ function renderGame() {
 // (data/rules.json für die Regeln, data/faq.json für die FAQs). Aufbau der Datei:
 //   { "meta": { "note": "…" }, "sections": [ { "id": "…", "title": "…", "blocks": [ … ] } ] }
 // Blöcke: p (Absatz), h (Zwischenüberschrift, l = 2 oder 3), q (Frage über der Antwort), ul (Liste; "ordered": true = nummeriert, "plain": true = ohne Aufzählungszeichen), note (Kasten),
-//         figure (Bild), gallery (Bilderreihe mit Beschriftung), example (Kasten mit Bild und Text),
+//         figure (Bild), gallery (Bilderreihe mit Beschriftung; items mit x = Beschreibung neben dem Bild), example (Kasten mit Bild und Text, side: "right" = Bild rechts),
 //         group (aufklappbarer Unterpunkt: { "t": "group", "title": "…", "blocks": [ … ] }, beliebig tief verschachtelbar),
-//         annotated (Bild mit nummerierten Punkten: src, alt, w, pins [[x%, y%], …], items ["Erklärung 1", …]).
+//         annotated (Bild mit nummerierten Punkten: src, alt, w, pins [[x%, y%], …], items ["Erklärung 1", …], side: "right" = Bild rechts).
 // Im Text: *kursiv*, **fett**, ***fett kursiv***, \n = Zeilenumbruch, [[farbe:X]] = farbiges Arcane-Symbol (pink, green, blue).
 const GUIDES = {
   rules: { container: "#rules-guide", url: "data/rules.json", placeholder: "Search the rules", empty: "No rules found." },
@@ -1757,6 +1760,30 @@ function searchForm(s) {
   return s.toLowerCase().replace(/[’‘]/g, "'").replace(/[“”]/g, '"');
 }
 
+// Wörter eines (schon mit searchForm umgewandelten) Textes; Punkt und Apostroph im Wort bleiben ("8.1", "character's")
+const WORD = /[\p{L}\p{N}]+(?:['.][\p{L}\p{N}]+)*/gu;
+function wordsOf(form) {
+  return form.match(WORD) || [];
+}
+
+// Wie viele Tippfehler (falscher, fehlender, zusätzlicher oder vertauschter Buchstabe) trennen den Suchbegriff
+// vom ähnlichsten Wortanfang? "movemnt" → "movement" = 1
+function prefixDistance(term, word) {
+  let before = null;
+  let prev = Array.from({ length: word.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= term.length; i++) {
+    const row = [i];
+    for (let j = 1; j <= word.length; j++) {
+      let d = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (term[i - 1] === word[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && term[i - 1] === word[j - 2] && term[i - 2] === word[j - 1]) d = Math.min(d, before[j - 2] + 1);
+      row.push(d);
+    }
+    before = prev;
+    prev = row;
+  }
+  return Math.min(...prev);
+}
+
 function blockNode(block) {
   switch (block.t) {
     case "h":
@@ -1772,11 +1799,18 @@ function blockNode(block) {
       return el("figure", { class: "rule-fig" },
         el("img", { src: block.src, alt: block.alt || "", loading: "lazy", style: block.w ? `max-width:min(100%, ${Number(block.w) || 22}rem)` : null }),
         block.caption ? el("figcaption", { text: block.caption }) : null);
-    case "gallery":
-      return el("div", { class: "rule-gallery", style: `--cols:${Number(block.cols) || 2}` }, ...block.items.map((item) =>
-        el("figure", {}, el("img", { src: item.src, alt: "", loading: "lazy" }), el("figcaption", { text: item.caption }))));
+    case "gallery": {
+      // Haben die Bilder eine Beschreibung (x), steht sie neben dem Bild statt nur der Beschriftung darunter
+      const described = block.items.some((item) => item.x);
+      return el("div", { class: described ? "rule-gallery described" : "rule-gallery", style: `--cols:${Number(block.cols) || 2}`, "data-cols": Number(block.cols) || 2 }, ...block.items.map((item) =>
+        el("figure", {}, el("img", { src: item.src, alt: "", loading: "lazy" }),
+          described
+            ? el("figcaption", {}, el("strong", { text: item.caption }), el("span", {}, ...inlineNodes(item.x || "")))
+            : el("figcaption", { text: item.caption }))));
+    }
     case "example":
-      return el("div", { class: "rule-example" },
+      // side: "right" = Bild rechts neben dem Text (auf schmalen Bildschirmen darunter)
+      return el("div", { class: block.side === "right" ? "rule-example right" : "rule-example" },
         el("img", { src: block.src, alt: block.alt || "", loading: "lazy", style: block.w ? `flex-basis:${Number(block.w) || 11}rem;width:${Number(block.w) || 11}rem` : null }),
         el("p", {}, ...inlineNodes(block.x)));
     case "annotated":
@@ -1818,7 +1852,7 @@ function annotatedNode(block) {
     itemNodes.push(item);
     return item;
   }));
-  return el("div", { class: "annot", style: block.w ? `--annot-w:${Number(block.w) || 22}rem` : null }, wrap, list);
+  return el("div", { class: block.side === "right" ? "annot right" : "annot", style:block.w ? `--annot-w:${Number(block.w) || 22}rem` : null }, wrap, list);
 }
 
 // Suchbare Einheiten eines Blocks (für Treffer und Sprung)
@@ -1827,7 +1861,7 @@ function leafUnits(block, node) {
     case "h":
     case "q": return [{ node, text: block.x, kind: "title" }];
     case "ul": return block.items.map((t, i) => ({ node: node.children[i], text: t, kind: "text" }));
-    case "gallery": return block.items.map((it, i) => ({ node: node.children[i], text: it.caption || "", kind: "text" }));
+    case "gallery": return block.items.map((it, i) => ({ node: node.children[i], text: `${it.caption || ""} ${it.x || ""}`, kind: "text" }));
     case "annotated": return block.items.map((t, i) => ({ node: node.querySelectorAll("li")[i], text: t, kind: "text" }));
     case "figure": return block.caption ? [{ node, text: block.caption, kind: "text" }] : [];
     case "example": return [{ node, text: `${block.x || ""} ${block.alt || ""}`, kind: "text" }];   // Alt-Text enthält z. B. den Kartennamen
@@ -1838,7 +1872,7 @@ function leafUnits(block, node) {
 function blockTexts(block) {
   const parts = [];
   if (block.x) parts.push(block.x);
-  if (block.items) parts.push(...block.items.map((i) => (typeof i === "string" ? i : i.caption || "")));
+  if (block.items) parts.push(...block.items.map((i) => (typeof i === "string" ? i : `${i.caption || ""} ${i.x || ""}`)));
   if (block.caption) parts.push(block.caption);
   if (block.t === "example" && block.alt) parts.push(block.alt);
   return parts;
@@ -1859,9 +1893,11 @@ function createGuide(container, config) {
     row.hidden = !text && next.hidden;
   }
 
-  let sections = [];       // oberste Abschnitte: { node, text, children }
+  let sections = [];       // oberste Abschnitte: { node, words, children }
   let allGroups = [];      // alle aufklappbaren Gruppen (auch verschachtelte)
   let units = [];          // alle suchbaren Absätze und Überschriften
+  let vocab = new Set();   // alle Wörter des Textes
+  let matchCache = new Map();
   let loadState = "idle";  // idle | loading | done
   let openBefore = null;   // welche Gruppen waren vor der Suche offen?
   let hits = [], hitIndex = -1, jumpTimer = null;
@@ -1871,8 +1907,45 @@ function createGuide(container, config) {
     list.normalize();
   }
 
-  function markTerms(root, terms) {
-    const pattern = new RegExp(terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+  // Suchbegriffe aus dem Eingabefeld; einzelne Buchstaben zählen nicht
+  function queryTerms() {
+    return [...new Set(wordsOf(searchForm(search.value)))].filter((t) => t.length >= 2);
+  }
+
+  // Welche Wörter passen zu einem Suchbegriff? Wort → Güte (3 genau, 2 Wortanfang, 1 Wortteil oder Tippfehler).
+  // Tippfehler werden nur gesucht, wenn der Begriff sonst nirgends vorkommt, damit z. B. "fire" nicht auch "fine" findet.
+  function matchesFor(term) {
+    let found = matchCache.get(term);
+    if (found) return found;
+    found = new Map();
+    for (const w of vocab) {
+      if (w === term) found.set(w, 3);
+      else if (w.startsWith(term)) found.set(w, 2);
+      else if (term.length >= 4 && w.includes(term)) found.set(w, 1);
+    }
+    if (!found.size && term.length >= 4) {
+      const allowed = term.length >= 8 ? 2 : 1;
+      for (const w of vocab) {
+        if (w.length >= term.length - allowed && prefixDistance(term, w) <= allowed) found.set(w, 1);
+      }
+    }
+    matchCache.set(term, found);
+    return found;
+  }
+
+  // Beste Güte, mit der ein Begriff in einer Wortmenge vorkommt (0 = gar nicht)
+  function quality(words, found) {
+    let best = 0;
+    for (const [w, q] of found) {
+      if (q > best && words.has(w)) best = q;
+      if (best === 3) break;
+    }
+    return best;
+  }
+
+  // Ganze passende Wörter markieren, nicht einzelne Buchstaben
+  function markTerms(root, found) {
+    const wanted = new Set(found.flatMap((f) => [...f.keys()]));
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
     const nodes = [];
     while (walker.nextNode()) {
@@ -1882,11 +1955,9 @@ function createGuide(container, config) {
     }
     for (const node of nodes) {
       const text = node.nodeValue;
-      const form = searchForm(text);
-      pattern.lastIndex = 0;
-      let match, pos = 0, frag = null;
-      while ((match = pattern.exec(form))) {
-        if (!match[0]) { pattern.lastIndex++; continue; }
+      let pos = 0, frag = null;
+      for (const match of searchForm(text).matchAll(WORD)) {
+        if (!wanted.has(match[0])) continue;
         frag = frag || document.createDocumentFragment();
         frag.append(text.slice(pos, match.index), el("mark", { text: text.slice(match.index, match.index + match[0].length) }));
         pos = match.index + match[0].length;
@@ -1896,29 +1967,30 @@ function createGuide(container, config) {
   }
 
   // Gruppen ein- oder ausblenden; Treffer werden aufgeklappt
-  function visit(group, terms) {
-    const match = !terms.length || terms.every((t) => group.text.includes(t));
+  function visit(group, found) {
+    const match = found.every((f) => quality(group.words, f) > 0);
     group.node.hidden = !match;
-    if (match && terms.length) group.node.open = true;
-    for (const child of group.children) visit(child, terms);
+    if (match && found.length) group.node.open = true;
+    for (const child of group.children) visit(child, found);
     return match;
   }
 
-  // Treffer sortieren: ganzer Suchtext im selben Absatz > Überschrift > Teile des Suchtextes
-  function rankHits(terms) {
+  // Treffer sortieren: ganzer Suchtext im selben Absatz > Überschrift > Teile des Suchtextes; genaue Wörter vor Tippfehlern
+  function rankHits(terms, found) {
     const phrase = terms.join(" ");
     const full = [], part = [];
     units.forEach((u, order) => {
       if (u.node.closest("details[hidden]")) return;
-      const own = terms.filter((t) => u.text.includes(t)).length;
-      if (!own) return;
-      const context = terms.every((t) => `${u.ctx} ${u.text}`.includes(t));
-      let score = own * 10;
-      if (own === terms.length) score += 100; else if (context) score += 50;
+      const own = found.map((f) => quality(u.words, f));
+      const count = own.filter(Boolean).length;
+      if (!count) return;
+      const context = found.every((f, i) => own[i] || quality(u.ctxWords, f));
+      let score = own.reduce((a, b) => a + b, 0) * 4;
+      if (count === terms.length) score += 100; else if (context) score += 50;
       if (u.text.includes(phrase)) score += 40;
       if (u.kind === "title") score += 30;
       if (u.text.startsWith(terms[0])) score += 5;
-      (own === terms.length || context ? full : part).push({ u, score, order });
+      (count === terms.length || context ? full : part).push({ u, score, order });
     });
     return (full.length ? full : part).sort((a, b) => b.score - a.score || a.order - b.order).map((x) => x.u);
   }
@@ -1946,26 +2018,27 @@ function createGuide(container, config) {
     void node.offsetWidth;
     node.classList.add("hit-flash");
     setTimeout(() => node.classList.remove("hit-flash"), 2000);
-    updateStatus(searchForm(search.value).split(/\s+/).filter(Boolean));
+    updateStatus(queryTerms());
   }
 
   function apply() {
     clearTimeout(jumpTimer);
     clearMarks();
-    const terms = searchForm(search.value).split(/\s+/).filter(Boolean);
+    const terms = queryTerms();
+    const found = terms.map(matchesFor);
     hits = []; hitIndex = -1;
     if (!terms.length) {
-      // Suche leer: alles zeigen, offene Gruppen wie vor der Suche wiederherstellen
-      for (const s of sections) visit(s, terms);
+      // Suche leer (oder nur einzelne Buchstaben): alles zeigen, offene Gruppen wie vor der Suche wiederherstellen
+      for (const s of sections) visit(s, found);
       if (openBefore) for (const g of allGroups) g.node.open = openBefore.has(g.node);
       openBefore = null;
       updateStatus(terms);
       return;
     }
     if (!openBefore) openBefore = new Set(allGroups.filter((g) => g.node.open).map((g) => g.node));
-    for (const s of sections) visit(s, terms);
-    markTerms(list, terms);
-    hits = rankHits(terms);
+    for (const s of sections) visit(s, found);
+    markTerms(list, found);
+    hits = rankHits(terms, found);
     updateStatus(terms);
     if (hits.length) jumpTimer = setTimeout(() => goTo(0), 350);   // kurz warten, falls noch weitergetippt wird
   }
@@ -1982,11 +2055,13 @@ function createGuide(container, config) {
   // Eine Gruppe (Abschnitt oder Unterpunkt) als aufklappbares Menü bauen
   function buildGroup(def, titles, level) {
     const chain = titles.concat(def.title);
-    const group = { node: null, children: [], text: "" };
+    const group = { node: null, children: [], words: null };
+    const ctxWords = new Set(wordsOf(searchForm(plainText(chain.join(" ")))));
     const parts = [def.title];
     const summary = el("summary", {}, el("span", { class: "summary-text", text: def.title }));   // eigenes span, damit Markierungen im Titel keine Lücken bekommen
     const body = el("div", { class: "rule-body" });
-    units.push({ node: summary, text: searchForm(plainText(def.title)), ctx: searchForm(plainText(titles.join(" "))), kind: "title" });
+    const titleText = searchForm(plainText(def.title));
+    units.push({ node: summary, text: titleText, words: new Set(wordsOf(titleText)), ctxWords: new Set(wordsOf(searchForm(plainText(titles.join(" "))))), kind: "title" });
     let blocks = def.blocks || [];
     // Nur eine Frage im Thema: kein zweites Aufklappen, die Frage steht direkt über der Antwort
     if (blocks.length === 1 && blocks[0].t === "group") blocks = [{ t: "q", x: blocks[0].title }, ...(blocks[0].blocks || [])];
@@ -1994,19 +2069,20 @@ function createGuide(container, config) {
       if (block.t === "group") {
         const sub = buildGroup(block, chain, level + 1);
         group.children.push(sub);
-        parts.push(sub.text);
+        parts.push(...sub.words);
         body.append(sub.node);
       } else {
         const node = blockNode(block);
         body.append(node);
         for (const u of leafUnits(block, node)) {
-          units.push({ node: u.node, text: searchForm(plainText(u.text)), ctx: searchForm(plainText(chain.join(" "))), kind: u.kind });
+          const text = searchForm(plainText(u.text));
+          units.push({ node: u.node, text, words: new Set(wordsOf(text)), ctxWords, kind: u.kind });
         }
         parts.push(...blockTexts(block));
       }
     }
     group.node = el("details", { class: level === 1 ? "rule-section" : "rule-group", id: def.id ? `${config.container.slice(1)}-${def.id}` : null }, summary, body);
-    group.text = searchForm(plainText(parts.join(" ")));
+    group.words = new Set(wordsOf(searchForm(plainText(parts.join(" ")))));
     allGroups.push(group);
     return group;
   }
@@ -2015,6 +2091,8 @@ function createGuide(container, config) {
     const defs = Array.isArray(guideData && guideData.sections) ? guideData.sections : [];
     units = []; allGroups = [];
     sections = defs.map((def) => buildGroup(def, [], 1));
+    vocab = new Set(sections.flatMap((s) => [...s.words]));
+    matchCache = new Map();
     list.replaceChildren(...sections.map((s) => s.node));
     const note = guideData && guideData.meta && guideData.meta.note;
     foot.textContent = note || "";
@@ -2024,23 +2102,31 @@ function createGuide(container, config) {
     apply();
   }
 
-  return {
-    async load() {
-      if (loadState !== "idle") return;
-      loadState = "loading";
-      setStatus("Loading…");
-      try {
-        const response = await fetch(config.url);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        render(await response.json());
-        loadState = "done";
-      } catch (err) {
-        loadState = "idle";   // beim nächsten Öffnen nochmal versuchen
-        setStatus("");
-        list.replaceChildren(el("p", { class: "empty", text: `This page could not be loaded (${err.message}). Please check your connection and try again.` }));
-      }
-    },
-  };
+  async function load() {
+    if (loadState !== "idle") return;
+    loadState = "loading";
+    setStatus("Loading…");
+    try {
+      const response = await fetch(config.url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      render(await response.json());
+      loadState = "done";
+    } catch (err) {
+      loadState = "idle";   // beim nächsten Öffnen oder per Knopf nochmal versuchen
+      setStatus("");
+      const retry = el("button", { class: "ghost", type: "button", text: "Try again" });
+      retry.addEventListener("click", () => {
+        list.replaceChildren();
+        load();
+      });
+      list.replaceChildren(el("div", { class: "empty guide-error", role: "alert" },
+        el("p", { text: `This page could not be loaded (${err.message}). Please check your connection and try again.` }),
+        retry));
+      retry.focus();
+    }
+  }
+
+  return { load };
 }
 
 

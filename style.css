@@ -244,13 +244,26 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: hsl(var(--h) var(--fac-s) var(--fac-l));
   color: var(--portrait-fg);
   font: 600 1.1rem/1 var(--font-display);
   letter-spacing: 0.02em;
   overflow: hidden;
+  /* Ring in der Fraktionsfarbe (wie der Sockel einer Miniatur), mit schmalem Abstand zum Bild.
+     Bei zwei Fraktionen ein Verlauf von der ersten zur zweiten (--h2, gesetzt in portrait()).
+     Ring und Abstand liegen außerhalb der Größe (content-box + negativer Rand), das Layout bleibt gleich. */
+  --ring-1: hsl(var(--h) var(--fac-s) var(--fac-l));
+  --ring-2: hsl(var(--h2) var(--fac-s2) var(--fac-l));
+  box-sizing: content-box;
+  border: 2px solid transparent;
+  padding: 2px;
+  margin: -4px;
+  background:
+    linear-gradient(var(--ring-1), var(--ring-1)) content-box,   /* Hintergrund für die Initialen ohne Bild */
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(135deg, var(--ring-1) 30%, var(--ring-2) 70%) border-box;
 }
-.portrait img { width: 100%; height: 100%; object-fit: cover; background: var(--portrait-bg); }
+.portrait.mini { border-width: 1.5px; padding: 1px; margin: -2.5px; }
+.portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: var(--portrait-bg); }
 .portrait.big { width: 4.5rem; height: 4.5rem; font-size: 1.5rem; }
 .portrait.small { width: 2.75rem; height: 2.75rem; font-size: 0.95rem; }
 .portrait.mini { width: 1.9rem; height: 1.9rem; font-size: 0.7rem; }
@@ -695,7 +708,7 @@ dialog.card-view {
 dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 .card-view .detail { padding: 0; gap: 0.75rem; justify-items: center; }
 
-.card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.9rem; }
 .card-stage { position: relative; width: 100%; }
 
 .card-flip {
@@ -773,7 +786,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 .rule-faction { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; color: var(--fg); }
 
 /* Beschworene Charaktere: eigene Zeile unter den Plätzen */
-.section-label { margin: 0.75rem 0 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.section-label { margin: 0.75rem 0 0; font-size: 0.9rem; font-weight: 600; color: var(--muted); }
 .hint-inline { font-weight: 400; letter-spacing: 0; text-transform: none; }
 #editor-summons .slots { margin-top: 0.4rem; }
 .slot-portrait.summoned { border: 2px dashed var(--accent); }
@@ -1119,10 +1132,25 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 .rule-gallery figure { display: grid; justify-items: center; align-content: end; gap: 0.35rem; text-align: center; }
 .rule-gallery img { height: 4.2rem; width: auto; max-width: 100%; object-fit: contain; }
 .rule-gallery figcaption { font-size: 0.82rem; font-weight: 600; line-height: 1.25; }
+/* Sechs Bilder in einer Reihe, auf schmalen Bildschirmen zwei Reihen à drei */
+@media (max-width: 719px) { .rule-gallery[data-cols="6"] { grid-template-columns: repeat(3, minmax(0, 7.5rem)); } }
+/* Mit Beschreibung: Wappen neben dem Text. Breit: zwei Spalten gespiegelt, die Wappen treffen sich in der Mitte */
+.rule-gallery.described { grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-items: center; }
+.rule-gallery.described figure { grid-template-columns: 4.2rem minmax(0, 1fr); align-items: center; justify-items: start; column-gap: 0.8rem; text-align: left; }
+.rule-gallery.described figcaption { display: grid; gap: 0.15rem; font-size: 0.9rem; }
+.rule-gallery.described figcaption span { font-weight: 400; color: var(--muted); }
+@media (min-width: 720px) {
+  .rule-gallery.described { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.2rem; }
+  .rule-gallery.described figure:nth-child(odd) { grid-template-columns: minmax(0, 1fr) 4.2rem; justify-items: end; text-align: right; }
+  .rule-gallery.described figure:nth-child(odd) img { order: 1; }
+}
 .rule-example { display: flex; flex-wrap: wrap; gap: 0.9rem; align-items: flex-start; }
 .rule-example img { flex: 0 1 11rem; width: 11rem; max-width: 100%; height: auto; }
 .rule-example p { flex: 1 1 13rem; margin: 0; }
-.guide-note { margin: 1.25rem 0 0; font-size: 0.8rem; color: var(--muted); text-align: center; }
+.rule-example.right img { order: 1; }   /* Text zuerst, Bild rechts bzw. beim Umbruch darunter */
+.guide-error { display: grid; justify-items: start; gap: 0.6rem; }
+.guide-error p { margin: 0; }
+.guide-note {margin: 1.25rem 0 0; font-size: 0.8rem; color: var(--muted); text-align: center; }
 /* Verschachtelte Unterpunkte: schlichte Zeilen mit Trennlinie statt eigener Kästen */
 .rule-group { border-top: 1px solid var(--line); }
 .rule-body > .rule-group + .rule-group { margin-top: -0.75rem; }   /* Zeilen direkt untereinander, ohne Lücke aus dem Grid */
@@ -1174,6 +1202,12 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 .annot { display: grid; gap: 1rem; justify-items: center; }
 .annot-img { position: relative; width: min(100%, var(--annot-w, 24rem)); }
 .annot-img img { display: block; width: 100%; height: auto; }
+/* side: "right": Erklärungen links, Bild rechts daneben (auf schmalen Bildschirmen wie gehabt untereinander) */
+@media (min-width: 720px) {
+  .annot.right { grid-template-columns: minmax(0, 1fr) min(50%, var(--annot-w, 24rem)); align-items: start; }
+  .annot.right .annot-img { grid-column: 2; grid-row: 1; width: 100%; }
+  .annot.right .annot-list { grid-column: 1; grid-row: 1; }
+}
 .pin {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -1308,7 +1342,7 @@ ul.plain-list li + li { margin-top: 0.35rem; }
   .card-main { position: relative; flex-direction: column; align-items: stretch; gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
   .card-main .portrait { width: 3.6rem; height: 3.6rem; }
   .card-main .card-crest { display: grid; position: absolute; top: 1.05rem; right: 1rem; width: 1.9rem; height: 1.9rem; }
-  .card-text { width: 100%; justify-items: center; gap: 0.2rem; }
+  .card-text { flex: 1; width: 100%; justify-items: center; align-content: center; gap: 0.2rem; }   /* Text mittig im Rest der Kachel, statt leerer Fläche unten */
   .card-name { font-size: 0.92rem; text-align: center; line-height: 1.2; }
   .card-main .card-faction { display: none; }
   /* Geweih und Sonnenstrahlen ragen weiter über die Scheibe hinaus: leicht nach unten/innen schieben, damit oben und rechts gleich viel Rand bleibt */

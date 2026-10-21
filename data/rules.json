@@ -125,6 +125,7 @@
      "src": "images/rules/card-flintlock.webp",
      "alt": "Example character card: Flintlock",
      "w": 24,
+     "side": "right",
      "pins": [
       [
        3.2,
@@ -215,18 +216,12 @@
      "title": "1. Set up the Board",
      "blocks": [
       {
-       "t": "p",
-       "x": "Moonstone is played on 3’ x 3’ playing surface. Players should arrange some terrain in a mutually agreeable and aesthetically pleasing manner."
-      },
-      {
-       "t": "p",
-       "x": "Avoid placing terrain on the very centre of the board."
-      },
-      {
-       "t": "figure",
+       "t": "example",
+       "side": "right",
+       "x": "Moonstone is played on 3’ x 3’ playing surface. Players should arrange some terrain in a mutually agreeable and aesthetically pleasing manner.\n\nAvoid placing terrain on the very centre of the board.",
        "src": "images/rules/board.webp",
        "alt": "A 3’ x 3’ playing surface with fantasy terrain",
-       "w": 26
+       "w": 14
       }
      ]
     },
@@ -248,25 +243,25 @@
        "items": [
         {
          "src": "images/rules/crest-commonwealth.webp",
-         "caption": "Commonwealth"
+         "caption": "Commonwealth",
+         "x": "Typically includes humans, giants and gnomes."
         },
         {
          "src": "images/rules/crest-dominion.webp",
-         "caption": "Dominion"
+         "caption": "Dominion",
+         "x": "Typically includes goblins, faeries and trolls."
         },
         {
          "src": "images/rules/crest-leshavult.webp",
-         "caption": "Leshavult"
+         "caption": "Leshavult",
+         "x": "Typically includes fauns, spirits and cultists."
         },
         {
          "src": "images/rules/crest-shades.webp",
-         "caption": "Shades of Moonreach"
+         "caption": "Shades of Moonreach",
+         "x": "Typically include spirits, risen and psychopomps."
         }
        ]
-      },
-      {
-       "t": "p",
-       "x": "Commonwealth typically includes humans, giants and gnomes; Dominion typically includes goblins, faeries and trolls; Leshavult typically includes fauns, spirits and cultists; and Shades typically include spirits, risen and psychopomps."
       },
       {
        "t": "p",
@@ -278,7 +273,7 @@
       },
       {
        "t": "gallery",
-       "cols": 3,
+       "cols": 6,
        "items": [
         {
          "src": "images/rules/crest-commonwealth-dominion.webp",
