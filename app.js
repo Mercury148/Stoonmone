@@ -331,9 +331,13 @@ function createFilterPanel(container, onChange) {
   const synSummary = el("summary", {});
   const synChips = el("div", { class: "chips" });
   // Schalter oben rechts im Synergies-Feld: ODER (mindestens ein gewählter Begriff) oder UND (alle gewählten Begriffe)
-  const modeBtn = el("button", { class: "mode-btn", type: "button", "aria-live": "polite" });
+  const modeBtn = el("button", { class: "mode-btn", type: "button" },
+    el("span", { class: "mode-thumb", "aria-hidden": "true" }),
+    el("span", { class: "mode-opt", text: "OR" }),
+    el("span", { class: "mode-opt", text: "AND" })
+  );
   function renderMode() {
-    modeBtn.textContent = state.all ? "AND" : "OR";
+    modeBtn.classList.toggle("is-and", state.all);
     modeBtn.title = state.all ? "Character must have ALL selected synergies. Tap to switch to OR." : "Character needs at least ONE selected synergy. Tap to switch to AND.";
     modeBtn.setAttribute("aria-label", modeBtn.title);
     modeBtn.setAttribute("aria-pressed", String(state.all));

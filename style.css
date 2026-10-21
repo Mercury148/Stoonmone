@@ -1262,6 +1262,10 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 
 /* Schalter ODER / UND oben rechts im Synergies-Feld */
 .synergy-box { position: relative; }
-.mode-btn { position: absolute; top: 0.45rem; right: 0.6rem; min-height: 0; padding: 0.2rem 0.7rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; background: var(--surface-2); color: var(--fg); border: 1px solid var(--line); }
-.mode-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
-.synergy-box summary { padding-right: 4.8rem; }
+.mode-btn { position: absolute; top: 0.4rem; right: 0.6rem; min-height: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; align-items: center; border-radius: 99px; overflow: hidden; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; -webkit-tap-highlight-color: transparent; }
+.mode-opt { position: relative; z-index: 1; min-width: 2.6rem; padding: 0.22rem 0.55rem; text-align: center; transition: color 0.25s; }
+.mode-thumb { position: absolute; top: 0; bottom: 0; left: 0; width: 50%; border-radius: 99px; background: var(--accent); transition: transform 0.25s ease; }
+.mode-btn:not(.is-and) .mode-opt:nth-of-type(2), .mode-btn.is-and .mode-opt:nth-of-type(3) { color: var(--accent-fg); }
+.mode-btn.is-and .mode-thumb { transform: translateX(100%); }
+@media (prefers-reduced-motion: reduce) { .mode-thumb, .mode-opt { transition: none; } }
+.synergy-box summary { padding-right: 7.4rem; }
