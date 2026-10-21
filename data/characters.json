@@ -1394,7 +1394,7 @@
       "name": "Viktor Petty, Graverobber",
       "factions": ["dominion","shades"],
       "keywords": ["Human","Rogue"],
-      "synergies": ["Reanimation","Likes Dead Friends"],
+      "synergies": ["Reanimation","Likes Dead Friends","Harvesting"],
       "health": [1,0,0,1,0,0,1,0],
       "image": "portraits/graverobber.webp",
       "card": "images/Viktor_Petty_Graverobber_front.webp",
