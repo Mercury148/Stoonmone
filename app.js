@@ -486,7 +486,13 @@ function createFilterPanel(container, onChange) {
           if (!text.includes(query)) return false;
         }
         return true;
-      });
+      }).sort((x, y) => Number(this.isPrimary(y)) - Number(this.isPrimary(x)));
+    },
+    // Hat der Charakter die gewählten Synergie-Begriffe selbst als Keyword (statt nur als Synergie)?
+    isPrimary(c) {
+      if (!state.synergies.size) return false;
+      const picked = [...state.synergies];
+      return state.all ? picked.every((k) => c.keywords.includes(k)) : picked.some((k) => c.keywords.includes(k));
     },
     // Ist gerade eine Suche oder ein Filter aktiv?
     isFiltering() {
@@ -876,8 +882,7 @@ function renderCards() {
     return;
   }
 
-  $("#cards").replaceChildren(
-    ...list.map((c) =>
+  const cardEl = (c) =>
       el("article", { class: "card" },
         el("button", { class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
@@ -887,9 +892,20 @@ function renderCards() {
             c.keywords.length ? el("span", { class: "card-kw", text: c.keywords.join(" · ") }) : null
           )
         )
-      )
-    )
-  );
+      );
+  // Bei einem Synergie-Filter: erst Modelle mit dem Keyword selbst, dann (neue Zeile) Modelle, die nur eine Synergie damit haben
+  const primary = list.filter((c) => compendiumPanel.isPrimary(c));
+  const rest = list.filter((c) => !compendiumPanel.isPrimary(c));
+  const grouped = primary.length > 0 && rest.length > 0;
+  $("#cards").classList.toggle("grouped", grouped);
+  if (grouped) {
+    $("#cards").replaceChildren(
+      el("div", { class: "cards-sub" }, ...primary.map(cardEl)),
+      el("div", { class: "cards-sub" }, ...rest.map(cardEl))
+    );
+  } else {
+    $("#cards").replaceChildren(...list.map(cardEl));
+  }
 }
 
 // --- Troupen-Übersicht ---
