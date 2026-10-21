@@ -488,6 +488,10 @@ function createFilterPanel(container, onChange) {
         return true;
       }).sort((x, y) => Number(this.isPrimary(y)) - Number(this.isPrimary(x)));
     },
+    // Ist dieser Begriff im Synergie-Filter gewählt?
+    isPicked(tag) {
+      return state.synergies.has(tag);
+    },
     // Hat der Charakter die gewählten Synergie-Begriffe selbst als Keyword (statt nur als Synergie)?
     isPrimary(c) {
       if (!state.synergies.size) return false;
@@ -889,7 +893,12 @@ function renderCards() {
           el("div", { class: "card-text" },
             el("span", { class: "card-name", text: c.name }),
             factionLine(c),
-            c.keywords.length ? el("span", { class: "card-kw", text: c.keywords.join(" · ") }) : null
+            c.keywords.length ? el("span", { class: "card-kw" },
+              ...c.keywords.flatMap((k, i) => [
+                i ? " · " : null,
+                el("span", { class: compendiumPanel.isPicked(k) ? "kw-hit" : null, text: k })
+              ])
+            ) : null
           )
         )
       );
