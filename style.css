@@ -1301,3 +1301,13 @@ ul.plain-list li + li { margin-top: 0.35rem; }
   .card-crest[data-fac="leshavult+shades"] { transform: translate(0.11rem, 0.11rem); }
   .card-kw { font-size: 0.72rem; line-height: 1.25; text-align: center; }
 }
+
+/* Handy: vier Auswahlkacheln pro Reihe im Troupe Builder (Seitenverhältnis bleibt 5:6) */
+@media (max-width: 599px) {
+  .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.4rem; }
+  .tiles .tile-label { padding: 0.9rem 0.3rem 0.3rem; }
+  .tiles .tile-name { font-size: 0.62rem; line-height: 1.15; }
+  .tiles .tile-factions { padding: 0.3rem 1rem 1rem 0.35rem; }
+  .tiles .tile-factions .faction-icon { width: 1.05rem; height: 1.05rem; }
+  .tiles .tile-check { top: 0.3rem; right: 0.3rem; width: 1.1rem; height: 1.1rem; font-size: 0.7rem; }
+}
