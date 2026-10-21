@@ -954,7 +954,7 @@
       "name": "Natty, Slum Thief",
       "factions": ["commonwealth"],
       "keywords": ["Rogue","Human"],
-      "synergies": [],
+      "synergies": ["Drops or Steals Moonstone"],
       "health": [1,1,0,1,0,1],
       "image": "portraits/natty.webp",
       "card": "images/Natty_Slum_Thief_front.webp",
