@@ -404,7 +404,6 @@ function createFilterPanel(container, onChange) {
       )
     );
     synSummary.textContent = "Synergies";
-    if (state.synergies.size) synSummary.append(el("span", { class: "keyword-selected", text: [...state.synergies].join(", ") }));
   }
 
   // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff angewählt und die Zeile geleert.

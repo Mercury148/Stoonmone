@@ -142,7 +142,7 @@ button.link { background: none; min-height: 44px; padding: 0 0.25rem; color: var
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ---------- Filter (Kompendium und Editor) ---------- */
-.filters { display: grid; gap: 0.6rem; margin-bottom: 1.25rem; }
+.filters { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.6rem; margin-bottom: 1.25rem; }   /* minmax(0, …): lange Zeilen (gewählte Synergien) kürzen statt das Feld zu verbreitern */
 
 /* Fraktionssymbole: mehrere gleichzeitig wählbar. Nur das Wappen, ohne Kasten und Namen */
 /* Gemeinsames Feld wie die Synergien darüber; hinter jedem Wappen ein schwacher Schein in der Fraktionsfarbe */
@@ -215,7 +215,6 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 .keyword-box[open] summary::before { transform: rotate(45deg); }
 .keyword-box .chips { padding: 0.25rem 0.75rem 0.75rem; }
-.keyword-selected { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent); font-weight: 500; font-size: 0.9rem; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chip {
