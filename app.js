@@ -332,6 +332,7 @@ function createFilterPanel(container, onChange) {
   // Eigener Platzhalter, damit die Klammer kleiner sein kann als "Search" (verschwindet, sobald etwas getippt wird)
   const searchHint = el("span", { class: "search-hint", "aria-hidden": "true" }, "Search ", el("small", { text: "(name, keyword, synergy)" }));
   const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
+  trackGlow(factionRow, ".faction-btn:not(.blocked)", ".faction-btn", 1.3);   // Leuchten bei Mausnähe (bis 1,3 Spaltenbreiten: zwischen zwei Wappen leuchten beide)
   // Synergien: zusätzliche Schlagwörter pro Charakter ("synergies" in characters.json), die NICHT auf der Karte stehen
   const synSummary = el("summary", {});
   const synChips = el("div", { class: "chips" });
@@ -366,27 +367,35 @@ function createFilterPanel(container, onChange) {
   synWrap.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
 
   // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
+  // Die Knöpfe werden nur einmal gebaut und danach nur aktualisiert, damit das Leuchten flüssig übergehen kann
+  const factionButtons = new Map();
   function renderFactions() {
-    factionRow.replaceChildren(
-      ...data.factions.map((f) =>
-        el("button", {
-          class: allowed && !allowed.has(f.id) ? "faction-btn blocked" : "faction-btn",
-          type: "button",
-          style: factionStyle(f),
-          title: f.name,
-          "aria-label": f.name,   // nur das Wappen ist sichtbar, der Name kommt aus Tooltip und aria-label
-          "aria-pressed": String(state.factions.has(f.id)),
-          onclick: () => {
-            if (state.factions.has(f.id)) state.factions.delete(f.id);
-            else state.factions.add(f.id);
-            renderFactions();
-            onChange();
-          },
-        },
-          factionIcon(f)
-        )
-      )
-    );
+    if (!factionButtons.size) {
+      factionRow.replaceChildren(
+        ...data.factions.map((f) => {
+          const button = el("button", {
+            class: "faction-btn",
+            type: "button",
+            style: factionStyle(f),
+            title: f.name,
+            "aria-label": f.name,   // nur das Wappen ist sichtbar, der Name kommt aus Tooltip und aria-label
+            onclick: () => {
+              if (state.factions.has(f.id)) state.factions.delete(f.id);
+              else state.factions.add(f.id);
+              renderFactions();
+              onChange();
+            },
+          }, factionIcon(f));
+          factionButtons.set(f.id, button);
+          return button;
+        })
+      );
+    }
+    for (const f of data.factions) {
+      const button = factionButtons.get(f.id);
+      button.classList.toggle("blocked", Boolean(allowed && !allowed.has(f.id)));
+      button.setAttribute("aria-pressed", String(state.factions.has(f.id)));
+    }
   }
 
   function renderSynergies() {
@@ -910,16 +919,17 @@ function cardCrest(c) {
 const WATERMARK_PAD = 24 / 188;   // Rand rund ums Wappen, damit das Leuchten nicht abgeschnitten wird
 const watermarkCache = new Map();
 // opts: crest = Deckkraft des Wappens im Bild (0 = nur das Leuchten), glow = Deckkraft des Leuchtens, blur = Unschärfen (klein, groß)
+// pad = Rand ums Wappen (Anteil der Wappengröße); größeres Leuchten braucht mehr Rand, sonst wird es abgeschnitten
 function watermarkImage(image, factions, opts = {}) {
-  const { crest: crestAlpha = 0.25, glow: glowAlpha = 0.35, blur = [10, 24] } = opts;
+  const { crest: crestAlpha = 0.25, glow: glowAlpha = 0.35, blur = [10, 24], pad: padShare = WATERMARK_PAD } = opts;
   const light = getComputedStyle(document.documentElement).getPropertyValue("--fac-l").trim() || "62%";
-  const key = `${image}|${light}|${crestAlpha}|${glowAlpha}|${blur}|${factions.map((f) => f.id)}`;
+  const key = `${image}|${light}|${crestAlpha}|${glowAlpha}|${blur}|${padShare}|${factions.map((f) => f.id)}`;
   if (watermarkCache.has(key)) return watermarkCache.get(key);
   const promise = new Promise((resolve) => {
     const src = new Image();
     src.onload = () => {
       const crest = 376;                                   // Wappen in doppelter Auflösung (Original 188 px)
-      const pad = Math.round(crest * WATERMARK_PAD);
+      const pad = Math.round(crest * padShare);
       const size = crest + 2 * pad;
       const canvas = () => { const cv = document.createElement("canvas"); cv.width = size; cv.height = size; return cv; };
       // 1. Leuchten: nur der Schatten des Wappens (das Wappen selbst wird außerhalb gezeichnet und weggeschoben)
@@ -962,9 +972,13 @@ function addCrestGlow(icon, factions) {
   if (!img) return icon;
   const files = factions.map((f) => f.id).sort((x, y) => FACTION_ORDER.indexOf(x) - FACTION_ORDER.indexOf(y)).map((id) => factionById.get(id));
   const glow = el("img", { class: "crest-glow", alt: "", draggable: "false" });
+  // Wie bei den Kompendium-Kacheln: zusätzliches, größeres Leuchten, das mit der Mausnähe aufblendet (siehe trackGlow)
+  const near = el("img", { class: "crest-glow crest-glow-near", alt: "", draggable: "false" });
   glow.hidden = true;
-  icon.prepend(glow);
+  near.hidden = true;
+  icon.prepend(near, glow);
   watermarkImage(img.getAttribute("src"), files, { crest: 0, glow: 0.9, blur: [14, 32] }).then((url) => { if (url) { glow.src = url; glow.hidden = false; } });
+  watermarkImage(img.getAttribute("src"), files, { crest: 0, glow: 0.9, blur: [18, 42], pad: 32 / 188 }).then((url) => { if (url) { near.src = url; near.hidden = false; } });
   return icon;
 }
 
@@ -974,10 +988,57 @@ function cardWatermark(c) {
   const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
   if (!image) return null;
   const img = el("img", { class: "card-watermark", alt: "", draggable: "false", "aria-hidden": "true" });
+  // Zweite Ebene nur mit kräftigem Leuchten: blendet auf, je näher die Maus der Wappenmitte kommt (siehe trackCrestGlow)
+  const glow = el("img", { class: "card-watermark card-watermark-glow", alt: "", draggable: "false", "aria-hidden": "true" });
   img.hidden = true;
+  glow.hidden = true;
   watermarkImage(image, files).then((url) => { if (url) { img.src = url; img.hidden = false; } });
-  return img;
+  // Leuchten ca. 30 % größer als bei den Troupe-Wappen (blur 14/32), mit passend größerem Rand (siehe .card-watermark-glow)
+  watermarkImage(image, files, { crest: 0, glow: 0.9, blur: [18, 42], pad: 32 / 188 }).then((url) => { if (url) { glow.src = url; glow.hidden = false; } });
+  return [img, glow];
 }
+
+// Wappen, die heller leuchten, je näher die Maus ist: zählt nur der Abstand zur Mitte, egal wo die Maus ist.
+// Ergebnis als --near (0 bis 1) am host-Element; ab range Breiten des gemessenen Elements Abstand 0, in der Mitte 1.
+const glowTargets = [];   // { container, measure: Selektor des gemessenen Elements, host: Selektor für --near, range }
+let glowLit = new Set(), glowFrame = 0, glowPos = null;
+
+function trackGlow(container, measure, host, range) {
+  glowTargets.push({ container, measure, host, range });
+}
+
+function updateGlow() {
+  glowFrame = 0;
+  const next = new Map();
+  if (glowPos) {
+    // Erst alle Positionen lesen, dann schreiben (sonst rechnet der Browser bei jedem Wappen das Layout neu)
+    for (const t of glowTargets) {
+      for (const node of t.container.querySelectorAll(t.measure)) {
+        const r = node.getBoundingClientRect();
+        if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;   // ausgeblendet oder nicht im Bild
+        const near = 1 - Math.min(1, Math.hypot(glowPos.x - (r.left + r.width / 2), glowPos.y - (r.top + r.height / 2)) / (r.width * t.range));
+        if (near > 0) next.set(node.closest(t.host), near * near);
+      }
+    }
+  }
+  for (const node of glowLit) if (!next.has(node)) node.style.removeProperty("--near");
+  for (const [node, near] of next) node.style.setProperty("--near", near.toFixed(3));
+  glowLit = new Set(next.keys());
+}
+
+const scheduleGlow = () => { if (!glowFrame) glowFrame = requestAnimationFrame(updateGlow); };
+document.addEventListener("pointermove", (e) => {
+  if (e.pointerType !== "mouse") return;
+  glowPos = { x: e.clientX, y: e.clientY };
+  scheduleGlow();
+});
+window.addEventListener("scroll", () => { if (glowPos) scheduleGlow(); }, { passive: true });   // beim Scrollen wandern die Wappen unter der Maus
+document.documentElement.addEventListener("mouseleave", () => { glowPos = null; scheduleGlow(); });   // Maus verlässt das Fenster
+
+// Kompendium-Kacheln: bis 2 Wappenbreiten
+trackGlow($("#cards"), ".card-watermark-glow:not([hidden])", ".card", 2);
+// Troupe-Kacheln: Wappen in der Ecke, bis 10 Wappenbreiten (etwa so weit wie bei den Kompendium-Kacheln)
+trackGlow($("#troupe-list"), ".troupe-corner .faction-icon", ".faction-icon", 10);
 
 function renderCards() {
   // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen

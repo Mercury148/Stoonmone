@@ -157,6 +157,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 /* Fraktionssymbole: mehrere gleichzeitig wählbar. Nur das Wappen, ohne Kasten und Namen */
 /* Gemeinsames Feld wie die Synergien darüber; hinter jedem Wappen ein schwacher Schein in der Fraktionsfarbe */
 .faction-row {
+  position: relative;
+  isolation: isolate;   /* alle Leuchtflächen (z-index -1) liegen hinter allen Wappen, aber vor dem Hintergrund */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
   gap: 0.5rem;
@@ -165,9 +167,34 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
+/* Leuchtstufen als animierbare Zahlen: --near (Mausnähe, 0–1, setzt trackGlow() in app.js) und --sel (gewählt, 0/1).
+   Weil sie registriert sind, gleiten alle Verläufe und Schatten, die daraus berechnet werden, weich ineinander über. */
+@property --near { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --sel { syntax: "<number>"; inherits: true; initial-value: 0; }
+/* Leichtes, unregelmäßiges Pulsieren: --pulse (Helligkeit) und --swell (Größe) laufen mit krummen, je Wappen
+   verschiedenen Dauern, damit sich das Muster nicht erkennbar wiederholt und die Wappen nie im Gleichtakt sind */
+@property --pulse { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --swell { syntax: "<number>"; inherits: true; initial-value: 1; }
+@keyframes crest-pulse {
+  0%, 100% { --pulse: 1; }
+  11% { --pulse: 0.84; }
+  23% { --pulse: 0.95; }
+  38% { --pulse: 0.78; }
+  46% { --pulse: 0.9; }
+  63% { --pulse: 1; }
+  77% { --pulse: 0.82; }
+  88% { --pulse: 0.96; }
+}
+@keyframes crest-swell {
+  0%, 100% { --swell: 1; }
+  17% { --swell: 1.07; }
+  31% { --swell: 0.95; }
+  52% { --swell: 1.04; }
+  69% { --swell: 0.92; }
+  84% { --swell: 1.06; }
+}
 .faction-btn {
   position: relative;
-  isolation: isolate;
   display: grid;
   place-items: center;
   padding: 0.35rem 0;
@@ -176,8 +203,16 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border: none;
   border-radius: var(--radius);
   font-weight: 500;
-  transition: opacity 0.15s, filter 0.15s;
+  --sel: 0;
+  transition: opacity 0.35s ease, filter 0.35s ease, --near 0.3s ease-out, --sel 0.45s ease-in-out;   /* abwählen: sanft ausblenden */
 }
+/* wählen: sofort hell (sonst sinkt das Leuchten kurz ab, wenn die Maus nach dem Klick weggeht) */
+.faction-btn[aria-pressed="true"] { --sel: 1; transition: opacity 0.35s ease, filter 0.35s ease, --near 0.3s ease-out, --sel 0.1s ease-out; }
+.faction-btn { animation: crest-pulse 4.7s ease-in-out infinite, crest-swell 6.3s ease-in-out infinite; }
+.faction-btn:nth-child(2) { animation-duration: 5.9s, 7.7s; animation-delay: -2.1s, -4.6s; }
+.faction-btn:nth-child(3) { animation-duration: 4.3s, 8.9s; animation-delay: -3.4s, -1.3s; }
+.faction-btn:nth-child(4) { animation-duration: 6.7s, 5.6s; animation-delay: -0.8s, -3.9s; }
+@media (prefers-reduced-motion: reduce) { .faction-btn { animation: none; } }
 .faction-icon { width: 1.7rem; height: 1.7rem; display: grid; place-items: center; font: 600 0.8rem/1 var(--font-display); }
 .faction-icon svg, .faction-icon img { width: 100%; height: 100%; }
 .faction-btn::before {
@@ -190,14 +225,34 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   aspect-ratio: 1;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.22) 0%, transparent 70%);
-  transition: background 0.15s;
+  /* schwacher Schein, gewählt (--sel 1) kräftig: Werte gleiten mit --sel von einer Stufe zur anderen */
+  background: radial-gradient(circle,
+    hsl(var(--h) var(--fac-s) var(--fac-l) / calc(0.22 + 0.38 * var(--sel))) 0%,
+    hsl(var(--h) var(--fac-s) var(--fac-l) / calc(0.08 + 0.17 * var(--sel))) 45%,
+    transparent calc(70% + 2% * var(--sel)));
 }
-/* Gewählt: kräftiges Leuchten in der Fraktionsfarbe; ist etwas gewählt, treten die anderen Wappen zurück */
-.faction-btn[aria-pressed="true"]::before {
-  background: radial-gradient(circle, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.6) 0%, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.25) 45%, transparent 72%);
+/* Leuchten direkt ums Wappen: das Stärkere aus Mausnähe (bis 80 %) und Gewählt (100 %) */
+.faction-btn .faction-icon {
+  --glow: calc(max(var(--near) * 0.8, var(--sel)) * var(--pulse));
+  filter: drop-shadow(0 0 0.5rem hsl(var(--h) var(--fac-s) var(--fac-l) / var(--glow))) drop-shadow(0 0 0.2rem hsl(var(--h) var(--fac-s) var(--fac-l) / calc(var(--glow) * 0.8)));
 }
-.faction-btn[aria-pressed="true"] .faction-icon { filter: drop-shadow(0 0 0.5rem hsl(var(--h) var(--fac-s) var(--fac-l))) drop-shadow(0 0 0.2rem hsl(var(--h) var(--fac-s) var(--fac-l) / 0.8)); }
+/* Leuchten bei Mausnähe (--near setzt trackGlow() in app.js): große, breite Fläche, die mit den Nachbarn ineinanderläuft.
+   In der Wappenmitte etwa 80 % des Leuchtens eines gewählten Wappens; ein gewähltes Wappen behält die Fläche dauerhaft in voller Stärke. */
+.faction-btn::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 230%;   /* breiter als die Spalte: die Flächen benachbarter Wappen überlappen und gehen farblich ineinander über */
+  height: 6rem;   /* flach genug, dass das Leuchten nicht unten aus der Box läuft */
+  transform: translate(-50%, -50%) scale(var(--swell));
+  background: radial-gradient(closest-side, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.6) 0%, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.25) 40%, transparent 100%);
+  opacity: calc(max(var(--near) * 0.8, var(--sel)) * var(--pulse));   /* gewählt: die Fläche bleibt in voller Stärke, auch wenn die Maus weggeht */
+  mix-blend-mode: screen;   /* Farben benachbarter Wappen addieren sich zu einem sanften Übergang */
+  pointer-events: none;
+}
+.faction-btn.blocked::after { opacity: 0; }
 .faction-row:has([aria-pressed="true"]) .faction-btn[aria-pressed="false"] { opacity: 0.45; }
 .faction-btn.blocked { opacity: 0.3; filter: grayscale(1); }
 
@@ -288,6 +343,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   pointer-events: none;
 }
 .card-watermark[hidden] { display: none; }
+/* Zusätzliches Leuchten: unsichtbar, solange die Maus nicht auf der Kachel ist; --near setzt trackCrestGlow() in app.js */
+.card-watermark-glow {
+  opacity: var(--near, 0);
+  transition: opacity 0.2s ease-out;
+  /* Bild mit größerem Rand (32/188 statt 24/188): 135 % × (1 + 2 × 32/188) = 181 %; Verschiebung so, dass die Mitte auf dem Wappen bleibt */
+  height: 181%;
+  transform: translate(46.25%, -50%);
+}
 .card-main { position: relative; z-index: 1; }   /* Text und Klickfläche über dem Wappen */
 .card-name { font: 600 1.05rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .card-faction { display: flex; align-items: center; flex-wrap: wrap; column-gap: 0.75rem; row-gap: 0.1rem; font-size: 0.85rem; color: var(--muted); }
@@ -1444,6 +1507,10 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .filter-box .keyword-box .chips { padding: 0.1rem 0 0.9rem; }
 /* Fraktionswappen: ohne eigenen Kasten */
 .filter-box .faction-row { padding: 1.25rem 0 0.15rem; background: none; border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; }
+/* Das breite Wappen-Leuchten darf seitlich weich aus der Box auslaufen; damit es auf schmalen Bildschirmen
+   nicht zum seitlichen Scrollen führt, schneidet die Seite selbst alles ab, was über den Bildschirmrand ragt */
+/* (auch an html, sonst wird es ans Fenster weitergereicht und schneidet nicht wirklich ab) */
+html, body { overflow-x: clip; }
 
 /* Platzhalter der Suche: "Search" normal, die Klammer kleiner */
 .filter-box .search-wrap { position: relative; }
@@ -1455,6 +1522,9 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .faction-icon img.crest-glow { width: 274.4%; height: 274.4%; }
 .faction-icon[data-fac="leshavult"] img.crest-glow { width: 317.2%; height: 317.2%; }
 .faction-icon img.crest-glow[hidden] { display: none; }
+/* Mausnähe-Leuchten (--near setzt trackGlow() in app.js): Bild mit größerem Rand (32/188 statt 24/188) → 218,6 % × (1 + 64/188) */
+.faction-icon img.crest-glow-near { width: 293%; height: 293%; opacity: var(--near, 0); transition: opacity 0.2s ease-out; }
+.faction-icon[data-fac="leshavult"] img.crest-glow-near { width: 338.7%; height: 338.7%; }
 
 /* Gewählte Synergien in der Synergies-Zeile, so groß wie "(name, keyword, synergy)" in der Suchzeile; auf dem Handy ausgeblendet */
 .syn-picked { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 400; color: var(--accent); }
