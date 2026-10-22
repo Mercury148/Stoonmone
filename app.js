@@ -328,7 +328,9 @@ function createFilterPanel(container, onChange) {
   const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
-  const search = el("input", { type: "search", placeholder: "Search (name, keyword, synergy)", "aria-label": "Search", autocomplete: "off" });
+  const search = el("input", { type: "search", placeholder: " ", "aria-label": "Search (name, keyword, synergy)", autocomplete: "off" });
+  // Eigener Platzhalter, damit die Klammer kleiner sein kann als "Search" (verschwindet, sobald etwas getippt wird)
+  const searchHint = el("span", { class: "search-hint", "aria-hidden": "true" }, "Search ", el("small", { text: "(name, keyword, synergy)" }));
   const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
   // Synergien: zusätzliche Schlagwörter pro Charakter ("synergies" in characters.json), die NICHT auf der Karte stehen
   const synSummary = el("summary", {});
@@ -351,7 +353,7 @@ function createFilterPanel(container, onChange) {
   const synWrap = el("div", { class: "synergy-wrap" }, synBox);
   // Suchzeile: Eingabe und ganz rechts in der Ecke der OR/AND-Schalter; die Anzahl steht rechts in der Synergies-Zeile; "Reset filters" darunter nur, wenn etwas gefiltert ist
   const count = el("span", { class: "search-count" });
-  const searchWrap = el("div", { class: "search-wrap" }, search, modeBtn);
+  const searchWrap = el("div", { class: "search-wrap" }, search, searchHint, modeBtn);
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, reset);
 

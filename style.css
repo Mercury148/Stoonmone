@@ -1432,3 +1432,9 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .filter-box .keyword-box .chips { padding: 0.1rem 0 0.9rem; }
 /* Fraktionswappen: ohne eigenen Kasten */
 .filter-box .faction-row { padding: 1.25rem 0 0.15rem; background: none; border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; }
+
+/* Platzhalter der Suche: "Search" normal, die Klammer kleiner */
+.filter-box .search-wrap { position: relative; }
+.search-hint { position: absolute; left: 0.9rem; right: 6.8rem; top: 50%; transform: translateY(-50%); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+.search-hint small { font-size: 0.72em; }
+.search-wrap input:not(:placeholder-shown) ~ .search-hint { display: none; }
