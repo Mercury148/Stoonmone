@@ -1441,3 +1441,13 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 /* Gewählte Synergien in der Synergies-Zeile, so groß wie "(name, keyword, synergy)" in der Suchzeile; auf dem Handy ausgeblendet */
 .syn-picked { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 400; color: var(--accent); }
 @media (max-width: 599px) { .syn-picked { display: none; } }
+
+/* Beispiele in den Regeln: gelber Kasten */
+.rule-example-box {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  border-radius: var(--radius);
+}

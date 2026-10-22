@@ -2154,15 +2154,29 @@ function createGuide(container, config) {
     let blocks = def.blocks || [];
     // Nur eine Frage im Thema: kein zweites Aufklappen, die Frage steht direkt über der Antwort
     if (blocks.length === 1 && blocks[0].t === "group") blocks = [{ t: "q", x: blocks[0].title }, ...(blocks[0].blocks || [])];
+    // Beispiele ("***Example:*** …", "*For example …", "*In the example …") samt den folgenden kursiven Absätzen und Bildern
+    // kommen in einen gelben Kasten
+    const textOf = (block) => (typeof block.x === "string" ? block.x : "");
+    const exampleStart = (block) => (block.t === "p" || block.t === "example") && /^(\*\*\*Example\b|\*(For example|In the example)\b)/.test(textOf(block));
+    const exampleMore = (block) => block.t === "figure" || block.t === "gallery" ||
+      ((block.t === "p" || block.t === "example") && /^\*(?!\*)[\s\S]*\*$/.test(textOf(block).trim()));   // ganz kursiver Absatz
+    let exampleBox = null;
     for (const block of blocks) {
       if (block.t === "group") {
+        exampleBox = null;
         const sub = buildGroup(block, chain, level + 1);
         group.children.push(sub);
         parts.push(...sub.words);
         body.append(sub.node);
       } else {
         const node = blockNode(block);
-        body.append(node);
+        if (exampleStart(block)) {
+          exampleBox = el("div", { class: "rule-example-box" });
+          body.append(exampleBox);
+        } else if (!(exampleBox && exampleMore(block))) {
+          exampleBox = null;
+        }
+        (exampleBox || body).append(node);
         for (const u of leafUnits(block, node)) {
           const text = searchForm(plainText(u.text));
           units.push({ node: u.node, text, words: new Set(wordsOf(text)), ctxWords, kind: u.kind });
