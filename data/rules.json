@@ -332,13 +332,11 @@
        "x": "To do this, one player should take seven 4-sided dice, hold them in a fist, palm down, about 12-16” above the centre of the board, then open their hand so that the dice drop. Leave them where they fall. If any dice fall outside of the 3’ x 3’ play area, they should be re-dropped from the centre of the board."
       },
       {
-       "t": "figure",
+       "t": "example",
+       "side": "right",
        "src": "images/rules/die.webp",
        "alt": "A four-sided die with a depth value of 1",
-       "w": 11
-      },
-      {
-       "t": "p",
+       "w": 11,
        "x": "Each die represents the location of a Moonstone. The number shown on each die represents the difficulty of extracting it from the ground and is referred to as the *Depth Value*. The example above has a depth value of ‘1’."
       },
       {

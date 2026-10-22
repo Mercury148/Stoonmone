@@ -1899,7 +1899,8 @@ function blockNode(block) {
     }
     case "example":
       // side: "right" = Bild rechts neben dem Text (auf schmalen Bildschirmen darunter)
-      return el("div", { class: block.side === "right" ? "rule-example right" : "rule-example" },
+      // Breite Bilder (ab 13rem, z. B. der Spieltisch) stehen auf dem Handy mittig statt neben dem Text
+      return el("div", { class: ["rule-example", block.side === "right" ? "right" : "", Number(block.w) >= 13 ? "wide" : ""].filter(Boolean).join(" ") },
         el("img", { src: block.src, alt: block.alt || "", loading: "lazy", style: block.w ? `flex-basis:${Number(block.w) || 11}rem;width:${Number(block.w) || 11}rem` : null }),
         el("p", {}, ...inlineNodes(block.x)));
     case "annotated":
