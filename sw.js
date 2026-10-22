@@ -7,7 +7,7 @@
 //
 // CACHE_NAME nur erhöhen, wenn sich die Liste DATEIEN ändert.
 
-const CACHE_NAME = "TTG-v0.9.0";
+const CACHE_NAME = "TTG-v0.9.1";
 const DATEIEN = [
   "./",
   "index.html",
@@ -100,7 +100,7 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   if (istNetzZuerst(new URL(event.request.url))) {
-    const ausNetz = fetch(event.request).then((antwort) => {
+    const ausNetz = fetch(event.request, { cache: "no-cache" }).then((antwort) => {
       if (antwort.ok) {
         const kopie = antwort.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, kopie));
