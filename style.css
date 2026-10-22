@@ -1437,3 +1437,7 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .faction-icon img.crest-glow { width: 274.4%; height: 274.4%; }
 .faction-icon[data-fac="leshavult"] img.crest-glow { width: 317.2%; height: 317.2%; }
 .faction-icon img.crest-glow[hidden] { display: none; }
+
+/* Gewählte Synergien in der Synergies-Zeile, so groß wie "(name, keyword, synergy)" in der Suchzeile; auf dem Handy ausgeblendet */
+.syn-picked { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 400; color: var(--accent); }
+@media (max-width: 599px) { .syn-picked { display: none; } }

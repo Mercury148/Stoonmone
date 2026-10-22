@@ -406,7 +406,13 @@ function createFilterPanel(container, onChange) {
         })
       )
     );
-    synSummary.replaceChildren(el("span", { text: "Synergies" }), count);   // Trefferanzahl rechts in der Synergies-Zeile
+    // Gewählte Synergien klein neben "Synergies" (nur in der breiten Ansicht, siehe style.css); Trefferanzahl rechts
+    const picked = [...state.synergies];
+    synSummary.replaceChildren(
+      el("span", { text: "Synergies" }),
+      picked.length ? el("span", { class: "syn-picked", text: picked.join(", ") }) : null,
+      count
+    );
   }
 
   // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff angewählt und die Zeile geleert.
