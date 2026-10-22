@@ -1,10 +1,11 @@
-/* Schrift Cormorant Garamond: liegt im Ordner fonts/ (SIL Open Font License, siehe fonts/OFL.txt), nichts wird von fremden Servern geladen */
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500; font-display: swap; src: url("fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 600; font-display: swap; src: url("fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 700; font-display: swap; src: url("fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 400; font-display: swap; src: url("fonts/cormorant-garamond-latin-400-italic.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 600; font-display: swap; src: url("fonts/cormorant-garamond-latin-600-italic.woff2") format("woff2"); }
+/* Schrift Cormorant Garamond: liegt im Ordner fonts/ (SIL Open Font License, siehe fonts/OFL.txt), nichts wird von fremden Servern geladen.
+   size-adjust: 115% = Cormorant Garamond überall ca. 15 % größer (die Schrift der Regeltexte bleibt gleich) */
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 400; font-display: swap; size-adjust: 115%; src: url("fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500; font-display: swap; size-adjust: 115%; src: url("fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 600; font-display: swap; size-adjust: 115%; src: url("fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 700; font-display: swap; size-adjust: 115%; src: url("fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 400; font-display: swap; size-adjust: 115%; src: url("fonts/cormorant-garamond-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 600; font-display: swap; size-adjust: 115%; src: url("fonts/cormorant-garamond-latin-600-italic.woff2") format("woff2"); }
 
 /* ==========================================================
    Tauber Tourist Guide: Gestaltung
@@ -1473,8 +1474,8 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .accent-text { color: var(--accent); font-weight: 700; }
 
 /* Regeltexte sowie FAQ-Fragen und -Antworten bleiben in der bisherigen Schrift; Überschriften und alles andere in Cormorant Garamond */
-.rule-body { font-family: var(--font-text); }
+.rule-body { font-family: var(--font-text); font-size: 1.15rem; }   /* ca. 15 % größer als vorher (rem, damit verschachtelte Abschnitte nicht doppelt wachsen) */
 /* FAQ-Frage = Gruppe ohne Untergruppen (".leaf", gesetzt in app.js); Themen wie Charakternamen behalten Cormorant Garamond */
-#faqs-guide .rule-group.leaf > summary, #faqs-guide .rule-q { font: 600 0.95rem/1.4 var(--font-text); }
+#faqs-guide .rule-group.leaf > summary, #faqs-guide .rule-q { font: 600 1.09rem/1.4 var(--font-text); }
 /* Zahlen in Cormorant Garamond in normaler Höhe (statt der kleinen, alten Ziffern) */
 body { font-variant-numeric: lining-nums; }
