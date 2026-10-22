@@ -900,7 +900,12 @@ function cardWatermark(c) {
   const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
   const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
   if (!image) return null;
-  return el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true" });
+  // Darunter liegt das Leuchten: eine Silhouette des Wappens in Kachelfarbe mit farbigem Schein. Die Silhouette verdeckt den Schein
+  // hinter dem Wappen, so leuchtet nur der Rand und das blasse Wappen darüber behält seine eigenen Farben
+  return [
+    el("span", { class: "card-glow", "aria-hidden": "true" }, el("span", { class: "card-glow-shape", style: `--wm: url("${image}")` })),
+    el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true" }),
+  ];
 }
 
 // Farben für das Leuchten des Wappens (bei zwei Fraktionen beide Farben); überdeckt auch den weißen Schein der Doppelwappen
@@ -923,7 +928,7 @@ function renderCards() {
 
   const cardEl = (c) =>
       el("article", { class: "card", style: glowStyle(c) },
-        cardWatermark(c),
+        ...(cardWatermark(c) || []),
         el("button",{ class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
           cardCrest(c),
