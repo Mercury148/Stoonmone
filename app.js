@@ -409,9 +409,11 @@ function createFilterPanel(container, onChange) {
     // Gewählte Synergien klein neben "Synergies" (nur in der breiten Ansicht, siehe style.css); Trefferanzahl rechts
     const picked = [...state.synergies];
     synSummary.replaceChildren(
-      el("span", { text: "Synergies" }),
-      picked.length ? el("span", { class: "syn-picked", text: picked.join(", ") }) : null,
-      count
+      ...[
+        el("span", { text: "Synergies" }),
+        picked.length ? el("span", { class: "syn-picked", text: picked.join(", ") }) : null,
+        count,
+      ].filter(Boolean)   // ohne Auswahl nichts einfügen (replaceChildren würde sonst "null" als Text zeigen)
     );
   }
 
