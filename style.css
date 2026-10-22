@@ -277,6 +277,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   transform: translate(45%, -50%);
   opacity: 0.25;
   pointer-events: none;
+  /* dauerhaftes Leuchten in Fraktionsfarbe, wie bei einem gewählten Wappen im Filter */
+  filter: drop-shadow(0 0 0.3rem hsl(var(--h) var(--fac-s) var(--fac-l))) drop-shadow(0 0 0.7rem hsl(var(--h) var(--fac-s) var(--fac-l))) drop-shadow(0 0 0.7rem hsl(var(--h2) var(--fac-s2) var(--fac-l)));
 }
 .card-main { position: relative; z-index: 1; }   /* Text und Klickfläche über dem Wappen */
 .card-name { font: 600 1.05rem/1.25 var(--font-display); overflow-wrap: anywhere; }

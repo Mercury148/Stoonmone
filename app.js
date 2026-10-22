@@ -900,7 +900,10 @@ function cardWatermark(c) {
   const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
   const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
   if (!image) return null;
-  return el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true" });
+  // Leuchten in Fraktionsfarbe (bei zwei Fraktionen beide Farben); überdeckt auch den weißen Schein der Doppelwappen
+  const [a, b = a] = factions;
+  const glow = `--h:${a.hue}; --fac-s:${a.sat ?? 55}%; --h2:${b.hue}; --fac-s2:${b.sat ?? 55}%`;
+  return el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true", style: glow });
 }
 
 function renderCards() {
