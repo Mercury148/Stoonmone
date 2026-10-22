@@ -1391,16 +1391,10 @@ ul.plain-list li + li { margin-top: 0.35rem; }
   .cards, .cards-sub { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
   .card-main { position: relative; flex-direction: column; align-items: stretch; gap: 0.25rem; padding: 0.55rem 0.6rem 0.6rem; }
   .card-main .portrait { width: 3.6rem; height: 3.6rem; }
-  .card-watermark { display: none; }   /* auf dem Handy steht das Wappen schon klein oben rechts */
-  .card-main .card-crest { display: grid; position: absolute; top: 1.05rem; right: 1rem; width: 1.9rem; height: 1.9rem; }
+  /* Das blasse Wappen sitzt wie in der breiten Ansicht mittig am rechten Rand (135 % der Kachelhöhe, zur Hälfte über den Rand hinaus) */
   .card-text { flex: 1; width: 100%; justify-items: center; align-content: center; gap: 0.2rem; }   /* Text mittig im Rest der Kachel, statt leerer Fläche unten */
   .card-name { font-size: 0.92rem; text-align: center; line-height: 1.2; }
   .card-main .card-faction { display: none; }
-  /* Geweih und Sonnenstrahlen ragen weiter über die Scheibe hinaus: leicht nach unten/innen schieben, damit oben und rechts gleich viel Rand bleibt */
-  .card-crest[data-fac="leshavult"] { transform: translate(0.28rem, 0.28rem); }
-  .card-crest[data-fac="dominion+leshavult"] { transform: translate(0.21rem, 0.21rem); }
-  .card-crest[data-fac="commonwealth+leshavult"] { transform: translate(0.125rem, 0.125rem); }
-  .card-crest[data-fac="leshavult+shades"] { transform: translate(0.11rem, 0.11rem); }
   .card-kw { font-size: 0.72rem; line-height: 1.25; text-align: center; }
 }
 
