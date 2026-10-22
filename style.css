@@ -272,31 +272,12 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   position: absolute;
   top: 50%;
   right: 0;
-  height: 135%;
+  height: 169.5%;   /* 135 % Wappenhöhe plus der Rand fürs Leuchten (Bild wird in app.js vorbereitet) */
   width: auto;
-  transform: translate(45%, -50%);
-  opacity: 0.25;
+  transform: translate(46%, -50%);
   pointer-events: none;
 }
-/* Leuchten in Fraktionsfarbe nur UM das Wappen herum: gleiche Lage und Größe wie das Wappen */
-.card-glow {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  height: 135%;
-  aspect-ratio: 1;
-  transform: translate(45%, -50%);
-  opacity: 0.35;
-  pointer-events: none;
-  filter: drop-shadow(0 0 0.3rem hsl(var(--h) var(--fac-s) var(--fac-l))) drop-shadow(0 0 0.7rem hsl(var(--h) var(--fac-s) var(--fac-l))) drop-shadow(0 0 0.7rem hsl(var(--h2) var(--fac-s2) var(--fac-l)));
-}
-.card-glow-shape {
-  position: absolute;
-  inset: 0;
-  background: var(--surface);   /* Silhouette in Kachelfarbe: verdeckt den Schein hinter dem Wappen */
-  -webkit-mask: var(--wm) center / contain no-repeat;
-  mask: var(--wm) center / contain no-repeat;
-}
+.card-watermark[hidden] { display: none; }
 .card-main { position: relative; z-index: 1; }   /* Text und Klickfläche über dem Wappen */
 .card-name { font: 600 1.05rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .card-faction { display: flex; align-items: center; flex-wrap: wrap; column-gap: 0.75rem; row-gap: 0.1rem; font-size: 0.85rem; color: var(--muted); }

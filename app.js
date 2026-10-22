@@ -895,25 +895,63 @@ function cardCrest(c) {
   return icon;
 }
 
-// Großes, blasses Wappen am rechten Rand der Kachel, halb abgeschnitten wie auf den Charakterkarten (nur breite Ansicht)
-function cardWatermark(c) {
-  const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
-  const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
-  if (!image) return null;
-  // Darunter liegt das Leuchten: eine Silhouette des Wappens in Kachelfarbe mit farbigem Schein. Die Silhouette verdeckt den Schein
-  // hinter dem Wappen, so leuchtet nur der Rand und das blasse Wappen darüber behält seine eigenen Farben
-  return [
-    el("span", { class: "card-glow", "aria-hidden": "true" }, el("span", { class: "card-glow-shape", style: `--wm: url("${image}")` })),
-    el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true" }),
-  ];
+// Großes, blasses Wappen am rechten Rand der Kachel, halb abgeschnitten wie auf den Charakterkarten.
+// Das Bild wird einmal pro Wappen im Browser vorbereitet (Canvas): Leuchten in Fraktionsfarbe nur UM das Wappen herum,
+// das Wappen selbst blass in seinen eigenen Farben. So sieht es auf allen Geräten gleich aus (auch auf dem iPhone,
+// wo Maske + Filter in CSS nicht zuverlässig funktionieren).
+const WATERMARK_PAD = 24 / 188;   // Rand rund ums Wappen, damit das Leuchten nicht abgeschnitten wird
+const watermarkCache = new Map();
+function watermarkImage(image, factions) {
+  const light = getComputedStyle(document.documentElement).getPropertyValue("--fac-l").trim() || "62%";
+  const key = `${image}|${light}`;
+  if (watermarkCache.has(key)) return watermarkCache.get(key);
+  const promise = new Promise((resolve) => {
+    const src = new Image();
+    src.onload = () => {
+      const crest = 376;                                   // Wappen in doppelter Auflösung (Original 188 px)
+      const pad = Math.round(crest * WATERMARK_PAD);
+      const size = crest + 2 * pad;
+      const canvas = () => { const cv = document.createElement("canvas"); cv.width = size; cv.height = size; return cv; };
+      // 1. Leuchten: nur der Schatten des Wappens (das Wappen selbst wird außerhalb gezeichnet und weggeschoben)
+      const glow = canvas();
+      const g = glow.getContext("2d");
+      const [a, b = a] = factions;
+      const color = (f) => `hsl(${f.hue} ${f.sat ?? 55}% ${light})`;
+      for (const [f, blur] of [[a, 10], [a, 24], [b, 24]]) {
+        g.shadowColor = color(f);
+        g.shadowBlur = blur;
+        g.shadowOffsetX = size * 4;
+        g.drawImage(src, pad - size * 4, pad, crest, crest);
+      }
+      // 2. Hinter dem Wappen kein Leuchten: die Wappenfläche wieder herausschneiden
+      g.shadowColor = "transparent";
+      g.globalCompositeOperation = "destination-out";
+      g.drawImage(src, pad, pad, crest, crest);
+      // 3. Zusammensetzen: Leuchten 35 %, darüber das Wappen 25 %
+      const out = canvas();
+      const o = out.getContext("2d");
+      o.globalAlpha = 0.35;
+      o.drawImage(glow, 0, 0);
+      o.globalAlpha = 0.25;
+      o.drawImage(src, pad, pad, crest, crest);
+      try { resolve(out.toDataURL("image/png")); } catch { resolve(null); }
+    };
+    src.onerror = () => resolve(null);
+    src.src = image;
+  });
+  watermarkCache.set(key, promise);
+  return promise;
 }
 
-// Farben für das Leuchten des Wappens (bei zwei Fraktionen beide Farben); überdeckt auch den weißen Schein der Doppelwappen
-function glowStyle(c) {
+function cardWatermark(c) {
   const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
-  if (!factions.length) return null;
-  const [a, b = a] = factions;
-  return `--h:${a.hue}; --fac-s:${a.sat ?? 55}%; --h2:${b.hue}; --fac-s2:${b.sat ?? 55}%`;
+  const files = factions.map((f) => f.id).sort((x, y) => FACTION_ORDER.indexOf(x) - FACTION_ORDER.indexOf(y)).map((id) => factionById.get(id));
+  const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
+  if (!image) return null;
+  const img = el("img", { class: "card-watermark", alt: "", draggable: "false", "aria-hidden": "true" });
+  img.hidden = true;
+  watermarkImage(image, files).then((url) => { if (url) { img.src = url; img.hidden = false; } });
+  return img;
 }
 
 function renderCards() {
@@ -927,8 +965,8 @@ function renderCards() {
   }
 
   const cardEl = (c) =>
-      el("article", { class: "card", style: glowStyle(c) },
-        ...(cardWatermark(c) || []),
+      el("article", { class: "card" },
+        cardWatermark(c),
         el("button",{ class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
           cardCrest(c),
