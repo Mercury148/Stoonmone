@@ -2186,7 +2186,9 @@ function createGuide(container, config) {
         parts.push(...blockTexts(block));
       }
     }
-    group.node = el("details", { class: level === 1 ? "rule-section" : "rule-group", id: def.id ? `${config.container.slice(1)}-${def.id}` : null }, summary, body);
+    // "leaf": Gruppe ohne Untergruppen, z. B. eine einzelne FAQ-Frage (für die Schrift in style.css)
+    const leaf = level > 1 && !(def.blocks || []).some((b) => b.t === "group");
+    group.node = el("details", { class: level === 1 ? "rule-section" : leaf ? "rule-group leaf" : "rule-group", id: def.id ? `${config.container.slice(1)}-${def.id}` : null }, summary, body);
     group.words = new Set(wordsOf(searchForm(plainText(parts.join(" ")))));
     allGroups.push(group);
     return group;

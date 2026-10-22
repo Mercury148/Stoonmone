@@ -7,7 +7,7 @@
 //
 // CACHE_NAME nur erhöhen, wenn sich die Liste DATEIEN ändert.
 
-const CACHE_NAME = "TTG-v0.9.1";
+const CACHE_NAME = "TTG-v0.9.2";
 const DATEIEN = [
   "./",
   "index.html",
@@ -71,6 +71,12 @@ const DATEIEN = [
     "images/factions/leshavult-shades.webp",
     "data/rules.json",
     "data/faq.json",
+    "fonts/cormorant-garamond-latin-400-normal.woff2",
+    "fonts/cormorant-garamond-latin-500-normal.woff2",
+    "fonts/cormorant-garamond-latin-600-normal.woff2",
+    "fonts/cormorant-garamond-latin-700-normal.woff2",
+    "fonts/cormorant-garamond-latin-400-italic.woff2",
+    "fonts/cormorant-garamond-latin-600-italic.woff2",
 ];
 
 self.addEventListener("install", (event) => {
