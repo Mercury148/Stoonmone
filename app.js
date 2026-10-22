@@ -348,15 +348,16 @@ function createFilterPanel(container, onChange) {
   modeBtn.addEventListener("click", () => { state.all = !state.all; renderMode(); onChange(); });
   renderMode();
   const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
-  // Der Schalter liegt über der Kopfzeile des Feldes und bleibt auch bei eingeklapptem Feld sichtbar
-  const synWrap = el("div", { class: "synergy-wrap" }, synBox, modeBtn);
-  // Anzahl rechts im Suchfeld; "Reset filters" darunter nur, wenn etwas gefiltert ist
+  const synWrap = el("div", { class: "synergy-wrap" }, synBox);
+  // Suchzeile: Eingabe und ganz rechts in der Ecke der OR/AND-Schalter; die Anzahl steht rechts in der Synergies-Zeile; "Reset filters" darunter nur, wenn etwas gefiltert ist
   const count = el("span", { class: "search-count" });
-  const searchWrap = el("div", { class: "search-wrap" }, search, count);
+  const searchWrap = el("div", { class: "search-wrap" }, search, modeBtn);
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
   const meta = el("div", { class: "filter-meta" }, reset);
 
-  container.replaceChildren(el("div", { class: "filters" }, searchWrap, synWrap, factionRow, meta));
+  // Suche, Synergien und Fraktionen in einer gemeinsamen Box, getrennt durch Linien (wie die FAQs)
+  const box = el("div", { class: "filter-box" }, searchWrap, synWrap, factionRow);
+  container.replaceChildren(el("div", { class: "filters" }, box, meta));
 
   // Keywords und Synergien werden zusammengeführt (jeder Begriff nur einmal)
   const allSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))].sort((a, b) => a.localeCompare(b, "en"));
@@ -403,7 +404,7 @@ function createFilterPanel(container, onChange) {
         })
       )
     );
-    synSummary.textContent = "Synergies";
+    synSummary.replaceChildren(el("span", { text: "Synergies" }), count);   // Trefferanzahl rechts in der Synergies-Zeile
   }
 
   // Passt der getippte Text genau auf einen Begriff (auch im Plural), wird dieser Begriff angewählt und die Zeile geleert.
