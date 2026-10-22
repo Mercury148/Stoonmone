@@ -822,7 +822,7 @@
      "title": "Faeries can fly!",
      "blocks": [
       {
-       "t": "note",
+       "t": "p",
        "x": "When a character with the *Faerie* keyword takes a Jog action, they are not affected by *Water Features* or *Wooded Patches* and may move over *Obstacles* and other models during the Jog, provided their base does not overlap at the end of the move. In addition, *Faeries* do not suffer Wds from ***Falling*** as described on page 12."
       }
      ]
