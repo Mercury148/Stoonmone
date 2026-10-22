@@ -986,7 +986,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 .game-startbar button { width: 100%; }
 
 /* 5 Modelle nebeneinander */
-.grow { display: grid; grid-template-columns: repeat(var(--gcols, 5), minmax(0, 1fr)); gap: 0.3rem; align-items: start; }
+.grow { display: grid; grid-template-columns: repeat(var(--gcols, 5), minmax(0, 1fr)); gap: 0.3rem; align-items: stretch; }   /* Kacheln einer Reihe gleich hoch, damit die Lebenspunkte unten auf einer Linie stehen */
 /* leicht durchscheinender, gräulicher Hintergrund hinter jedem Modell: bessere Lesbarkeit von Leben und Energy */
 .gcell { display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; padding: 3px; border-radius: 10px; background: rgba(170, 175, 195, 0.13); }
 .gcell.dead { opacity: 0.5; }
@@ -1040,13 +1040,16 @@ button.gcell-open { display: block; width: 100%; padding: 0; background: none; c
 /* Transform-Knopf zwischen Name und Lebenspunkten statt auf dem Portrait */
 .transform-btn.transform-inline { position: static; width: 100%; min-height: 26px; }
 .transform-spacer { display: block; visibility: hidden; }   /* gleich groß wie der Transform-Knopf, aber unsichtbar */
+/* Lebenspunkte unten in der Kachel verankert; der Platz zwischen Name und Lebenspunkten nimmt Anyas Transform-Knopf auf.
+   Innerhalb des Blocks beginnen die Zeilen oben (nah am Portrait). */
+.gcell > .hboxes { margin-top: auto; }
 /* Handy: Portraits in der Spielansicht 30 % höher */
 @media (max-width: 719px) { .gcell-portrait { aspect-ratio: 5 / 7.8; } }
 /* Handy: jede Fünfergruppe in einer eigenen Zeile; der Block ist genau fünf Punkte breit und steht mittig.
-   Platz für vier Zeilen (bis 20 Lebenspunkte) ist immer reserviert, damit alle Kacheln gleich hoch sind. */
+   Platz für drei Zeilen (bis 15 Lebenspunkte, mehr hat kein Charakter) ist immer reserviert. */
 @media (max-width: 719px) {
   .hrow { display: contents; }
-  .gcell .hboxes { min-height: calc(4 * var(--pip) + 3 * var(--row-gap)); }   /* .gcell: setzt sich gegen die allgemeine Regel weiter unten durch */
+  .gcell .hboxes { min-height: calc(3 * var(--pip) + 2 * var(--row-gap)); }   /* .gcell: setzt sich gegen die allgemeine Regel weiter unten durch */
 }
 
 /* Lebensleiste: blaue Punkte erzeugen Energy, verlorene Lebenspunkte sind rot.

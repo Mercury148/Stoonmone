@@ -1076,9 +1076,9 @@ function renderCards() {
   }
 
   const cardEl = (c) =>
-      el("article", { class: "card" },
+      el("article", { class: "card", "data-char": c.id },
         cardWatermark(c),
-        el("button",{ class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
+        el("button",{ class: "card-main", type: "button", onclick: (e) => openDetail(c.id, e.currentTarget), "aria-label": `${c.name}: open details` },
           portrait(c),
           cardCrest(c),
           el("div", { class: "card-text" },
@@ -1183,7 +1183,7 @@ function renderEditor() {
       if (!id) return el("span", { class: "slot-empty" });
       const c = characterById.get(id);
       return el("div", { class: "slot-portrait" },
-        el("button", { class: "slot-open", type: "button", "aria-label": `${c.name}: open details`, onclick: () => openDetail(id) },
+        el("button", { class: "slot-open", type: "button", "data-char": id, "aria-label": `${c.name}: open details`, onclick: (e) => openDetail(id, e.currentTarget) },
           portraitCard(c),
           el("span", { class: "tile-factions" },
             ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
@@ -1226,7 +1226,7 @@ function renderSummons() {
   $("#summons-list").replaceChildren(
     ...list.map((c) =>
       el("div", { class: "slot-portrait summoned" },
-        el("button", { class: "slot-open", type: "button", "aria-label": `${c.name} (summoned): open details`, onclick: () => openDetail(c.id) },
+        el("button", { class: "slot-open", type: "button", "data-char": c.id, "aria-label": `${c.name} (summoned): open details`, onclick: (e) => openDetail(c.id, e.currentTarget) },
           portraitCard(c),
           el("span", { class: "tile-factions" },
             ...c.factions.map((fid) => el("span", { class: "dot", style: factionStyle(factionById.get(fid)), title: factionById.get(fid).name }))
@@ -1325,11 +1325,72 @@ function openCardView(c) {
     )
   );
   $("#detail").classList.add("card-view");
-  $("#detail").showModal();
+  if (!$("#detail").open) $("#detail").showModal();
 }
 
-// Detailansicht in einem <dialog>-Fenster (nur Nachschlagen, ohne Hinzufügen)
-function openDetail(id) {
+// Blättern in der geöffneten Karte: Pfeiltasten links/rechts (Computer), Wischen links/rechts (Handy).
+// Die Reihenfolge ist die der Liste, aus der die Karte geöffnet wurde (Kompendium, Troupe, Auswahl, Spielreihe).
+// Jedes Element, das eine Karte öffnet, trägt dafür data-char (die ID); die Liste ist der umgebende Bereich.
+const DETAIL_LISTS = "#cards, .tiles, #editor-slots, #summons-list, .grow";
+let detailNav = { ids: [], index: 0 };
+
+function idsAround(source, id) {
+  const scope = source && source.closest(DETAIL_LISTS);
+  const ids = scope ? [...new Set([...scope.querySelectorAll("[data-char]")].map((n) => n.dataset.char))] : [];
+  return ids.includes(id) ? ids : [id];
+}
+
+function stepDetail(dir) {
+  const { ids } = detailNav;
+  if (ids.length < 2 || !$("#detail").open) return;
+  detailNav.index = (detailNav.index + dir + ids.length) % ids.length;   // am Ende geht es vorne weiter
+  showDetail(ids[detailNav.index]);
+  // Die neue Karte gleitet kurz aus der Richtung herein, aus der geblättert wurde
+  if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+    $("#detail-body").animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
+  }
+}
+
+$("#detail").addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") { e.preventDefault(); stepDetail(1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); stepDetail(-1); }
+});
+
+// Wischen: deutlich waagerecht und schnell genug. Danach wird der Klick unterdrückt, den manche Browser
+// nach dem Loslassen noch auslösen (sonst würde die Karte beim Wischen gleichzeitig umgedreht).
+{
+  let start = null, swallowClick = false;
+  const dlg = $("#detail");
+  dlg.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    start = e.touches.length === 1 ? { x: t.clientX, y: t.clientY, time: Date.now() } : null;
+  }, { passive: true });
+  dlg.addEventListener("touchend", (e) => {
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x, dy = t.clientY - start.y;
+    const quick = Date.now() - start.time < 700;
+    start = null;
+    if (quick && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      swallowClick = true;
+      setTimeout(() => { swallowClick = false; }, 400);
+      stepDetail(dx < 0 ? 1 : -1);   // nach links wischen = nächster Charakter
+    }
+  });
+  dlg.addEventListener("click", (e) => {
+    if (swallowClick) { swallowClick = false; e.preventDefault(); e.stopPropagation(); }
+  }, true);
+}
+
+// Detailansicht in einem <dialog>-Fenster (nur Nachschlagen, ohne Hinzufügen).
+// source: das angetippte Element; aus seiner Liste ergibt sich die Reihenfolge zum Blättern.
+function openDetail(id, source = null) {
+  detailNav = { ids: idsAround(source, id), index: 0 };
+  detailNav.index = detailNav.ids.indexOf(id);
+  showDetail(id);
+}
+
+function showDetail(id) {
   const c = characterById.get(id);
   const close = el("div", { class: "detail-actions" },
     el("button", { class: "ghost", type: "button", text: "Close", onclick: () => $("#detail").close() })
@@ -1353,7 +1414,7 @@ function openDetail(id) {
       close
     )
   );
-  $("#detail").showModal();
+  if (!$("#detail").open) $("#detail").showModal();
 }
 
 
@@ -1529,13 +1590,14 @@ function cardPress(c, onclick, onDown = null) {
       if (longPressed) { longPressed = false; e.preventDefault(); return; }
       onclick(e);
     },
-    oncontextmenu: (e) => { e.preventDefault(); openDetail(c.id); },
+    oncontextmenu: (e) => { e.preventDefault(); openDetail(c.id, e.currentTarget); },
     onpointerdown: (e) => {
       if (onDown) onDown(e);
       if (e.pointerType === "mouse") return;
       longPressed = false;
       startX = e.clientX; startY = e.clientY;
-      timer = setTimeout(() => { longPressed = true; timer = null; if (navigator.vibrate) navigator.vibrate(15); openDetail(c.id); }, 500);
+      const source = e.currentTarget;
+      timer = setTimeout(() => { longPressed = true; timer = null; if (navigator.vibrate) navigator.vibrate(15); openDetail(c.id, source); }, 500);
     },
     onpointermove: (e) => { if (timer && Math.hypot(e.clientX - startX, e.clientY - startY) > 10) cancel(); },
     onpointerup: cancel,
@@ -1545,7 +1607,7 @@ function cardPress(c, onclick, onDown = null) {
 }
 
 function tileFor(c, selected, onclick, extraClass = "") {
-  const tile = el("button", { class: extraClass ? `tile ${extraClass}` : "tile", type: "button", "aria-pressed": String(selected), "aria-label": c.name,
+  const tile = el("button", { class: extraClass ? `tile ${extraClass}` : "tile", type: "button", "data-char": c.id, "aria-pressed": String(selected), "aria-label": c.name,
     ...cardPress(c, onclick),
   },
     portraitCard(c),
@@ -1651,9 +1713,9 @@ function gameCell(side, c) {
   // Beschworene Charaktere starten ausgegraut. Erst "Summon" bringt sie mit vollen Lebenspunkten und ohne Energy ins Spiel.
   // Der gerade nicht aktive Zwilling steht ausgegraut in der Beschworenen-Zeile (kein Summon-Knopf)
   if (twinOf(c) && !sideIds(side).includes(c.id)) {
-    return el("div", { class: "gcell unsummoned" },
+    return el("div", { class: "gcell unsummoned", "data-char": c.id },
       el("div", { class: "gcell-media" },
-        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: (e) => openDetail(c.id, e.currentTarget) }, portraitCard(c)),
         el("div", { class: "summon-note", text: "Transformed" })
       ),
       el("div", { class: "gcell-name", text: c.name })
@@ -1662,10 +1724,10 @@ function gameCell(side, c) {
 
   // Auch ein beschworenes Modell, das auf 0 Lebenspunkte fällt, geht zurück in den Zustand "nicht im Spiel" und kann neu beschworen werden
   if (isSummoned(c) && !twinOf(c) && (!m.summoned || (health && remaining <= 0))) {
-    return el("div", { class: "gcell unsummoned" },
+    return el("div", { class: "gcell unsummoned", "data-char": c.id },
       // Der Summon-Knopf liegt auf dem Portrait, die Kachel wird dadurch nicht größer
       el("div", { class: "gcell-media" },
-        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: (e) => openDetail(c.id, e.currentTarget) }, portraitCard(c)),
         el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) })
       ),
       el("div", { class: "gcell-name", text: c.name })
@@ -1708,7 +1770,7 @@ function gameCell(side, c) {
   const flash = f2
     ? `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:${f2.hue}; --flash-s2:${f2.sat ?? 55}%; --flash-l2:var(--fac-l)`
     : `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:230; --flash-s2:8%; --flash-l2:22%`;
-  return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}` },
+  return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}`, "data-char": c.id },
     el("div", { class: "gcell-media", style: flash, "data-mono": f2 ? null : "1" },
       el("div", { class: "gcell-portrait" }, portraitCard(c)),
       // Rechtsklick oder Halten auf dem Portrait öffnet die Karte (wie im Troupe Builder), ohne zu heilen oder zu verwunden
@@ -1716,7 +1778,7 @@ function gameCell(side, c) {
       hpButton("down", `${c.name}: 1 wound`, wound)
     ),
     // Karte öffnen auch über den Namen
-    el("button", { class: "gcell-name gcell-open", type: "button", text: c.name, "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }),
+    el("button", { class: "gcell-name gcell-open", type: "button", text: c.name, "aria-label": `${c.name}: open card`, onclick: (e) => openDetail(c.id, e.currentTarget) }),
     // Transform-Knopf (Anya / Striga Anya) zwischen Name und Lebenspunkten. Ist so ein Modell im Spiel, bekommen alle
     // anderen einen unsichtbaren Platzhalter gleicher Größe: alle Kacheln gleich hoch, Lebenspunkte auf gleicher Höhe
     twinOf(c) ? el("button", { class: "transform-btn transform-inline", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) })
@@ -1995,7 +2057,7 @@ function renderGame() {
     $("#game-foe-summons-panel").hidden = !foeSummonsOpen;
     $("#game-foe-summons-none").hidden = possible.length > 0;
     $("#game-foe-summons-hint").hidden = possible.length === 0;
-    $("#game-foe-summons-list").replaceChildren(...possible.map((c) => tileFor(c, false, () => openDetail(c.id))));
+    $("#game-foe-summons-list").replaceChildren(...possible.map((c) => tileFor(c, false, (e) => openDetail(c.id, e.currentTarget))));
     $("#game-start").disabled = game.own.length === 0 || game.opps.some((o) => o.ids.length === 0);
   } else {
     renderGamePlay();
