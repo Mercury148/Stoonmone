@@ -351,6 +351,27 @@ function createFilterPanel(container, onChange) {
   modeBtn.addEventListener("click", () => { state.all = !state.all; renderMode(); onChange(); });
   renderMode();
   const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
+  // Sanftes Auf- und Zuklappen: die Begriffe gleiten in der Höhe auf bzw. zu und blenden dabei ein bzw. aus
+  let synAnim = null;
+  synSummary.addEventListener("click", (e) => {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    e.preventDefault();
+    const opening = !synBox.open || synBox.classList.contains("closing");
+    const cs = getComputedStyle(synChips);
+    const from = synAnim ? { height: `${synChips.offsetHeight}px`, opacity: cs.opacity } : null;   // mitten in einer Animation umkehren
+    if (synAnim) synAnim.cancel();
+    synBox.classList.toggle("closing", !opening);
+    if (opening) synBox.open = true;
+    const full = { height: `${synChips.scrollHeight}px`, opacity: 1 };
+    const none = { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
+    synChips.style.overflow = "hidden";
+    synAnim = synChips.animate(opening ? [from || none, full] : [from || full, none], { duration: 260, easing: opening ? "ease-out" : "ease-in" });
+    synAnim.onfinish = () => {
+      synAnim = null;
+      synChips.style.overflow = "";
+      if (!opening) { synBox.open = false; synBox.classList.remove("closing"); }
+    };
+  });
   const synWrap = el("div", { class: "synergy-wrap" }, synBox);
   // Suchzeile: Eingabe und ganz rechts in der Ecke der OR/AND-Schalter; die Anzahl steht rechts in der Synergies-Zeile; "Reset filters" darunter nur, wenn etwas gefiltert ist
   const count = el("span", { class: "search-count" });
@@ -1496,19 +1517,21 @@ function resetFoePickerWhenFull() {
   foePanel.clear();
 }
 
-function tileFor(c, selected, onclick, extraClass = "") {
-  // Rechtsklick (Computer) oder Antippen und Halten (Handy) zeigt die Karte, ohne das Modell zu wählen
+// Rechtsklick (Computer) oder Antippen und Halten (Handy) zeigt die Karte, ein normaler Klick macht etwas anderes (onclick).
+// Liefert die Ereignis-Eigenschaften für el(); onDown läuft zusätzlich bei jedem Herunterdrücken.
+function cardPress(c, onclick, onDown = null) {
   let timer = null;
   let longPressed = false;
   let startX = 0, startY = 0;
   const cancel = () => { clearTimeout(timer); timer = null; };
-  const tile = el("button", { class: extraClass ? `tile ${extraClass}` : "tile", type: "button", "aria-pressed": String(selected), "aria-label": c.name,
+  return {
     onclick: (e) => {
       if (longPressed) { longPressed = false; e.preventDefault(); return; }
       onclick(e);
     },
     oncontextmenu: (e) => { e.preventDefault(); openDetail(c.id); },
     onpointerdown: (e) => {
+      if (onDown) onDown(e);
       if (e.pointerType === "mouse") return;
       longPressed = false;
       startX = e.clientX; startY = e.clientY;
@@ -1518,6 +1541,12 @@ function tileFor(c, selected, onclick, extraClass = "") {
     onpointerup: cancel,
     onpointercancel: cancel,
     onpointerleave: cancel,
+  };
+}
+
+function tileFor(c, selected, onclick, extraClass = "") {
+  const tile = el("button", { class: extraClass ? `tile ${extraClass}` : "tile", type: "button", "aria-pressed": String(selected), "aria-label": c.name,
+    ...cardPress(c, onclick),
   },
     portraitCard(c),
     // Fraktionssymbole oben links in der Ecke (mit dunklem Verlauf), der Name bleibt unten
@@ -1592,6 +1621,23 @@ function randomizeFlash(event) {
   s.setProperty("--flash-bh", second ? "var(--flash-h2)" : "var(--flash-h)");
   s.setProperty("--flash-bs", second ? "var(--flash-s2)" : "var(--flash-s)");
   s.setProperty("--flash-bl", second ? "var(--flash-l2)" : "var(--fac-l)");
+  // Gedrückt-Zustand selbst setzen: auf dem Handy greift :active zu spät oder (iPhone) gar nicht
+  button.classList.add("pressed");
+  const release = () => button.classList.remove("pressed");
+  for (const type of ["pointerup", "pointercancel", "pointerleave"]) button.addEventListener(type, release, { once: true });
+}
+
+// Nach dem Antippen wird die Spielansicht neu gezeichnet und der Knopf ersetzt. Damit das Aufleuchten trotzdem
+// sichtbar bleibt (kurzes Tippen auf dem Handy), bekommt der neue Knopf dasselbe Muster und blendet es langsam aus.
+let pendingFlash = null;   // { model, half, style } des zuletzt angetippten Knopfes
+function rememberFlash(event, model, half) {
+  pendingFlash = { model, half, style: event.currentTarget.style.cssText };
+}
+function takeFlash(model, half) {
+  if (!pendingFlash || pendingFlash.model !== model || pendingFlash.half !== half) return null;
+  const style = pendingFlash.style;
+  pendingFlash = null;
+  return style;
 }
 
 function gameCell(side, c) {
@@ -1600,7 +1646,7 @@ function gameCell(side, c) {
   const total = health ? health.length : null;
   const remaining = health ? total - m.wounds : null;
   const maxWounds = total === null ? 30 : total;
-  const change = (patch) => { Object.assign(m, patch); saveGame(); renderGamePlay(); };
+  const change = (patch) => { Object.assign(m, patch); saveGame(); renderGamePlay(); pendingFlash = null; };
 
   // Beschworene Charaktere starten ausgegraut. Erst "Summon" bringt sie mit vollen Lebenspunkten und ohne Energy ins Spiel.
   // Der gerade nicht aktive Zwilling steht ausgegraut in der Beschworenen-Zeile (kein Summon-Knopf)
@@ -1649,8 +1695,12 @@ function gameCell(side, c) {
     : el("div", { class: "hboxes none", text: `Wounds: ${m.wounds}` });
 
   // Unsichtbare Knöpfe auf dem Portrait: obere Hälfte heilt (+1), untere Hälfte verwundet (−1); dazwischen ein schmaler Spalt
-  const heal = () => change({ wounds: Math.max(0, m.wounds - 1) });
-  const wound = () => change({ wounds: Math.min(health ? total : maxWounds, m.wounds + 1) });
+  const heal = (e) => { rememberFlash(e, m, "up"); change({ wounds: Math.max(0, m.wounds - 1) }); };
+  const wound = (e) => { rememberFlash(e, m, "down"); change({ wounds: Math.min(health ? total : maxWounds, m.wounds + 1) }); };
+  const hpButton = (half, label, onclick) => {
+    const after = takeFlash(m, half);   // gerade angetippt: Aufleuchten im neuen Knopf ausblenden
+    return el("button", { class: `hp-btn hp-${half}${after !== null ? " flash-out" : ""}`, type: "button", style: after, "aria-label": label, ...cardPress(c, onclick, randomizeFlash) });
+  };
   // Aufleuchten beim Antippen in der Fraktionsfarbe der Troupe dieser Seite (bei zwei Fraktionen beide), sonst der des Modells
   const troupeFactions = troupeFactionList({ ids: sideIds(side) });
   const [f1, f2] = troupeFactions.length ? troupeFactions : [primaryFaction(c) || { hue: 0, sat: 0 }];
@@ -1661,18 +1711,27 @@ function gameCell(side, c) {
   return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}` },
     el("div", { class: "gcell-media", style: flash, "data-mono": f2 ? null : "1" },
       el("div", { class: "gcell-portrait" }, portraitCard(c)),
-      el("button", { class: "hp-btn hp-up", type: "button", "aria-label": `${c.name}: heal 1`, onclick: heal, onpointerdown: randomizeFlash }),
-      el("button", { class: "hp-btn hp-down", type: "button", "aria-label": `${c.name}: 1 wound`, onclick: wound, onpointerdown: randomizeFlash }),
-      // Der Transform-Knopf sitzt auf dem Portrait (über dem Heilen-Knopf), damit die Kachel gleich groß bleibt wie die anderen
-      twinOf(c) ? el("button", { class: "transform-btn", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) }) : null
+      // Rechtsklick oder Halten auf dem Portrait öffnet die Karte (wie im Troupe Builder), ohne zu heilen oder zu verwunden
+      hpButton("up", `${c.name}: heal 1`, heal),
+      hpButton("down", `${c.name}: 1 wound`, wound)
     ),
-    // Karte öffnen jetzt über den Namen (das Portrait gehört den Lebenspunkt-Knöpfen)
+    // Karte öffnen auch über den Namen
     el("button", { class: "gcell-name gcell-open", type: "button", text: c.name, "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }),
+    // Transform-Knopf (Anya / Striga Anya) zwischen Name und Lebenspunkten. Ist so ein Modell im Spiel, bekommen alle
+    // anderen einen unsichtbaren Platzhalter gleicher Größe: alle Kacheln gleich hoch, Lebenspunkte auf gleicher Höhe
+    twinOf(c) ? el("button", { class: "transform-btn transform-inline", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) })
+      : gameHasTransform ? el("span", { class: "transform-btn transform-inline transform-spacer", "aria-hidden": "true", text: "Transform" }) : null,
     boxes
   );
 }
 
+let gameHasTransform = false;   // ist ein Modell mit Transform-Knopf im Spiel? (wird in renderGamePlay gesetzt)
+
 function renderGamePlay() {
+  gameHasTransform = [...game.own, ...game.opps.flatMap((o) => o.ids)].some((id) => {
+    const c = characterById.get(id);
+    return Boolean(c && twinOf(c));
+  });
   // Reihenfolge der Beschworenen: aktuell beschworene Modelle zuerst, dann die übrigen in der normalen Reihenfolge,
   // Zwillinge (z. B. Striga Anya, wird nie aktiv beschworen) ganz am Ende
   const orderedSummons = (side) => {
@@ -2385,7 +2444,31 @@ function createGuide(container, config) {
 
 let lastTab = "compendium";
 
+// Seitenwechsel über die untere Leiste: die neue Seite blendet ein und gleitet ein Stück aus der Richtung des Tabs herein
+// (Tab weiter rechts: von rechts, sonst von links). Teile mit fest am Rand stehenden Knöpfen (Plus, Import) gleiten nicht mit,
+// denn ein Verschieben würde diese Knöpfe kurz mitnehmen; sie blenden nur ein.
+const TAB_ORDER = ["compendium", "troupes", "rules", "faqs"];
+const FIXED_BUTTONS = ".add-btn, #import-open";
+function animateViewChange(from, to) {
+  if (!TAB_ORDER.includes(from) || !TAB_ORDER.includes(to) || from === to) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const view = $(`#view-${to}`);
+  const dir = TAB_ORDER.indexOf(to) > TAB_ORDER.indexOf(from) ? 1 : -1;
+  const timing = { duration: 240, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
+  view.animate([{ opacity: 0 }, { opacity: 1 }], timing);
+  for (const part of view.children) {
+    if (part.matches(FIXED_BUTTONS) || part.querySelector(FIXED_BUTTONS)) continue;
+    part.animate([{ transform: `translateX(${dir * 18}px)` }, { transform: "none" }], timing);
+  }
+}
+
+function currentView() {
+  const open = [...document.querySelectorAll("[id^='view-']")].find((v) => !v.hidden);
+  return open ? open.id.slice(5) : null;
+}
+
 function showView(name) {
+  const before = currentView();
   $("#view-compendium").hidden = name !== "compendium";
   $("#view-troupes").hidden = name !== "troupes";
   $("#view-editor").hidden = name !== "editor";
@@ -2404,13 +2487,28 @@ function showView(name) {
     markTab(name);
   }
   window.scrollTo(0, 0);
+  animateViewChange(before, name);
 }
 
 function markTab(name) {
   for (const tab of document.querySelectorAll("[role=tab]")) {
     tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
   }
+  placeTabMarker();
 }
+
+// Die gelbe Markierung auf Position und Breite des gewählten Tabs setzen (die Tabs sind je nach Wort verschieden breit)
+function placeTabMarker() {
+  const nav = document.querySelector(".tabs");
+  const tab = nav && nav.querySelector('[aria-selected="true"]');
+  if (!tab || !tab.offsetWidth) return;   // Leiste ausgeblendet (Editor, Spiel): beim nächsten Anzeigen
+  nav.style.setProperty("--mx", `${tab.offsetLeft}px`);
+  nav.style.setProperty("--mw", `${tab.offsetWidth}px`);
+  if (!nav.classList.contains("ready")) requestAnimationFrame(() => nav.classList.add("ready"));
+}
+window.addEventListener("resize", placeTabMarker);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeTabMarker);   // Wortbreiten stehen erst mit der Schrift fest
+placeTabMarker();
 
 function openEditor(id) {
   current = troupes.find((t) => t.id === id);

@@ -274,8 +274,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-right: 2px solid var(--muted);
   border-bottom: 2px solid var(--muted);
   transform: rotate(-45deg);
+  transition: transform 0.26s ease, border-color 0.26s ease;
 }
 .keyword-box[open] summary::before { transform: rotate(45deg); }
+.keyword-box.closing summary::before { transform: rotate(-45deg); }   /* beim Zuklappen dreht der Pfeil sofort mit zurück */
 .keyword-box .chips { padding: 0.25rem 0.75rem 0.75rem; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -751,6 +753,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .tabs {
   position: fixed;
   inset: auto 0 0 0;
+  z-index: 5;   /* über dem Seiteninhalt (z. B. OR/AND-Schalter beim Scrollen), unter den Hinweisen (.toast) */
   display: flex;
   gap: 0.35rem;
   padding: 0.5rem var(--gutter-r) calc(0.5rem + var(--safe-b)) var(--gutter);
@@ -760,38 +763,35 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .tabs button {
   position: relative;
   z-index: 1;   /* über der gleitenden Markierung */
-  flex: 1;
+  flex: 1 1 auto;   /* mindestens so breit wie das Wort ("Compendium" passt auch auf schmalen Handys), Rest gleich verteilt */
   min-width: 0;
-  padding: 0.5rem 0.2rem;
+  padding: 0.5rem 0.35rem;
   background: none;
   color: var(--muted);
   border: 1px solid transparent;
   font-size: clamp(0.6rem, 3.1vw, 0.88rem);   /* vier Tabs müssen auch auf schmalen Handys nebeneinander passen */
+  white-space: nowrap;
   transition: color 0.3s ease;
 }
 .tabs button[aria-selected="true"] { color: var(--accent); }
 /* Markierung des gewählten Tabs: ein einziges Feld, das zum gewählten Tab gleitet statt zu springen.
-   Alle vier Tabs sind gleich breit, die Position ergibt sich aus der Nummer des gewählten Tabs (--tab). */
-.tabs { --tab: 0; --tab-gap: 0.35rem; }
-.tabs:has(#tab-troupes[aria-selected="true"]) { --tab: 1; }
-.tabs:has(#tab-rules[aria-selected="true"]) { --tab: 2; }
-.tabs:has(#tab-faqs[aria-selected="true"]) { --tab: 3; }
+   Position und Breite des gewählten Tabs (--mx, --mw) misst placeTabMarker() in app.js, weil die Tabs verschieden breit sind. */
 .tabs::before {
-  --tab-w: calc((100% - var(--gutter) - var(--gutter-r) - 3 * var(--tab-gap)) / 4);
   content: "";
-  box-sizing: border-box;   /* Rahmen in der Breite, sonst verschiebt translateX um die Rahmenbreite zu weit */
+  box-sizing: border-box;
   position: absolute;
   top: 0.5rem;
   bottom: calc(0.5rem + var(--safe-b));
-  left: var(--gutter);
-  width: var(--tab-w);
+  left: 0;
+  width: var(--mw, 0px);
   background: var(--accent-soft);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  /* Verschieben per transform (100 % = eigene Breite): läuft auf der Grafikkarte weiter, auch wenn der Aufbau einer Seite kurz Zeit braucht */
-  transform: translateX(calc(var(--tab) * (100% + var(--tab-gap))));
-  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Verschieben per transform: läuft auf der Grafikkarte weiter, auch wenn der Aufbau einer Seite kurz Zeit braucht */
+  transform: translateX(var(--mx, 0px));
 }
+/* Gleiten erst nach dem ersten Platzieren (sonst wächst die Markierung beim Laden von null aus auf) */
+.tabs.ready::before { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .tabs:not(:has([aria-selected="true"]))::before { display: none; }
 @media (prefers-reduced-motion: reduce) { .tabs::before { transition: none; } }
 body.editing .tabs { display: none; }
@@ -1033,8 +1033,21 @@ button.gcell-open { display: block; width: 100%; padding: 0; background: none; c
 }
 .hp-up::before { top: 0; -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent); mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent); }
 .hp-down::before { bottom: 0; -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent); mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent); }
-.hp-btn:active::before { opacity: 1; }
-.transform-btn { z-index: 1; }   /* liegt über dem Heilen-Knopf */
+/* Gedrückt (Klasse "pressed" setzt app.js, weil :active auf dem Handy unzuverlässig ist), danach im neu gezeichneten Knopf ausblenden */
+.hp-btn:active::before, .hp-btn.pressed::before { opacity: 1; }
+.hp-btn.flash-out::before { animation: hp-flash-out 0.45s ease-out both; }
+@keyframes hp-flash-out { from { opacity: 1; } to { opacity: 0; } }
+/* Transform-Knopf zwischen Name und Lebenspunkten statt auf dem Portrait */
+.transform-btn.transform-inline { position: static; width: 100%; min-height: 26px; }
+.transform-spacer { display: block; visibility: hidden; }   /* gleich groß wie der Transform-Knopf, aber unsichtbar */
+/* Handy: Portraits in der Spielansicht 30 % höher */
+@media (max-width: 719px) { .gcell-portrait { aspect-ratio: 5 / 7.8; } }
+/* Handy: jede Fünfergruppe in einer eigenen Zeile; der Block ist genau fünf Punkte breit und steht mittig.
+   Platz für vier Zeilen (bis 20 Lebenspunkte) ist immer reserviert, damit alle Kacheln gleich hoch sind. */
+@media (max-width: 719px) {
+  .hrow { display: contents; }
+  .gcell .hboxes { min-height: calc(4 * var(--pip) + 3 * var(--row-gap)); }   /* .gcell: setzt sich gegen die allgemeine Regel weiter unten durch */
+}
 
 /* Lebensleiste: blaue Punkte erzeugen Energy, verlorene Lebenspunkte sind rot.
    Fünfergruppen, höchstens 10 Punkte pro Zeile; Platz für zwei Zeilen ist immer reserviert (alle Kacheln gleich hoch) */
@@ -1194,11 +1207,40 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 /* Spielansicht: Der Hintergrund ist die Farbe von Runde 1 (Nacht). Von Runde zu Runde kriecht eine rötere Farbe
    vom oberen Rand herunter und blendet nach unten aus. In Runde 5 geht die Sonne auf. */
 body.in-game { background-color: #13151f; }   /* dieselbe Farbe wie die Kopfzeile bei "Choose models" */
-body.in-game[data-round="1"] { --sky: #13151f; --sky-h: 20vh; }
-body.in-game[data-round="2"] { --sky: hsl(262 36% 24%); --sky-h: 38vh; }
-body.in-game[data-round="3"] { --sky: hsl(318 38% 30%); --sky-h: 55vh; }
-body.in-game[data-round="4"] { --sky: hsl(348 55% 34%); --sky-h: 75vh; }
-body.in-game[data-round="5"] { --sky: hsl(13 68% 36%); --sky-h: 100vh; }
+/* --sky-prev / --sky-next: Farbe der Runde davor (dunkler) und danach (heller) für das Pulsieren;
+   Runde 1 hat keine davor (noch tiefere Nacht), Runde 5 keine danach (goldener Sonnenaufgang) */
+body.in-game[data-round="1"] { --sky: #13151f; --sky-prev: #0a0b12; --sky-next: hsl(262 36% 24%); --sky-h: 20vh; }
+body.in-game[data-round="2"] { --sky: hsl(262 36% 24%); --sky-prev: #13151f; --sky-next: hsl(312 31% 24%); --sky-h: 38vh; }
+body.in-game[data-round="3"] { --sky: hsl(312 31% 24%); --sky-prev: hsl(262 36% 24%); --sky-next: hsl(340 41% 27%); --sky-h: 55vh; }
+body.in-game[data-round="4"] { --sky: hsl(340 41% 27%); --sky-prev: hsl(312 31% 24%); --sky-next: hsl(5 50% 29%); --sky-h: 75vh; }
+body.in-game[data-round="5"] { --sky: hsl(5 50% 29%); --sky-prev: hsl(340 41% 27%); --sky-next: hsl(24 58% 40%); --sky-h: 100vh; }
+/* Farben als animierbare Werte: beim Rundenwechsel gleiten auch die pulsierenden Flecken in die neuen Farben */
+@property --sky-prev { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --sky-next { syntax: "<color>"; inherits: true; initial-value: transparent; }
+body.in-game { transition: --sky-prev 0.8s ease, --sky-next 0.8s ease; }
+
+/* Pulsieren: je ein weicher Fleck in der Farbe davor und danach (je etwa 15 % der Fläche) wandert langsam umher
+   und wird heller und schwächer. Krumme, verschiedene Dauern, damit das Muster unregelmäßig wirkt. */
+@property --sp-x { syntax: "<percentage>"; inherits: false; initial-value: 20%; }
+@property --sp-y { syntax: "<percentage>"; inherits: false; initial-value: 30%; }
+@property --sp-a { syntax: "<number>"; inherits: false; initial-value: 0.4; }
+@property --sn-x { syntax: "<percentage>"; inherits: false; initial-value: 75%; }
+@property --sn-y { syntax: "<percentage>"; inherits: false; initial-value: 25%; }
+@property --sn-a { syntax: "<number>"; inherits: false; initial-value: 0.4; }
+@keyframes sky-prev {
+  0%, 100% { --sp-x: 20%; --sp-y: 30%; --sp-a: 0.35; }
+  17% { --sp-x: 34%; --sp-y: 52%; --sp-a: 0.6; }
+  38% { --sp-x: 14%; --sp-y: 68%; --sp-a: 0.25; }
+  56% { --sp-x: 40%; --sp-y: 40%; --sp-a: 0.55; }
+  79% { --sp-x: 24%; --sp-y: 18%; --sp-a: 0.3; }
+}
+@keyframes sky-next {
+  0%, 100% { --sn-x: 76%; --sn-y: 24%; --sn-a: 0.3; }
+  22% { --sn-x: 61%; --sn-y: 46%; --sn-a: 0.55; }
+  41% { --sn-x: 86%; --sn-y: 62%; --sn-a: 0.35; }
+  63% { --sn-x: 66%; --sn-y: 30%; --sn-a: 0.6; }
+  84% { --sn-x: 81%; --sn-y: 14%; --sn-a: 0.25; }
+}
 body.in-game[data-round]::before {
   content: "";
   position: fixed;
@@ -1207,12 +1249,17 @@ body.in-game[data-round]::before {
   right: 0;
   height: var(--sky-h);
   background-color: var(--sky);
+  background-image:
+    radial-gradient(ellipse 32% 42% at var(--sn-x) var(--sn-y), color-mix(in srgb, var(--sky-next) calc(var(--sn-a) * 100%), transparent) 0%, transparent 100%),
+    radial-gradient(ellipse 32% 42% at var(--sp-x) var(--sp-y), color-mix(in srgb, var(--sky-prev) calc(var(--sp-a) * 100%), transparent) 0%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 100%);
   mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 100%);
   z-index: -1;
   pointer-events: none;
   transition: height 0.8s ease, background-color 0.8s ease;
+  animation: sky-prev 9.7s ease-in-out infinite, sky-next 12.3s ease-in-out infinite;
 }
+@media (prefers-reduced-motion: reduce) { body.in-game[data-round]::before { animation: none; } }
 /* Kopfzeile in der Farbe des Himmels oben, Schrift weiß */
 #view-game .editor-bar[data-round] { color: #fff; }
 #view-game .editor-bar[data-round] .game-title { color: #fff; }
@@ -1522,6 +1569,7 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .gcell.unsummoned .gcell-portrait { aspect-ratio: 11 / 10; }
 .gcell.unsummoned .pcard img, .gcell.unsummoned .pcard svg { object-fit: cover; object-position: center; }
 @media (min-width: 720px) { .gcell.unsummoned .gcell-portrait { aspect-ratio: 59 / 50; } }
+@media (max-width: 719px) { .gcell.unsummoned .gcell-portrait { aspect-ratio: 11 / 13; } }   /* Handy: 30 % höher, wie die übrigen Portraits */
 
 /* Schalter ODER / UND oben rechts im Synergies-Feld */
 .synergy-wrap { position: relative; }
@@ -1585,6 +1633,7 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .filter-box .keyword-box { background: none; border: 0; border-radius: 0; }
 .filter-box .keyword-box summary { padding: 0; min-height: 3rem; }
 .filter-box .keyword-box[open] summary::before { border-color: var(--accent); }
+.filter-box .keyword-box.closing summary::before { border-color: var(--muted); }
 .filter-box .keyword-box .chips { padding: 0.1rem 0 0.9rem; }
 /* Fraktionswappen: ohne eigenen Kasten */
 .filter-box .faction-row { padding: 1.25rem 0 0.15rem; background: none; border-radius: 0; border-left: 0; border-right: 0; border-bottom: 0; }
