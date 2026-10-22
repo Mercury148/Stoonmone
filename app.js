@@ -385,7 +385,7 @@ function createFilterPanel(container, onChange) {
               renderFactions();
               onChange();
             },
-          }, factionIcon(f));
+          }, addCrestGlow(factionIcon(f), [f], false));   // Leuchten als vorbereitetes Bild statt CSS-Filter (der wird auf dem Handy über dem Geweih abgeschnitten)
           factionButtons.set(f.id, button);
           return button;
         })
@@ -967,18 +967,22 @@ function watermarkImage(image, factions, opts = {}) {
 
 // Leuchten in Fraktionsfarbe um ein (kräftiges) Wappen, z. B. in der Ecke der Troupe-Kacheln.
 // Ein zweites Bild nur mit dem Leuchten liegt hinter dem Wappen; die Wappenfläche ist darin ausgespart.
-function addCrestGlow(icon, factions) {
+// withNear: zusätzlich das größere Mausnähe-Leuchten (Troupe-Kacheln); ohne nur das Leuchten selbst (Fraktionsfilter)
+function addCrestGlow(icon, factions, withNear = true) {
   const img = icon && icon.querySelector("img");
   if (!img) return icon;
   const files = factions.map((f) => f.id).sort((x, y) => FACTION_ORDER.indexOf(x) - FACTION_ORDER.indexOf(y)).map((id) => factionById.get(id));
   const glow = el("img", { class: "crest-glow", alt: "", draggable: "false" });
-  // Wie bei den Kompendium-Kacheln: zusätzliches, größeres Leuchten, das mit der Mausnähe aufblendet (siehe trackGlow)
-  const near = el("img", { class: "crest-glow crest-glow-near", alt: "", draggable: "false" });
   glow.hidden = true;
-  near.hidden = true;
-  icon.prepend(near, glow);
+  icon.prepend(glow);
   watermarkImage(img.getAttribute("src"), files, { crest: 0, glow: 0.9, blur: [14, 32] }).then((url) => { if (url) { glow.src = url; glow.hidden = false; } });
-  watermarkImage(img.getAttribute("src"), files, { crest: 0, glow: 0.9, blur: [18, 42], pad: 32 / 188 }).then((url) => { if (url) { near.src = url; near.hidden = false; } });
+  if (withNear) {
+    // Wie bei den Kompendium-Kacheln: zusätzliches, größeres Leuchten, das mit der Mausnähe aufblendet (siehe trackGlow)
+    const near = el("img", { class: "crest-glow crest-glow-near", alt: "", draggable: "false" });
+    near.hidden = true;
+    icon.prepend(near);
+    watermarkImage(img.getAttribute("src"), files, { crest: 0, glow: 0.9, blur: [18, 42], pad: 32 / 188 }).then((url) => { if (url) { near.src = url; near.hidden = false; } });
+  }
   return icon;
 }
 

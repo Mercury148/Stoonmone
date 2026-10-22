@@ -1,11 +1,9 @@
 /* Schrift Cormorant Garamond: liegt im Ordner fonts/ (SIL Open Font License, siehe fonts/OFL.txt), nichts wird von fremden Servern geladen.
    size-adjust: 115% = Cormorant Garamond überall ca. 15 % größer (die Schrift der Regeltexte bleibt gleich) */
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 400; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 500; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-500-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 600; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 700; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 400; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-400-italic.woff2") format("woff2"); }
-@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 600; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-600-italic.woff2") format("woff2"); }
+/* Variable Schrift (stufenlos von 300 bis 700): alle Schriftstärken sind ca. 15 % kräftiger als üblich
+   (normal 460 statt 400, 575 statt 500, 690 statt 600; 700 ist das Maximum der Schrift) */
+@font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 300 700; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-wght-normal.woff2") format("woff2-variations"), url("fonts/cormorant-garamond-latin-wght-normal.woff2") format("woff2"); }
+@font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 300 700; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-wght-italic.woff2") format("woff2-variations"), url("fonts/cormorant-garamond-latin-wght-italic.woff2") format("woff2"); }
 
 /* ==========================================================
    Tauber Tourist Guide: Gestaltung
@@ -20,8 +18,8 @@
   --surface: #ffffff;
   --surface-2: #e9e7f1;
   --line: #d4d1e0;
-  --fg: #1c1d2a;
-  --muted: #5d5f74;
+  --fg: #11121b;
+  --muted: #4b4d62;
   --accent: #7a5a12;
   --accent-fg: #ffffff;
   --accent-soft: #f0e3bd;
@@ -53,8 +51,8 @@
     --surface: #1c1f2e;
     --surface-2: #252a3d;
     --line: #33384f;
-    --fg: #e9e7f2;
-    --muted: #a2a5bd;
+    --fg: #f5f4fb;
+    --muted: #b8bbd0;
     --accent: #e0bf6a;
     --accent-fg: #1a1608;
     --accent-soft: #3a3322;
@@ -69,8 +67,8 @@
   --surface: #1c1f2e;
   --surface-2: #252a3d;
   --line: #33384f;
-  --fg: #e9e7f2;
-  --muted: #a2a5bd;
+  --fg: #f5f4fb;
+  --muted: #b8bbd0;
   --accent: #e0bf6a;
   --accent-fg: #1a1608;
   --accent-soft: #3a3322;
@@ -95,7 +93,8 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 16px/1.5 var(--font-body);
+  font: 460 16px/1.5 var(--font-body);   /* 460 statt 400: ca. 15 % kräftiger (siehe @font-face oben) */
+  text-rendering: optimizeLegibility;      /* sauberere Abstände zwischen den Buchstaben (Kerning) */
   padding-block: max(12px, env(safe-area-inset-top, 0px)) calc(5.5rem + var(--safe-b));
   padding-left: var(--gutter);
   padding-right: var(--gutter-r);
@@ -117,7 +116,7 @@ button { cursor: pointer; }
 
 /* ---------- Kopfzeile ---------- */
 .topbar { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; padding-block: 0.5rem 1rem; }
-.topbar h1 { margin: 0; display: flex; align-items: center; gap: 0.5rem; font: 600 1.6rem/1.1 var(--font-display); letter-spacing: 0.01em; }
+.topbar h1 { margin: 0; display: flex; align-items: center; gap: 0.5rem; font: 690 1.6rem/1.1 var(--font-display); letter-spacing: 0.01em; }
 .logo { width: 1.5rem; height: 1.5rem; color: var(--accent); }
 .sub { margin: 0; color: var(--muted); font-size: 0.85rem; }
 body.editing .topbar { display: none; }
@@ -144,11 +143,11 @@ button {
   color: var(--accent-fg);
   border: 0;
   border-radius: var(--radius);
-  font-weight: 600;
+  font-weight: 690;
 }
 button.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line); }
 button.ghost.danger { color: var(--danger); border-color: var(--danger); }
-button.link { background: none; min-height: 44px; padding: 0 0.25rem; color: var(--accent); text-decoration: underline; font-weight: 500; }
+button.link { background: none; min-height: 44px; padding: 0 0.25rem; color: var(--accent); text-decoration: underline; font-weight: 575; }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ---------- Filter (Kompendium und Editor) ---------- */
@@ -202,7 +201,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: hsl(var(--h) var(--fac-s) var(--fac-l));
   border: none;
   border-radius: var(--radius);
-  font-weight: 500;
+  font-weight: 575;
   --sel: 0;
   transition: opacity 0.35s ease, filter 0.35s ease, --near 0.3s ease-out, --sel 0.45s ease-in-out;   /* abwählen: sanft ausblenden */
 }
@@ -213,7 +212,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .faction-btn:nth-child(3) { animation-duration: 4.3s, 8.9s; animation-delay: -3.4s, -1.3s; }
 .faction-btn:nth-child(4) { animation-duration: 6.7s, 5.6s; animation-delay: -0.8s, -3.9s; }
 @media (prefers-reduced-motion: reduce) { .faction-btn { animation: none; } }
-.faction-icon { width: 1.7rem; height: 1.7rem; display: grid; place-items: center; font: 600 0.8rem/1 var(--font-display); }
+.faction-icon { width: 1.7rem; height: 1.7rem; display: grid; place-items: center; font: 690 0.8rem/1 var(--font-display); }
 .faction-icon svg, .faction-icon img { width: 100%; height: 100%; }
 .faction-btn::before {
   content: "";
@@ -232,12 +231,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
     transparent calc(70% + 2% * var(--sel)));
 }
 /* Leuchten direkt ums Wappen: das Stärkere aus Mausnähe (bis 80 %) und Gewählt (100 %) */
-.faction-btn .faction-icon {
-  --glow: calc(max(var(--near) * 0.8, var(--sel)) * var(--pulse));
-  filter: drop-shadow(0 0 0.5rem hsl(var(--h) var(--fac-s) var(--fac-l) / var(--glow))) drop-shadow(0 0 0.2rem hsl(var(--h) var(--fac-s) var(--fac-l) / calc(var(--glow) * 0.8)));
-}
+/* (als vorbereitetes Bild in app.js, nicht als CSS-Filter: der schneidet auf dem Handy das Leuchten über dem Geweih ab) */
+.faction-btn .faction-icon img.crest-glow { opacity: calc(max(var(--near) * 0.8, var(--sel)) * var(--pulse)); }
 /* Leuchten bei Mausnähe (--near setzt trackGlow() in app.js): große, breite Fläche, die mit den Nachbarn ineinanderläuft.
-   In der Wappenmitte etwa 80 % des Leuchtens eines gewählten Wappens; ein gewähltes Wappen behält die Fläche dauerhaft in voller Stärke. */
+   Höchstens 80 % (Maus direkt auf dem Wappen); ein gewähltes Wappen behält die Fläche dauerhaft in dieser Stärke. */
 .faction-btn::after {
   content: "";
   position: absolute;
@@ -248,7 +245,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   height: 6rem;   /* flach genug, dass das Leuchten nicht unten aus der Box läuft */
   transform: translate(-50%, -50%) scale(var(--swell));
   background: radial-gradient(closest-side, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.6) 0%, hsl(var(--h) var(--fac-s) var(--fac-l) / 0.25) 40%, transparent 100%);
-  opacity: calc(max(var(--near) * 0.8, var(--sel)) * var(--pulse));   /* gewählt: die Fläche bleibt in voller Stärke, auch wenn die Maus weggeht */
+  opacity: calc(max(var(--near), var(--sel)) * 0.8 * var(--pulse));   /* höchstens 80 %, auch gewählt (dann wird nur der Schein ums Wappen stärker); gewählt: die Fläche bleibt in voller Stärke, auch wenn die Maus weggeht */
   mix-blend-mode: screen;   /* Farben benachbarter Wappen addieren sich zu einem sanften Übergang */
   pointer-events: none;
 }
@@ -265,7 +262,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   gap: 0.6rem;
   padding: 0 0.75rem;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 690;
   list-style: none;
 }
 .keyword-box summary::-webkit-details-marker { display: none; }
@@ -289,7 +286,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--fg);
   border: 1px solid var(--line);
   border-radius: 999px;
-  font-weight: 500;
+  font-weight: 575;
   font-size: 0.9rem;
 }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
@@ -328,7 +325,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: none;
   color: var(--fg);
   text-align: left;
-  font-weight: 400;
+  font-weight: 460;
   border-radius: 0;
 }
 .card-text { min-width: 0; display: grid; gap: 0.15rem; }
@@ -352,7 +349,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   transform: translate(46.25%, -50%);
 }
 .card-main { position: relative; z-index: 1; }   /* Text und Klickfläche über dem Wappen */
-.card-name { font: 600 1.05rem/1.25 var(--font-display); overflow-wrap: anywhere; }
+.card-name { font: 690 1.05rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .card-faction { display: flex; align-items: center; flex-wrap: wrap; column-gap: 0.75rem; row-gap: 0.1rem; font-size: 0.85rem; color: var(--muted); }
 .faction-tag { display: inline-flex; align-items: center; gap: 0.35rem; }
 .dot { flex: none; width: 0.65rem; height: 0.65rem; border-radius: 50%; background: hsl(var(--h) var(--fac-s) var(--fac-l)); }
@@ -366,7 +363,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   place-items: center;
   border-radius: 50%;
   color: var(--portrait-fg);
-  font: 600 1.1rem/1 var(--font-display);
+  font: 690 1.1rem/1 var(--font-display);
   letter-spacing: 0.02em;
   overflow: hidden;
   /* Ring in der Fraktionsfarbe (wie der Sockel einer Miniatur), mit schmalem Abstand zum Bild.
@@ -393,7 +390,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ---------- Troupen-Übersicht ---------- */
 .page-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
-.page-head h2 { margin: 0; font: 600 1.3rem/1.2 var(--font-display); }
+.page-head h2 { margin: 0; font: 690 1.3rem/1.2 var(--font-display); }
 .add-btn {
   /* fest unten rechts, über der unteren Leiste */
   position: fixed;
@@ -450,7 +447,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: none;
   color: var(--fg);
   text-align: left;
-  font-weight: 400;
+  font-weight: 460;
 }
 .new-wrap.as-card .add-text { display: contents; }
 .new-wrap.as-card .mini-row { display: flex; }
@@ -488,7 +485,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border: 1px solid var(--line);
   border-radius: var(--radius);
   text-align: left;
-  font-weight: 400;
+  font-weight: 460;
 }
 .troupe-item { position: relative; display: grid; }
 .troupe-item .troupe-card { padding-right: 3rem; }
@@ -547,7 +544,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: var(--danger);
   color: #fff;
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 690;
 }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
 .icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -560,18 +557,18 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .dialog-stack button[hidden] { display: none; }
 
 /* Vorschau beim Import */
-.preview-title { margin: 0.5rem 0 0; font: 600 1.2rem/1.25 var(--font-display); overflow-wrap: anywhere; }
+.preview-title { margin: 0.5rem 0 0; font: 690 1.2rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .preview-list { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.35rem; max-height: 40vh; overflow-y: auto; }
 .preview-list li { display: flex; align-items: center; gap: 0.6rem; }
 .preview-list .portrait { flex: none; }
 .preview-info { display: grid; min-width: 0; }
-.preview-model { font-weight: 600; }
+.preview-model { font-weight: 690; }
 #preview-skipped { margin: 0.75rem 0 0; }
 #preview-skipped ul { margin: 0.35rem 0 0; padding-left: 1.1rem; }
 
 /* Backup-Zeile unter der Troupe-Liste */
 .backup-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
-.troupe-name { font: 600 1.15rem/1.25 var(--font-display); overflow-wrap: anywhere; }
+.troupe-name { font: 690 1.15rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .troupe-meta { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .mini-row { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.9rem; }
 /* Alle Kacheln gleich hoch: Platz für zwei Portrait-Zeilen. Feste Anordnung: 4 = 2x2, 8 = 2x4, 9 = 5+4 */
@@ -583,7 +580,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .mini-row[data-n="10"] { --mcols: 5; }
 
 .share { margin-top: 1.5rem; padding: 0.75rem 1rem 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
-.share summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+.share summary { cursor: pointer; font-weight: 690; min-height: 44px; display: flex; align-items: center; }
 .share button { margin-top: 0.6rem; margin-right: 0.5rem; }
 .hint { color: var(--muted); font-size: 0.9rem; margin: 0.25rem 0 0; }
 
@@ -601,7 +598,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: var(--bg);
   flex-wrap: wrap;
 }
-.editor-bar input { flex: 1; min-width: 0; font: 600 1.05rem/1.3 var(--font-display); }
+.editor-bar input { flex: 1; min-width: 0; font: 690 1.05rem/1.3 var(--font-display); }
 .back { flex: none; display: inline-flex; align-items: center; gap: 0.4rem; padding-inline: 0.75rem; }
 .back::before {
   content: "";
@@ -613,7 +610,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 
 .badge { font-variant-numeric: tabular-nums; margin-left: 0.25rem; padding: 0.05rem 0.45rem; border-radius: 99px; background: var(--surface-2); color: var(--fg); font-size: 0.8rem; }
-.badge.big { flex: none; margin: 0; padding: 0.2rem 0.65rem; font-size: 0.95rem; font-weight: 600; }
+.badge.big { flex: none; margin: 0; padding: 0.2rem 0.65rem; font-size: 0.95rem; font-weight: 690; }
 
 
 /* Portraitfläche (Bild oder Silhouette in der Fraktionsfarbe) */
@@ -644,7 +641,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: var(--surface);
   color: #f1effa;
   text-align: left;
-  font-weight: 400;
+  font-weight: 460;
 }
 .slot-portrait { border: 2px solid var(--accent); }
 .slot-open {
@@ -657,7 +654,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-radius: 0;
   color: inherit;
   text-align: left;
-  font-weight: 400;
+  font-weight: 460;
 }
 .slot-remove {
   position: absolute;
@@ -701,7 +698,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border: 2px solid var(--line);
   border-radius: var(--radius);
   text-align: left;
-  font-weight: 400;
+  font-weight: 460;
 }
 .tile-empty { aspect-ratio: 5 / 6; border: 2px dashed var(--line); border-radius: var(--radius); opacity: 0.7; }
 .tile-label {
@@ -714,7 +711,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: linear-gradient(to top, rgba(19, 21, 31, 0.92) 70%, rgba(19, 21, 31, 0));
 }
 .tile-name {
-  font: 600 0.78rem/1.2 var(--font-display);
+  font: 690 0.78rem/1.2 var(--font-display);
   overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -785,7 +782,7 @@ dialog {
 dialog::backdrop { background: rgba(8, 9, 16, 0.6); }
 .detail { padding: 1.25rem; display: grid; gap: 1rem; }
 .detail-head { display: flex; gap: 1rem; align-items: center; }
-.detail-head h2 { margin: 0; font: 600 1.4rem/1.2 var(--font-display); overflow-wrap: anywhere; }
+.detail-head h2 { margin: 0; font: 690 1.4rem/1.2 var(--font-display); overflow-wrap: anywhere; }
 .detail-actions { display: flex; gap: 0.5rem; }
 .detail-actions button { flex: 1; }
 .tag-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
@@ -901,14 +898,14 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 }
 
 /* Fraktion der Troupe in der Hinweiszeile des Editors */
-.rule-faction { font-weight: 600; color: var(--fg); }
+.rule-faction { font-weight: 690; color: var(--fg); }
 
 /* Hinweiszeile im Editor: die Fraktion der Troupe */
-.rule-faction { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; color: var(--fg); }
+.rule-faction { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 690; color: var(--fg); }
 
 /* Beschworene Charaktere: eigene Zeile unter den Plätzen */
-.section-label { margin: 0.75rem 0 0; font-size: 0.9rem; font-weight: 600; color: var(--muted); }
-.hint-inline { font-weight: 400; letter-spacing: 0; text-transform: none; }
+.section-label { margin: 0.75rem 0 0; font-size: 0.9rem; font-weight: 690; color: var(--muted); }
+.hint-inline { font-weight: 460; letter-spacing: 0; text-transform: none; }
 #editor-summons .slots { margin-top: 0.4rem; }
 .slot-portrait.summoned { border: 2px dashed var(--accent); }
 
@@ -949,7 +946,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   }
   #view-editor { padding-bottom: 9rem; }   /* damit die Knöpfe keine Kacheln verdecken */
 }
-.game-title { flex: 1; margin: 0; font: 600 1.15rem/1.2 var(--font-display); }
+.game-title { flex: 1; margin: 0; font: 690 1.15rem/1.2 var(--font-display); }
 .game-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 1rem; }   /* Abstand, damit das Ausblenden der Kopfzeile die Knöpfe nicht überdeckt */
 .game-tools button { padding-inline: 0.4rem; font-size: 0.85rem; }
 .game-startbar {
@@ -978,7 +975,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   border-radius: 8px;
   background: none;
 }
-.gcell-name { font: 600 0.6rem/1.15 var(--font-display); text-align: center; overflow-wrap: anywhere; min-height: 3.5em; }
+.gcell-name { font: 690 0.6rem/1.15 var(--font-display); text-align: center; overflow-wrap: anywhere; min-height: 3.5em; }
 
 /* Lebensleiste: blaue Punkte erzeugen Energy, verlorene Lebenspunkte sind rot */
 .hboxes { min-height: 1.35rem; align-content: flex-start; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
@@ -1041,7 +1038,7 @@ html, body, button, input, summary { touch-action: manipulation; }
 .gstep-row button, .summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
 /* Format-Auswahl: auf dem Handy eine eigene Zeile unter der Kopfzeile, am Computer rechts neben dem Namen */
-#editor-format { order: 10; flex: 1 1 100%; min-width: 0; min-height: 44px; font-weight: 600; }
+#editor-format { order: 10; flex: 1 1 100%; min-width: 0; min-height: 44px; font-weight: 690; }
 @media (min-width: 720px) {
   #editor-format { order: 0; flex: 0 0 auto; width: auto; }
   .editor-bar { flex-wrap: nowrap; }
@@ -1201,7 +1198,7 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
 #editor-rule { min-height: 1.5rem; display: flex; align-items: center; margin: 0.25rem 0 0.4rem; }
 #editor-rule .rule-faction { gap: 0.3rem; min-width: 0; max-width: 100%; }
 #editor-rule .rule-text { min-width: 0; margin-left: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#editor-rule .rule-faction.open { color: var(--muted); font-weight: 400; }
+#editor-rule .rule-faction.open { color: var(--muted); font-weight: 460; }
 #editor-rule .rule-faction.open .dot { background: var(--muted); opacity: 0.5; }
 
 
@@ -1225,7 +1222,7 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
   gap: 0.7rem;
   padding: 0 0.9rem;
   cursor: pointer;
-  font: 600 1.1rem/1.3 var(--font-display);
+  font: 690 1.1rem/1.3 var(--font-display);
   list-style: none;
 }
 .rule-section > summary::-webkit-details-marker { display: none; }
@@ -1242,9 +1239,9 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
 .rule-body { padding: 0.1rem 0.9rem 1.1rem; display: grid; gap: 0.75rem; line-height: 1.55; }
 .rule-body p, .rule-body ul, .rule-body figure { margin: 0; }
 .rule-body ul { padding-left: 1.2rem; display: grid; gap: 0.3rem; }
-.rule-h2 { margin: 0.8rem 0 0; font: 600 1.2rem/1.3 var(--font-display); }
+.rule-h2 { margin: 0.8rem 0 0; font: 690 1.2rem/1.3 var(--font-display); }
 .rule-h2:first-child { margin-top: 0.2rem; }
-.rule-h3 { margin: 0.4rem 0 0; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.rule-h3 { margin: 0.4rem 0 0; font-size: 0.8rem; font-weight: 690; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
 .rule-note { padding: 0.7rem 0.9rem; background: var(--accent-soft); border: 1px solid var(--line); border-radius: var(--radius); }
 .rule-fig { text-align: center; }
 .rule-fig img { max-width: min(100%, 22rem); width: auto; height: auto; }
@@ -1252,14 +1249,14 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
 .rule-gallery { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 7.5rem)); justify-content: center; align-items: end; gap: 1rem 0.9rem; }
 .rule-gallery figure { display: grid; justify-items: center; align-content: end; gap: 0.35rem; text-align: center; }
 .rule-gallery img { height: 4.2rem; width: auto; max-width: 100%; object-fit: contain; }
-.rule-gallery figcaption { font-size: 0.82rem; font-weight: 600; line-height: 1.25; }
+.rule-gallery figcaption { font-size: 0.82rem; font-weight: 690; line-height: 1.25; }
 /* Sechs Bilder in einer Reihe, auf schmalen Bildschirmen zwei Reihen à drei */
 @media (max-width: 719px) { .rule-gallery[data-cols="6"] { grid-template-columns: repeat(3, minmax(0, 7.5rem)); } }
 /* Mit Beschreibung: Wappen neben dem Text. Breit: zwei Spalten gespiegelt, die Wappen treffen sich in der Mitte */
 .rule-gallery.described { grid-template-columns: minmax(0, 1fr); justify-content: stretch; align-items: center; }
 .rule-gallery.described figure { grid-template-columns: 4.2rem minmax(0, 1fr); align-items: center; justify-items: start; column-gap: 0.8rem; text-align: left; }
 .rule-gallery.described figcaption { display: grid; gap: 0.15rem; font-size: 0.9rem; }
-.rule-gallery.described figcaption span { font-weight: 400; color: var(--muted); }
+.rule-gallery.described figcaption span { font-weight: 460; color: var(--muted); }
 @media (min-width: 720px) {
   .rule-gallery.described { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.2rem; }
   .rule-gallery.described figure:nth-child(odd) { grid-template-columns: minmax(0, 1fr) 4.2rem; justify-items: end; text-align: right; }
@@ -1292,7 +1289,7 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
   gap: 0.6rem;
   padding: 0.7rem 0;
   cursor: pointer;
-  font: 600 1rem/1.3 var(--font-display);
+  font: 690 1rem/1.3 var(--font-display);
   list-style: none;
 }
 .rule-group > summary::-webkit-details-marker { display: none; }
@@ -1314,11 +1311,11 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
 .rule-group .rule-group { border-top: 0; }
 .rule-group .rule-group + .rule-group { border-top: 1px solid var(--line); }
 .rule-group .rule-group:last-child { border-bottom: 0; }
-.rule-group .rule-group > summary { font: 600 0.95rem/1.4 var(--font-body); }
+.rule-group .rule-group > summary { font: 690 0.95rem/1.4 var(--font-body); }
 .rule-group .rule-group > summary::before { margin-top: 0.5rem; }
 .rule-group .rule-group[open] > summary { color: var(--accent); }
 /* Einzelne Frage ohne eigenes Aufklappen: sieht aus wie eine geöffnete Frage */
-.rule-q { font: 600 0.95rem/1.4 var(--font-body); color: var(--accent); }
+.rule-q { font: 690 0.95rem/1.4 var(--font-body); color: var(--accent); }
 .rule-body > details { margin: 0; }
 
 /* Farbige Arcane-Symbole im Text */
@@ -1412,7 +1409,7 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .add-foe.is-full { opacity: 0.45; }
 .foe-block { margin-top: 0.75rem; }
 .foe-head { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.4rem; }
-.foe-name { flex: 1; min-width: 0; font: 600 1rem/1.3 var(--font-display); }
+.foe-name { flex: 1; min-width: 0; font: 690 1rem/1.3 var(--font-display); }
 .foe-head .badge { margin: 0; flex: none; }
 .foe-remove { flex: none; min-height: 36px; padding: 0 0.6rem; }
 .foe-play + .foe-play { margin-top: 0.5rem; }
@@ -1421,7 +1418,7 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 #opp-add-name { width: 100%; box-sizing: border-box; font-size: 16px; margin-top: 0.4rem; }
 .opp-choice { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; text-align: left; }
 .opp-choice:disabled { opacity: 0.45; }
-.opp-note { font-size: 0.8rem; font-weight: 400; opacity: 0.8; white-space: nowrap; }
+.opp-note { font-size: 0.8rem; font-weight: 460; opacity: 0.8; white-space: nowrap; }
 
 /* Abstand über den Knöpfen "Show all Characters / Show summons" so groß wie darunter */
 .foe-actions { margin-top: 0.5rem; }
@@ -1431,7 +1428,7 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .grow.summons { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .summon-area { margin-top: 0.4rem; }
 .summon-menu { margin-top: 0.5rem; }
-.summon-menu > summary { cursor: pointer; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-weight: 600; font-size: 0.9rem; list-style: none; }
+.summon-menu > summary { cursor: pointer; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-weight: 690; font-size: 0.9rem; list-style: none; }
 .summon-menu > summary::-webkit-details-marker { display: none; }
 .summon-menu > summary::before { content: "›"; display: inline-block; margin-right: 0.5rem; transition: transform 0.15s; }
 .summon-menu[open] > summary::before { transform: rotate(90deg); }
@@ -1498,7 +1495,7 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 /* Suchzeile: der OR/AND-Schalter sitzt in der Ecke, oben und rechts gleich viel Abstand (0.625rem) */
 .filter-box .search-wrap { display: flex; align-items: center; gap: 0.6rem; min-height: 3rem; padding: 0 0.625rem 0 0.9rem; }
 .filter-box .search-wrap input[type="search"] { flex: 1; min-width: 0; min-height: 3rem; padding: 0; background: none; border: 0; border-radius: 0; outline: none; }
-.filter-box .search-count { position: static; transform: none; flex: none; margin-left: auto; font-weight: 400; }
+.filter-box .search-count { position: static; transform: none; flex: none; margin-left: auto; font-weight: 460; }
 .filter-box .mode-btn { position: relative; top: auto; right: auto; flex: none; height: 1.75rem; }
 /* Synergien: Kopfzeile ohne eigenen Kasten, Pfeil wie in den FAQs */
 .filter-box .keyword-box { background: none; border: 0; border-radius: 0; }
@@ -1527,7 +1524,7 @@ html, body { overflow-x: clip; }
 .faction-icon[data-fac="leshavult"] img.crest-glow-near { width: 338.7%; height: 338.7%; }
 
 /* Gewählte Synergien in der Synergies-Zeile, so groß wie "(name, keyword, synergy)" in der Suchzeile; auf dem Handy ausgeblendet */
-.syn-picked { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 400; color: var(--accent); }
+.syn-picked { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.72rem; font-weight: 460; color: var(--accent); }
 @media (max-width: 599px) { .syn-picked { display: none; } }
 
 /* Beispiele in den Regeln: gelber Kasten */
@@ -1546,6 +1543,6 @@ html, body { overflow-x: clip; }
 /* Regeltexte sowie FAQ-Fragen und -Antworten bleiben in der bisherigen Schrift; Überschriften und alles andere in Cormorant Garamond */
 .rule-body { font-family: var(--font-text); font-size: 1.15rem; }   /* ca. 15 % größer als vorher (rem, damit verschachtelte Abschnitte nicht doppelt wachsen) */
 /* FAQ-Frage = Gruppe ohne Untergruppen (".leaf", gesetzt in app.js); Themen wie Charakternamen behalten Cormorant Garamond */
-#faqs-guide .rule-group.leaf > summary, #faqs-guide .rule-q { font: 600 1.09rem/1.4 var(--font-text); }
+#faqs-guide .rule-group.leaf > summary, #faqs-guide .rule-q { font: 690 1.09rem/1.4 var(--font-text); }
 /* Zahlen in Cormorant Garamond in normaler Höhe (statt der kleinen, alten Ziffern) */
 body { font-variant-numeric: lining-nums; }
