@@ -2489,6 +2489,37 @@ async function boot() {
   } catch { /* ignorieren */ }
 }
 
+// --- Text, der abgeschnitten würde, automatisch kleiner machen ---
+// Betrifft Stellen mit begrenztem Platz (Namen auf den Kacheln, Platzhalter der Suche usw.).
+// Die Schrift wird schrittweise verkleinert, bis alles passt, höchstens bis auf 60 % der normalen Größe.
+const FIT_SELECTOR = ".tile-name, .gstep-label, .search-hint";
+function fitText(node) {
+  if (!node.isConnected || node.offsetParent === null) return;   // unsichtbar: später, wenn es angezeigt wird
+  const key = `${node.clientWidth}|${node.textContent}`;
+  if (node.dataset.fit === key) return;                            // schon passend für diese Breite und diesen Text
+  node.style.fontSize = "";
+  const base = parseFloat(getComputedStyle(node).fontSize);
+  const overflowing = () => node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1;
+  let size = base;
+  while (overflowing() && size > base * 0.6) {
+    size *= 0.93;
+    node.style.fontSize = `${size}px`;
+  }
+  node.dataset.fit = key;
+}
+let fitQueued = false;
+function fitAllText() {
+  if (fitQueued) return;
+  fitQueued = true;
+  requestAnimationFrame(() => {
+    fitQueued = false;
+    document.querySelectorAll(FIT_SELECTOR).forEach(fitText);
+  });
+}
+new MutationObserver(fitAllText).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["hidden", "open"] });
+window.addEventListener("resize", fitAllText);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { document.querySelectorAll(FIT_SELECTOR).forEach((n) => delete n.dataset.fit); fitAllText(); });
+
 // Bilder (auch die Charakterkarten) lassen sich nicht herausziehen
 document.addEventListener("dragstart", (e) => { if (e.target instanceof HTMLImageElement) e.preventDefault(); });
 
