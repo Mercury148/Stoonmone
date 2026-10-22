@@ -900,10 +900,15 @@ function cardWatermark(c) {
   const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
   const image = factions.length === 2 ? dualImage(factions) : factions[0] && (factions[0].icon || FACTION_IMAGES[factions[0].id]);
   if (!image) return null;
-  // Leuchten in Fraktionsfarbe (bei zwei Fraktionen beide Farben); überdeckt auch den weißen Schein der Doppelwappen
+  return el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true" });
+}
+
+// Farben für das Leuchten des Wappens (bei zwei Fraktionen beide Farben); überdeckt auch den weißen Schein der Doppelwappen
+function glowStyle(c) {
+  const factions = c.factions.map((id) => factionById.get(id)).filter(Boolean);
+  if (!factions.length) return null;
   const [a, b = a] = factions;
-  const glow = `--h:${a.hue}; --fac-s:${a.sat ?? 55}%; --h2:${b.hue}; --fac-s2:${b.sat ?? 55}%`;
-  return el("img", { class: "card-watermark", src: image, alt: "", draggable: "false", loading: "lazy", "aria-hidden": "true", style: glow });
+  return `--h:${a.hue}; --fac-s:${a.sat ?? 55}%; --h2:${b.hue}; --fac-s2:${b.sat ?? 55}%`;
 }
 
 function renderCards() {
@@ -917,7 +922,7 @@ function renderCards() {
   }
 
   const cardEl = (c) =>
-      el("article", { class: "card" },
+      el("article", { class: "card", style: glowStyle(c) },
         cardWatermark(c),
         el("button",{ class: "card-main", type: "button", onclick: () => openDetail(c.id), "aria-label": `${c.name}: open details` },
           portrait(c),
