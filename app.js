@@ -1482,8 +1482,18 @@ function toggleGamePick(side, id) {
   else list.push(id);
   // Sind alle Modelle dieses Gegners gewählt, klappt die Liste wieder ein
   if (side !== "own" && Number.isFinite(gameSize()) && list.length >= gameSize()) foeListOpen = false;
+  if (side !== "own") resetFoePickerWhenFull();
   saveGame();
   renderGame();
+}
+
+// Sind alle Gegner voll, gibt es nichts mehr zu wählen: Suche und Filter leeren, damit die Liste wirklich verschwindet
+// (bei aktiver Suche oder Filter bliebe sie sonst sichtbar)
+function resetFoePickerWhenFull() {
+  const size = gameSize();
+  if (!Number.isFinite(size) || !game.opps.every((o) => o.ids.length >= size)) return;
+  foeListOpen = false;
+  foePanel.clear();
 }
 
 function tileFor(c, selected, onclick, extraClass = "") {
@@ -1522,16 +1532,66 @@ function tileFor(c, selected, onclick, extraClass = "") {
   return tile;
 }
 
-// Eine kleine Zeile mit - Wert +
-function stepper(label, value, onMinus, onPlus) {
-  return el("div", { class: "gstep" },
-    el("span", { class: "gstep-label", text: label }),
-    el("div", { class: "gstep-row" },
-      el("button", { class: "ghost", type: "button", "aria-label": `${label}: less`, text: "−", onclick: onMinus }),
-      el("span", { class: "gstep-value", text: String(value) }),
-      el("button", { class: "ghost", type: "button", "aria-label": `${label}: more`, text: "+", onclick: onPlus })
-    )
-  );
+// Lebenspunkte beim letzten Zeichnen und laufende Kästchen-Animationen, je Modell-Eintrag des Spiels (neues Spiel = neue Einträge).
+// Wird während einer Animation neu gezeichnet (schnelles Klicken), läuft sie mit negativer Verzögerung an derselben Stelle weiter.
+const HBOX_ANIM_MS = 600;
+const healthAnim = new WeakMap();   // Modell-Eintrag → { remaining, boxes: Map(Index → { kind: "fill" | "drain", start }) }
+
+function hboxAnimations(m, remaining) {
+  const now = performance.now();
+  let track = healthAnim.get(m);
+  if (!track) { track = { remaining, boxes: new Map() }; healthAnim.set(m, track); }
+  const before = track.remaining;
+  track.remaining = remaining;
+  // Kästchen zwischen alter und neuer Grenze: neue Wunden füllen sich rot, geheilte laufen leer
+  for (let i = Math.min(before, remaining); i < Math.max(before, remaining); i++) {
+    const kind = i >= remaining ? "fill" : "drain";
+    const old = track.boxes.get(i);
+    // Umkehr mitten in einer Animation: beim aktuellen Füllstand weitermachen statt neu von leer/voll zu beginnen
+    const left = old && old.kind !== kind ? Math.max(0, HBOX_ANIM_MS - (now - old.start)) : 0;
+    track.boxes.set(i, { kind, start: now - left });
+  }
+  for (const [i, a] of track.boxes) {
+    if (now - a.start >= HBOX_ANIM_MS || (a.kind === "fill") !== (i >= remaining)) track.boxes.delete(i);
+  }
+  return (i) => {
+    const a = track.boxes.get(i);
+    return a ? { kind: a.kind, delay: a.start - now } : null;
+  };
+}
+
+// Bei jedem Antippen ein etwas anderes Farbmuster für das Aufleuchten, das an das vorige anschließt, so dass beim
+// mehrmaligen Tippen eine Art Welle entsteht: eine laufende Phase treibt Winkel, Farbaufteilung und Farbfleck auf
+// sanften Kurven weiter, mit etwas Zufall. Zwei Fraktionen: beide Farben wechseln sich ab;
+// eine Fraktion: die Fraktionsfarbe überwiegt, dazu ca. 15 % dunkles Grau und ca. 15 % hellere Fraktionsfarbe für Abwechslung.
+let flashPhase = Math.random() * 10;
+function randomizeFlash(event) {
+  const button = event.currentTarget;
+  const s = button.style;
+  const mono = button.parentElement.dataset.mono === "1";
+  flashPhase += 0.55 + Math.random() * 0.25;
+  const p = flashPhase;
+  const jitter = (n) => (Math.random() - 0.5) * n;
+  s.setProperty("--flash-angle", `${Math.round((p * 40 + jitter(16)) % 360)}deg`);
+  s.setProperty("--flash-x", `${Math.round(50 + 35 * Math.sin(p * 0.9))}%`);
+  s.setProperty("--flash-y", `${Math.round(50 + 35 * Math.cos(p * 0.7))}%`);
+  if (mono) {
+    s.setProperty("--flash-a", `${Math.round(72 + 8 * Math.sin(p * 1.3))}%`);   // Grau erst ab ca. 65–80 % (etwa 15 % der Fläche)
+    s.setProperty("--flash-b", "100%");
+    // Zweiter, hellerer Fleck in der Fraktionsfarbe (ca. 15 % der Fläche), auf eigenen Wellenbahnen
+    s.setProperty("--flash-hi", "1");
+    s.setProperty("--flash-x2", `${Math.round(50 + 32 * Math.sin(p * 1.1 + 2) + jitter(8))}%`);
+    s.setProperty("--flash-y2", `${Math.round(50 + 32 * Math.cos(p * 0.8 + 1) + jitter(8))}%`);
+  } else {
+    s.setProperty("--flash-hi", "0");
+    s.setProperty("--flash-a", `${Math.round(15 + 15 * Math.sin(p * 1.3))}%`);
+    s.setProperty("--flash-b", `${Math.round(85 + 15 * Math.sin(p * 1.1))}%`);
+  }
+  // Farbfleck: bei zwei Fraktionen abwechselnd in der einen oder anderen Farbe, bei einer immer in der Fraktionsfarbe
+  const second = !mono && Math.sin(p * 0.5) > 0;
+  s.setProperty("--flash-bh", second ? "var(--flash-h2)" : "var(--flash-h)");
+  s.setProperty("--flash-bs", second ? "var(--flash-s2)" : "var(--flash-s)");
+  s.setProperty("--flash-bl", second ? "var(--flash-l2)" : "var(--fac-l)");
 }
 
 function gameCell(side, c) {
@@ -1539,7 +1599,6 @@ function gameCell(side, c) {
   const health = healthOf(c);
   const total = health ? health.length : null;
   const remaining = health ? total - m.wounds : null;
-  const generated = energyGenerated(c, m.wounds);
   const maxWounds = total === null ? 30 : total;
   const change = (patch) => { Object.assign(m, patch); saveGame(); renderGamePlay(); };
 
@@ -1567,30 +1626,49 @@ function gameCell(side, c) {
     );
   }
 
+  // Kästchen, die sich gerade geändert haben, füllen sich rot von unten (fill) oder verlieren das Rot nach unten (drain)
+  const anim = health ? hboxAnimations(m, remaining) : null;
+  const pip = (dot, i) => {
+    const a = anim(i);
+    return el("span", {
+      class: `hbox${dot ? " blue" : ""}${i >= remaining ? " struck" : ""}${a ? " " + a.kind : ""}`,
+      style: a ? `--d: ${Math.round(a.delay)}ms` : null,
+    });
+  };
+  // Lebenspunkte in Fünfergruppen, höchstens zwei Gruppen (10 Punkte) pro Zeile; ist die Kachel zu schmal, steht jede Gruppe in einer eigenen Zeile
+  const rows = [];
+  if (health) {
+    for (let r = 0; r < health.length; r += 10) {
+      const groups = [];
+      for (let i = r; i < Math.min(r + 10, health.length); i += 5) groups.push(el("span", { class: "hgroup" }, ...health.slice(i, i + 5).map((dot, j) => pip(dot, i + j))));
+      rows.push(el("span", { class: "hrow" }, ...groups));
+    }
+  }
   const boxes = health
-    ? el("div", { class: "hboxes", role: "img", "aria-label": `${remaining} of ${total} health boxes left` },
-        ...health.map((dot, i) => el("span", { class: `hbox${dot ? " blue" : ""}${i >= remaining ? " struck" : ""}` })))
-    : el("div", { class: "hboxes none", text: "no health data" });
+    ? el("div", { class: "hboxes", role: "img", "aria-label": `${remaining} of ${total} health boxes left` }, ...rows)
+    : el("div", { class: "hboxes none", text: `Wounds: ${m.wounds}` });
 
+  // Unsichtbare Knöpfe auf dem Portrait: obere Hälfte heilt (+1), untere Hälfte verwundet (−1); dazwischen ein schmaler Spalt
+  const heal = () => change({ wounds: Math.max(0, m.wounds - 1) });
+  const wound = () => change({ wounds: Math.min(health ? total : maxWounds, m.wounds + 1) });
+  // Aufleuchten beim Antippen in der Fraktionsfarbe der Troupe dieser Seite (bei zwei Fraktionen beide), sonst der des Modells
+  const troupeFactions = troupeFactionList({ ids: sideIds(side) });
+  const [f1, f2] = troupeFactions.length ? troupeFactions : [primaryFaction(c) || { hue: 0, sat: 0 }];
+  // Eine Fraktion: zweite Farbe ist ein dezentes dunkles Grau
+  const flash = f2
+    ? `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:${f2.hue}; --flash-s2:${f2.sat ?? 55}%; --flash-l2:var(--fac-l)`
+    : `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:230; --flash-s2:8%; --flash-l2:22%`;
   return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}` },
-    // Der Transform-Knopf sitzt auf dem Portrait, damit die Kachel gleich groß bleibt wie die anderen
-    el("div", { class: "gcell-media" },
-      el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }, portraitCard(c)),
+    el("div", { class: "gcell-media", style: flash, "data-mono": f2 ? null : "1" },
+      el("div", { class: "gcell-portrait" }, portraitCard(c)),
+      el("button", { class: "hp-btn hp-up", type: "button", "aria-label": `${c.name}: heal 1`, onclick: heal, onpointerdown: randomizeFlash }),
+      el("button", { class: "hp-btn hp-down", type: "button", "aria-label": `${c.name}: 1 wound`, onclick: wound, onpointerdown: randomizeFlash }),
+      // Der Transform-Knopf sitzt auf dem Portrait (über dem Heilen-Knopf), damit die Kachel gleich groß bleibt wie die anderen
       twinOf(c) ? el("button", { class: "transform-btn", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) }) : null
     ),
-    el("div", { class: "gcell-name", text: c.name }),
-    boxes,
-    health
-      // HP = verbleibende Lebenspunkte: "−" streicht ein Kästchen von rechts (eine Wunde), "+" gibt eines zurück
-      ? stepper(`HP ${remaining}/${total}`, remaining,
-          () => change({ wounds: Math.min(total, m.wounds + 1) }),
-          () => change({ wounds: Math.max(0, m.wounds - 1) }))
-      : stepper("Wounds", m.wounds,
-          () => change({ wounds: Math.max(0, m.wounds - 1) }),
-          () => change({ wounds: Math.min(maxWounds, m.wounds + 1) })),
-    stepper(generated === null ? "Energy" : `Energy (+${generated})`, m.energy,
-      () => change({ energy: Math.max(0, m.energy - 1) }),
-      () => change({ energy: m.energy + 1 }))
+    // Karte öffnen jetzt über den Namen (das Portrait gehört den Lebenspunkt-Knöpfen)
+    el("button", { class: "gcell-name gcell-open", type: "button", text: c.name, "aria-label": `${c.name}: open card`, onclick: () => openDetail(c.id) }),
+    boxes
   );
 }
 
@@ -1707,6 +1785,7 @@ function addToOpponent(o, id) {
   const size = gameSize();
   o.ids.push(id);
   if (Number.isFinite(size) && o.ids.length >= size) foeListOpen = false;
+  resetFoePickerWhenFull();
   saveGame();
   renderGame();
 }
@@ -2322,11 +2401,15 @@ function showView(name) {
   if (name !== "game") delete document.body.dataset.round;
   if (name !== "editor" && name !== "game") {
     lastTab = name;
-    for (const tab of document.querySelectorAll("[role=tab]")) {
-      tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
-    }
+    markTab(name);
   }
   window.scrollTo(0, 0);
+}
+
+function markTab(name) {
+  for (const tab of document.querySelectorAll("[role=tab]")) {
+    tab.setAttribute("aria-selected", String(tab.dataset.tab === name));
+  }
 }
 
 function openEditor(id) {
@@ -2348,10 +2431,20 @@ function closeEditor() {
 /* ---------- 8. Start ---------- */
 
 function wireEvents() {
+  // Erst die Markierung umsetzen (sie gleitet sofort los), die neue Seite erst im nächsten Bild aufbauen.
+  // Bei schnellen Klicks hintereinander wird nur die Seite des letzten Klicks aufgebaut.
+  let pendingTab = null;
   for (const tab of document.querySelectorAll("[role=tab]")) {
     tab.addEventListener("click", () => {
-      showView(tab.dataset.tab);
-      if (tab.dataset.tab === "troupes") renderTroupes();
+      const name = tab.dataset.tab;
+      pendingTab = name;
+      markTab(name);
+      requestAnimationFrame(() => setTimeout(() => {
+        if (pendingTab !== name) return;
+        pendingTab = null;
+        showView(name);
+        if (name === "troupes") renderTroupes();
+      }, 0));
     });
   }
 
@@ -2557,7 +2650,7 @@ async function boot() {
 // --- Text, der abgeschnitten würde, automatisch kleiner machen ---
 // Betrifft Stellen mit begrenztem Platz (Namen auf den Kacheln, Platzhalter der Suche usw.).
 // Die Schrift wird schrittweise verkleinert, bis alles passt, höchstens bis auf 60 % der normalen Größe.
-const FIT_SELECTOR = ".tile-name, .gstep-label, .search-hint";
+const FIT_SELECTOR = ".tile-name, .search-hint";
 function fitText(node) {
   if (!node.isConnected || node.offsetParent === null) return;   // unsichtbar: später, wenn es angezeigt wird
   const key = `${node.clientWidth}|${node.textContent}`;

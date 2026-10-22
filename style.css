@@ -758,6 +758,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-top: 1px solid var(--line);
 }
 .tabs button {
+  position: relative;
+  z-index: 1;   /* über der gleitenden Markierung */
   flex: 1;
   min-width: 0;
   padding: 0.5rem 0.2rem;
@@ -765,8 +767,33 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: var(--muted);
   border: 1px solid transparent;
   font-size: clamp(0.6rem, 3.1vw, 0.88rem);   /* vier Tabs müssen auch auf schmalen Handys nebeneinander passen */
+  transition: color 0.3s ease;
 }
-.tabs button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--line); }
+.tabs button[aria-selected="true"] { color: var(--accent); }
+/* Markierung des gewählten Tabs: ein einziges Feld, das zum gewählten Tab gleitet statt zu springen.
+   Alle vier Tabs sind gleich breit, die Position ergibt sich aus der Nummer des gewählten Tabs (--tab). */
+.tabs { --tab: 0; --tab-gap: 0.35rem; }
+.tabs:has(#tab-troupes[aria-selected="true"]) { --tab: 1; }
+.tabs:has(#tab-rules[aria-selected="true"]) { --tab: 2; }
+.tabs:has(#tab-faqs[aria-selected="true"]) { --tab: 3; }
+.tabs::before {
+  --tab-w: calc((100% - var(--gutter) - var(--gutter-r) - 3 * var(--tab-gap)) / 4);
+  content: "";
+  box-sizing: border-box;   /* Rahmen in der Breite, sonst verschiebt translateX um die Rahmenbreite zu weit */
+  position: absolute;
+  top: 0.5rem;
+  bottom: calc(0.5rem + var(--safe-b));
+  left: var(--gutter);
+  width: var(--tab-w);
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  /* Verschieben per transform (100 % = eigene Breite): läuft auf der Grafikkarte weiter, auch wenn der Aufbau einer Seite kurz Zeit braucht */
+  transform: translateX(calc(var(--tab) * (100% + var(--tab-gap))));
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tabs:not(:has([aria-selected="true"]))::before { display: none; }
+@media (prefers-reduced-motion: reduce) { .tabs::before { transition: none; } }
 body.editing .tabs { display: none; }
 
 /* ---------- Detailansicht ---------- */
@@ -976,25 +1003,82 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   background: none;
 }
 .gcell-name { font: 690 0.6rem/1.15 var(--font-display); text-align: center; overflow-wrap: anywhere; min-height: 3.5em; }
+/* Name als Knopf zum Öffnen der Karte: sieht aus wie der normale Name */
+button.gcell-open { display: block; width: 100%; padding: 0; background: none; color: var(--fg); border-radius: 4px; }
 
-/* Lebensleiste: blaue Punkte erzeugen Energy, verlorene Lebenspunkte sind rot */
-.hboxes { min-height: 1.35rem; align-content: flex-start; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
-.hboxes.none { font-size: 0.55rem; color: var(--muted); text-align: center; }
-.hbox { width: 0.55rem; height: 0.55rem; border-radius: 50%; border: 1.5px solid var(--muted); box-sizing: border-box; }
-.hbox.blue { background: #3d7fe0; border-color: #3d7fe0; }
-.hbox.struck { background: #d94141; border-color: #d94141; opacity: 1; }
+/* Unsichtbare Lebenspunkt-Knöpfe auf dem Portrait: oben heilen, unten verwunden, mit kleinem Spalt dazwischen */
+.hp-btn { position: absolute; left: 0; right: 0; min-height: 0; padding: 0; background: transparent; border-radius: 8px; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+.hp-up { top: 0; bottom: calc(50% + 3px); }
+.hp-down { top: calc(50% + 3px); bottom: 0; }
+/* Rückmeldung beim Antippen: Aufleuchten in der Fraktionsfarbe der Troupe (--flash-… setzt app.js, bei zwei Fraktionen
+   schräg ineinander übergehend). Am äußeren Rand am kräftigsten, zur Mitte des Portraits hin auslaufend (auch über den Spalt hinaus).
+   Außen folgen die Ecken dem Portrait, zur Mitte hin keine Rundung. */
+.hp-up { border-radius: 8px 8px 0 0; }
+.hp-down { border-radius: 0 0 8px 8px; }
+.hp-btn::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 150%;   /* reicht über den Spalt in die andere Hälfte hinein und läuft dort aus */
+  border-radius: inherit;
+  /* Muster ändert sich bei jedem Antippen (--flash-angle/-a/-b/-x/-y/-bh/-bs setzt randomizeFlash() in app.js) */
+  background:
+    /* nur bei einer Fraktion (--flash-hi 1): hellerer Fleck in der Fraktionsfarbe */
+    radial-gradient(circle at var(--flash-x2, 70%) var(--flash-y2, 40%), hsl(var(--flash-h) var(--flash-s) calc(var(--fac-l) + 18%) / var(--flash-hi, 0)) 0%, transparent 32%),
+    radial-gradient(circle at var(--flash-x, 30%) var(--flash-y, 50%), hsl(var(--flash-bh, var(--flash-h)) var(--flash-bs, var(--flash-s)) var(--flash-bl, var(--fac-l))) 0%, transparent 55%),
+    linear-gradient(var(--flash-angle, 135deg), hsl(var(--flash-h) var(--flash-s) var(--fac-l)) var(--flash-a, 0%), hsl(var(--flash-h2) var(--flash-s2) var(--flash-l2, var(--fac-l))) var(--flash-b, 100%));
+  opacity: 0;
+  pointer-events: none;
+}
+.hp-up::before { top: 0; -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent); mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent); }
+.hp-down::before { bottom: 0; -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent); mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent); }
+.hp-btn:active::before { opacity: 1; }
+.transform-btn { z-index: 1; }   /* liegt über dem Heilen-Knopf */
 
-.gstep { display: flex; flex-direction: column; align-items: stretch; }
-.gstep-label { font-size: 0.5rem; line-height: 1.2; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gstep-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 2px; }
-.gstep-row button { min-height: 32px; padding: 0; border-radius: 6px; font-size: 1rem; line-height: 1; }
-.gstep-value { min-width: 0.9rem; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+/* Lebensleiste: blaue Punkte erzeugen Energy, verlorene Lebenspunkte sind rot.
+   Fünfergruppen, höchstens 10 Punkte pro Zeile; Platz für zwei Zeilen ist immer reserviert (alle Kacheln gleich hoch) */
+/* Der Block ist so breit wie seine längste Zeile und steht mittig in der Kachel; die Zeilen darin beginnen alle links */
+.hboxes { --pip: 0.62rem; --pip-gap: 2px; --row-gap: 3px; --pack-gap: 9px; display: flex; flex-direction: column; align-items: flex-start; gap: var(--row-gap); width: fit-content; max-width: 100%; margin-inline: auto; min-height: calc(2 * var(--pip) + var(--row-gap)); }
+.hrow { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--row-gap) var(--pack-gap); }
+.hgroup { display: flex; gap: var(--pip-gap); }
+.hboxes.none { font-size: 0.6rem; color: var(--muted); text-align: center; }
+.hbox { --rim: var(--muted); position: relative; overflow: hidden; width: var(--pip); height: var(--pip); border-radius: 50%; border: 1.5px solid var(--rim); box-sizing: border-box; }
+.hbox.blue { --rim: #3d7fe0; background-color: #3d7fe0; }
+.hbox.struck { background-image: linear-gradient(#d94141, #d94141); border-color: #d94141; opacity: 1; }
+
+/* Füllen und Leeren wie eine Flüssigkeit: ein rotes Feld mit welliger Oberfläche steigt von unten auf (fill)
+   oder sinkt ab (drain). Die Oberfläche besteht aus zwei Wellen mit verschiedener Wellenlänge, die gegenläufig
+   und verschieden schnell wandern, dadurch wirkt die Bewegung unregelmäßig.
+   --d (setzt app.js) = negative Verzögerung, damit eine Animation nach dem Neuzeichnen an derselben Stelle weiterläuft. */
+.hbox.fill, .hbox.drain { background-image: none; animation: 0.6s both; animation-delay: var(--d, 0ms); }   /* Dauer = HBOX_ANIM_MS in app.js */
+.hbox.fill { animation-name: hbox-rim-fill; animation-timing-function: ease-out; }
+.hbox.drain { animation-name: hbox-rim-drain; animation-timing-function: ease-in-out; }
+.hbox.fill::before, .hbox.drain::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.2rem;   /* Platz für die Wellenkämme: voll gefüllt liegen sie über dem Kästchen und sind nicht zu sehen */
+  bottom: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 26' preserveAspectRatio='none'%3E%3Cpath d='M0 4 Q5 0 10 4 T20 4 V26 H0Z' fill='%23d94141'/%3E%3C/svg%3E") 0 0 / 0.5rem 100% repeat-x,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 26' preserveAspectRatio='none'%3E%3Cpath d='M0 5 Q5 2 10 5 T20 5 V26 H0Z' fill='%23d94141'/%3E%3C/svg%3E") 0 0 / 0.33rem 100% repeat-x;
+  animation: 0.6s both;
+  animation-delay: var(--d, 0ms);
+}
+.hbox.fill::before { transform: translateY(0); animation-name: hbox-rise, hbox-wave; animation-timing-function: ease-out, linear; }
+.hbox.drain::before { transform: translateY(100%); animation-name: hbox-sink, hbox-wave; animation-timing-function: ease-in-out, linear; }
+@keyframes hbox-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes hbox-sink { from { transform: translateY(0); } to { transform: translateY(100%); } }
+@keyframes hbox-wave { from { background-position: 0 0, 0 0; } to { background-position: -1rem 0, 0.66rem 0; } }
+@keyframes hbox-rim-fill { from { border-color: var(--rim); } to { border-color: #d94141; } }
+@keyframes hbox-rim-drain { from { border-color: #d94141; } to { border-color: var(--rim); } }
+@media (prefers-reduced-motion: reduce) { .hbox.fill, .hbox.drain, .hbox.fill::before, .hbox.drain::before { animation: none; } }
 
 @media (min-width: 720px) {
   .gcell-name { font-size: 0.8rem; }
-  .hbox { width: 0.7rem; height: 0.7rem; }
-  .gstep-label { font-size: 0.65rem; }
-  .gstep-value { font-size: 1rem; }
+  .hboxes { --pip: 0.95rem; --pip-gap: 2px; --row-gap: 4px; --pack-gap: 12px; }   /* zwei Fünfergruppen passen noch nebeneinander in eine Kachel */
 }
 
 /* Beschworene Modelle, die noch nicht im Spiel sind */
@@ -1035,7 +1119,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 /* Kein Doppeltipp-Zoom: schnelles mehrfaches Tippen (z. B. auf + und -) soll nicht zoomen.
    Das Zusammenziehen mit zwei Fingern bleibt erlaubt. */
 html, body, button, input, summary { touch-action: manipulation; }
-.gstep-row button, .summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
 /* Format-Auswahl: auf dem Handy eine eigene Zeile unter der Kopfzeile, am Computer rechts neben dem Namen */
 #editor-format { order: 10; flex: 1 1 100%; min-width: 0; min-height: 44px; font-weight: 690; }
