@@ -1833,7 +1833,8 @@ function inlineNodes(text) {
     else if (piece.startsWith("*") && piece.endsWith("*") && piece.length > 2) out.push(el("em", { text: piece.slice(1, -1) }));
     else if (/^\[\[[a-z]+:[^\]]+\]\]$/.test(piece)) {
       const [color, symbol] = piece.slice(2, -2).split(":");
-      out.push(el("span", { class: `arc arc-${color}`, text: symbol }));   // farbiges Arcane-Symbol
+      if (color === "accent") out.push(el("strong", { class: "accent-text", text: symbol }));   // [[accent:Text]] = fett in Akzentfarbe
+      else out.push(el("span", { class: `arc arc-${color}`, text: symbol }));   // farbiges Arcane-Symbol
     }
     else plain(piece);
   }
@@ -1899,8 +1900,8 @@ function blockNode(block) {
     }
     case "example":
       // side: "right" = Bild rechts neben dem Text (auf schmalen Bildschirmen darunter)
-      // Breite Bilder (ab 13rem, z. B. der Spieltisch) stehen auf dem Handy mittig statt neben dem Text
-      return el("div", { class: ["rule-example", block.side === "right" ? "right" : "", Number(block.w) >= 13 ? "wide" : ""].filter(Boolean).join(" ") },
+      // Breite Bilder rechts (ab 13rem, z. B. der Spieltisch) stehen auf dem Handy mittig statt neben dem Text
+      return el("div", { class: ["rule-example", block.side === "right" ? "right" : "", block.side === "right" && Number(block.w) >= 13 ? "wide" : ""].filter(Boolean).join(" ") },
         el("img", { src: block.src, alt: block.alt || "", loading: "lazy", style: block.w ? `flex-basis:${Number(block.w) || 11}rem;width:${Number(block.w) || 11}rem` : null }),
         el("p", {}, ...inlineNodes(block.x)));
     case "annotated":

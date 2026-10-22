@@ -1459,3 +1459,6 @@ ul.plain-list li + li { margin-top: 0.35rem; }
   border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
   border-radius: var(--radius);
 }
+
+/* Hervorgehobener Text in den Regeln ([[accent:…]] in rules.json) */
+.accent-text { color: var(--accent); font-weight: 700; }

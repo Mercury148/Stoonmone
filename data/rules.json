@@ -909,7 +909,7 @@
     },
     {
      "t": "p",
-     "x": "**Wds Suffered From Falling**\n0-2” : None\n2-4” : 1/4 of total health boxes, rounding up\n4-6” : 1/2 of total health boxes, rounding up\n6+” : The character is *Slain*"
+     "x": "[[accent:Wds Suffered From Falling]]\n0-2” : None\n2-4” : 1/4 of total health boxes, rounding up\n4-6” : 1/2 of total health boxes, rounding up\n6+” : The character is *Slain*"
     },
     {
      "t": "p",
@@ -1186,18 +1186,11 @@
          "x": "Some damage results on Melee Cards are inside a yellow circle. This means you get to make a ***Follow-Up Attack***. Resolve the round of melee as normal, then provided your character was not *Slain*, before moving to the End Step, you may choose another card from your hand and place it on the table face up. It deals damage based on whatever card your opponent originally played, modified in the usual way. This is a completely free hit, it costs no energy and you suffer no damage. *Critical Hits* can be played as normal."
         },
         {
-         "t": "figure",
+         "t": "example",
          "src": "images/rules/melee-follow-up-table.webp",
          "alt": "Part of the Sweeping Cut card: the damage table with a yellow circle behind the 0 in the row for Thrust",
-         "w": 14
-        },
-        {
-         "t": "p",
-         "x": "In the unlikely event that both players can make *Follow-Up Attacks*, the new cards are chosen simultaneously and are resolved against the opponents *Follow-Up* card, rather than their previously played card. In this situation both players may deal (and therefore suffer) damage."
-        },
-        {
-         "t": "p",
-         "x": "*Follow-Up Attacks* can be upgraded to *Signature Moves* as normal if the correct card type is played."
+         "w": 14,
+         "x": "In the unlikely event that both players can make *Follow-Up Attacks*, the new cards are chosen simultaneously and are resolved against the opponents *Follow-Up* card, rather than their previously played card. In this situation both players may deal (and therefore suffer) damage.\n\n*Follow-Up Attacks* can be upgraded to *Signature Moves* as normal if the correct card type is played."
         }
        ]
       },
@@ -1206,18 +1199,11 @@
        "title": "Signature Moves",
        "blocks": [
         {
-         "t": "figure",
+         "t": "example",
          "src": "images/rules/melee-groin-tickler.webp",
          "alt": "Signature Move card: Groin Tickler, upgrade for Rising Attack",
-         "w": 12
-        },
-        {
-         "t": "p",
-         "x": "On the back of each Character Card is a *Signature Move* which looks like a Melee Card. Each *Signature Move* is an enhanced version of one of the six regular Melee Cards. The standard card that each *Signature Move* is able to replace is printed just under the *Signature Move’s* name on the card ('Rising Attack' in the example Groin Tickler above)."
-        },
-        {
-         "t": "p",
-         "x": "To use *Signature Moves*, conduct the round of melee as normal. Once all cards have been revealed, but before damage is calculated, if either player has a *Signature Move* that matches their Melee Card, they may declare that they are upgrading their Melee Card(s) to their *Signature Move*; use its damage table when determining the amount of damage you deal to your opponent. The amount of damage your opponent deals to you is not affected by your choice to upgrade; read off their damage as normal against the name of the regular move that was replaced."
+         "w": 12,
+         "x": "On the back of each Character Card is a *Signature Move* which looks like a Melee Card. Each *Signature Move* is an enhanced version of one of the six regular Melee Cards. The standard card that each *Signature Move* is able to replace is printed just under the *Signature Move’s* name on the card ('Rising Attack' in the example Groin Tickler above).\n\nTo use *Signature Moves*, conduct the round of melee as normal. Once all cards have been revealed, but before damage is calculated, if either player has a *Signature Move* that matches their Melee Card, they may declare that they are upgrading their Melee Card(s) to their *Signature Move*; use its damage table when determining the amount of damage you deal to your opponent. The amount of damage your opponent deals to you is not affected by your choice to upgrade; read off their damage as normal against the name of the regular move that was replaced."
         },
         {
          "t": "p",
