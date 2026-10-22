@@ -1432,3 +1432,8 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 .search-hint { position: absolute; left: 0.9rem; right: 6.8rem; top: 50%; transform: translateY(-50%); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
 .search-hint small { font-size: 0.72em; }
 .search-wrap input:not(:placeholder-shown) ~ .search-hint { display: none; }
+
+/* Leuchten hinter den Wappen in der Ecke der Troupe-Kacheln (Bild wird in app.js vorbereitet, mit Rand fürs Leuchten) */
+.faction-icon img.crest-glow { width: 274.4%; height: 274.4%; }
+.faction-icon[data-fac="leshavult"] img.crest-glow { width: 317.2%; height: 317.2%; }
+.faction-icon img.crest-glow[hidden] { display: none; }

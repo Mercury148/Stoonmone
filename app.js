@@ -901,9 +901,11 @@ function cardCrest(c) {
 // wo Maske + Filter in CSS nicht zuverlässig funktionieren).
 const WATERMARK_PAD = 24 / 188;   // Rand rund ums Wappen, damit das Leuchten nicht abgeschnitten wird
 const watermarkCache = new Map();
-function watermarkImage(image, factions) {
+// opts: crest = Deckkraft des Wappens im Bild (0 = nur das Leuchten), glow = Deckkraft des Leuchtens, blur = Unschärfen (klein, groß)
+function watermarkImage(image, factions, opts = {}) {
+  const { crest: crestAlpha = 0.25, glow: glowAlpha = 0.35, blur = [10, 24] } = opts;
   const light = getComputedStyle(document.documentElement).getPropertyValue("--fac-l").trim() || "62%";
-  const key = `${image}|${light}`;
+  const key = `${image}|${light}|${crestAlpha}|${glowAlpha}|${blur}|${factions.map((f) => f.id)}`;
   if (watermarkCache.has(key)) return watermarkCache.get(key);
   const promise = new Promise((resolve) => {
     const src = new Image();
@@ -917,9 +919,9 @@ function watermarkImage(image, factions) {
       const g = glow.getContext("2d");
       const [a, b = a] = factions;
       const color = (f) => `hsl(${f.hue} ${f.sat ?? 55}% ${light})`;
-      for (const [f, blur] of [[a, 10], [a, 24], [b, 24]]) {
+      for (const [f, r] of [[a, blur[0]], [a, blur[1]], [b, blur[1]]]) {
         g.shadowColor = color(f);
-        g.shadowBlur = blur;
+        g.shadowBlur = r;
         g.shadowOffsetX = size * 4;
         g.drawImage(src, pad - size * 4, pad, crest, crest);
       }
@@ -930,10 +932,12 @@ function watermarkImage(image, factions) {
       // 3. Zusammensetzen: Leuchten 35 %, darüber das Wappen 25 %
       const out = canvas();
       const o = out.getContext("2d");
-      o.globalAlpha = 0.35;
+      o.globalAlpha = glowAlpha;
       o.drawImage(glow, 0, 0);
-      o.globalAlpha = 0.25;
-      o.drawImage(src, pad, pad, crest, crest);
+      if (crestAlpha > 0) {
+        o.globalAlpha = crestAlpha;
+        o.drawImage(src, pad, pad, crest, crest);
+      }
       try { resolve(out.toDataURL("image/png")); } catch { resolve(null); }
     };
     src.onerror = () => resolve(null);
@@ -941,6 +945,19 @@ function watermarkImage(image, factions) {
   });
   watermarkCache.set(key, promise);
   return promise;
+}
+
+// Leuchten in Fraktionsfarbe um ein (kräftiges) Wappen, z. B. in der Ecke der Troupe-Kacheln.
+// Ein zweites Bild nur mit dem Leuchten liegt hinter dem Wappen; die Wappenfläche ist darin ausgespart.
+function addCrestGlow(icon, factions) {
+  const img = icon && icon.querySelector("img");
+  if (!img) return icon;
+  const files = factions.map((f) => f.id).sort((x, y) => FACTION_ORDER.indexOf(x) - FACTION_ORDER.indexOf(y)).map((id) => factionById.get(id));
+  const glow = el("img", { class: "crest-glow", alt: "", draggable: "false" });
+  glow.hidden = true;
+  icon.prepend(glow);
+  watermarkImage(img.getAttribute("src"), files, { crest: 0, glow: 0.9, blur: [14, 32] }).then((url) => { if (url) { glow.src = url; glow.hidden = false; } });
+  return icon;
 }
 
 function cardWatermark(c) {
@@ -1022,7 +1039,7 @@ function renderTroupes() {
         el("span", { class: "troupe-meta", text: troupeMeta(t) }),
         el("span", { class: "mini-row", "data-n": String(t.ids.length) }, ...t.ids.map((id) => portrait(characterById.get(id), "mini")))
       ),
-      faction ? el("span", { class: "troupe-corner", title: factions.map((f) => f.name).join(" / ") }, ...(factionsIcon(factions) ? [factionsIcon(factions)] : factions.map((f) => factionIcon(f)))) : null,
+      faction ? el("span", { class: "troupe-corner", title: factions.map((f) => f.name).join(" / ") }, ...(factionsIcon(factions) ? [addCrestGlow(factionsIcon(factions), factions)] : factions.map((f) => addCrestGlow(factionIcon(f), [f])))) : null,
       deleteButton(t)
     );
   });
