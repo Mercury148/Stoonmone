@@ -1873,3 +1873,9 @@ html.touring, html.touring body { overflow: hidden; }
   86% { opacity: 0.99; }
 }
 @media (prefers-reduced-motion: reduce) { .logo-wrap::before { animation: none; } }
+
+/* "Skip all" in der Sprechblase: dezent, links */
+.tour-skip { min-height: 32px; padding: 0.2rem 0; background: none; border: 0; color: var(--muted); font-size: 0.85rem; font-weight: 500; text-decoration: underline; text-underline-offset: 0.15em; }
+.tour-skip-row { display: flex; margin-top: 0.4rem; }
+.tour-bar.in-box .tour-skip { margin-right: auto; }
+.tour-bar.in-box .hint-check:not([hidden]) { flex: 1 1 100%; order: -1; }   /* in der Blase: Haken in eigener Zeile über Skip / Schritt / Knopf */

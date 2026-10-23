@@ -2931,6 +2931,8 @@ function tipOff(key) { try { return localStorage.getItem(key) === "1"; } catch {
 function setTipOff(key) { try { localStorage.setItem(key, "1"); } catch { /* ignorieren */ } }
 const PLAY_HINT_KEY = "ttg-hint-play-v1";
 const TOUR_KEY = "ttg-hint-game-tour-v1";
+// alle Tipps und Rundgänge (für "Skip all"); die Konstanten weiter unten werden erst beim Klick gelesen
+const ALL_TIP_KEYS = ["ttg-hint-flip-v1", "ttg-hint-play-v1", "ttg-hint-game-tour-v1", "ttg-hint-welcome-v1", "ttg-hint-troupes-tour-v1", "ttg-hint-editor-tour-v1", "ttg-hint-setup-tour-v1"];
 const isPhoneLayout = () => window.matchMedia && window.matchMedia("(max-width: 719.98px)").matches;
 
 // Handy: Sprechblase über dem runden Play-Knopf, sobald die Troupe zum ersten Mal vollständig ist
@@ -3061,6 +3063,11 @@ function runTour(key, allSteps, { once = false } = {}) {
   const check = el("input", { type: "checkbox", id: "tour-off" });
   const checkLabel = el("label", { class: "hint-check", for: "tour-off" }, check, "Don't show this again");
   const nextBtn = el("button", { type: "button", class: "tour-next" });
+  // "Skip all": dieser und alle anderen Rundgänge und Tipps erscheinen nie mehr
+  const skipBtn = el("button", { type: "button", class: "tour-skip", text: "Skip all", onclick: () => {
+    for (const k of ALL_TIP_KEYS) { setTipOff(k); try { localStorage.removeItem(`${k}-at`); } catch { /* ignorieren */ } }
+    end();
+  } });
   // Mit Maus (Desktop): Schrittzahl und "Next tip" direkt in der Sprechblase; auf dem Handy als Leiste am Bildschirmrand
   const inBox = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   // Reihenfolge: Haken links, Schrittzahl und Knopf rechts (mit dem rechten Daumen gut erreichbar)
@@ -3099,7 +3106,9 @@ function runTour(key, allSteps, { once = false } = {}) {
     const r0 = targetsOf(step)[0].getBoundingClientRect();
     const barIntoBox = inBox || r0.bottom > window.innerHeight - 110;
     bar.classList.toggle("in-box", barIntoBox);
-    box.replaceChildren(...[el("p", {}, ...step.text()), barIntoBox ? bar : null].filter(Boolean));   // ohne Leiste kein "null" einfügen
+    // "Skip all" steht immer in der Sprechblase: in der Leiste links, wenn die Leiste in der Blase ist, sonst in einer eigenen Zeile
+    if (barIntoBox) bar.prepend(skipBtn);
+    box.replaceChildren(...[el("p", {}, ...step.text()), barIntoBox ? bar : el("div", { class: "tour-skip-row" }, skipBtn)].filter(Boolean));   // ohne Leiste kein "null" einfügen
     if (!barIntoBox && bar.parentElement !== layer) layer.append(bar);
     count.textContent = `${index + 1}/${steps.length}`;
     nextBtn.textContent = last ? "Got it" : "Next tip";
