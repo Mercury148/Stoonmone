@@ -3063,7 +3063,8 @@ function runTour(key, allSteps, { once = false } = {}) {
   const nextBtn = el("button", { type: "button", class: "tour-next" });
   // Mit Maus (Desktop): Schrittzahl und "Next tip" direkt in der Sprechblase; auf dem Handy als Leiste am Bildschirmrand
   const inBox = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-  const bar = el("div", { class: inBox ? "tour-bar in-box" : "tour-bar" }, count, checkLabel, nextBtn);
+  // Reihenfolge: Haken links, Schrittzahl und Knopf rechts (mit dem rechten Daumen gut erreichbar)
+  const bar = el("div", { class: inBox ? "tour-bar in-box" : "tour-bar" }, checkLabel, count, nextBtn);
   // Unsichtbare Fläche mit Loch: blockiert Klicks auf den abgedunkelten Rest, der hervorgehobene Bereich bleibt bedienbar
   const shade = el("div", { class: "tour-shade" });
   const layer = el("div", { class: "tour-layer" }, shade, spot, box, inBox ? null : bar);
@@ -3083,11 +3084,9 @@ function runTour(key, allSteps, { once = false } = {}) {
     box.style.width = `${width}px`;
     box.style.left = `${left}px`;
     box.style.setProperty("--arrow-x", `${Math.min(Math.max(18, r.left + r.width / 2 - left), width - 18)}px`);
-    // Liegt der Bereich ganz unten (z. B. die Reiter), wandert die Leiste mit "Next tip" nach oben
-    if (!inBox) bar.classList.toggle("top", r.bottom > vh - bar.offsetHeight - 8);
-    const barRect = bar.getBoundingClientRect();
-    const floor = inBox ? vh : bar.classList.contains("top") ? vh : barRect.top;
-    const ceiling = !inBox && bar.classList.contains("top") ? barRect.bottom : 0;
+    const barInBox = box.contains(bar);
+    const floor = barInBox ? vh : bar.getBoundingClientRect().top;
+    const ceiling = 0;
     const below = r.bottom + pad + 14 + box.offsetHeight < floor - 8;
     box.classList.toggle("above", !below);
     box.style.top = below ? `${r.bottom + pad + 14}px` : `${Math.max(ceiling + 8, r.top - pad - 14 - box.offsetHeight)}px`;
@@ -3095,7 +3094,13 @@ function runTour(key, allSteps, { once = false } = {}) {
   const show = () => {
     const step = steps[index];
     const last = !steps.slice(index + 1).some((st) => targetsOf(st).length);
-    box.replaceChildren(el("p", {}, ...step.text()), inBox ? bar : null);
+    // Handy: Leiste unten am Rand. Liegt der Bereich selbst ganz unten (z. B. die Reiter), kommt die Leiste in die
+    // Sprechblase direkt darüber, statt an den oberen Rand (dort wäre sie mit dem Daumen schlecht zu erreichen)
+    const r0 = targetsOf(step)[0].getBoundingClientRect();
+    const barIntoBox = inBox || r0.bottom > window.innerHeight - 110;
+    bar.classList.toggle("in-box", barIntoBox);
+    box.replaceChildren(...[el("p", {}, ...step.text()), barIntoBox ? bar : null].filter(Boolean));   // ohne Leiste kein "null" einfügen
+    if (!barIntoBox && bar.parentElement !== layer) layer.append(bar);
     count.textContent = `${index + 1}/${steps.length}`;
     nextBtn.textContent = last ? "Got it" : "Next tip";
     checkLabel.hidden = !last || once;

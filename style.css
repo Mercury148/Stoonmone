@@ -1819,11 +1819,12 @@ html.touring, html.touring body { overflow: hidden; }
   background: var(--surface);
   border-top: 1px solid var(--line);
 }
-.tour-bar.top { top: 0; bottom: auto; border-top: 0; border-bottom: 1px solid var(--line); padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); padding-bottom: 0.75rem; }
-.tour-count { color: var(--muted); font-variant-numeric: tabular-nums lining-nums; min-width: 2.5rem; }
+/* Schrittzahl und Knopf rechts beieinander (rechter Daumen), der Haken links */
+.tour-count { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums lining-nums; text-align: right; }
 .tour-bar .hint-check { flex: 1; }
+.tour-bar .hint-check:not([hidden]) + .tour-count { margin-left: 0; }
 .tour-bar .hint-check[hidden] { display: none; }
-.tour-next { margin-left: auto; }
+.tour-bar:not(.in-box) .tour-next { min-height: 52px; padding: 0.6rem 1.5rem; }   /* Handy: großer Knopf für den Daumen */
 @media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } .tip-pulse { animation: none; } }
 
 /* Desktop (Maus): Schrittzahl, Haken und "Next tip" in der Sprechblase statt am unteren Rand */
@@ -1834,3 +1835,4 @@ html.touring, html.touring body { overflow: hidden; }
 /* Rundgang wartet, während man sich das Ergebnis einer Aktion ansieht: unsichtbar und durchlässig */
 .tour-layer.tour-waiting { opacity: 0; transition: opacity 0.2s ease; }
 .tour-layer.tour-waiting, .tour-layer.tour-waiting > * { pointer-events: none !important; }
+@media (pointer: coarse) { .tour-bar.in-box .tour-next { min-height: 46px; padding: 0.5rem 1.3rem; } }   /* Handy, Leiste in der Sprechblase: trotzdem gut zu treffen */
