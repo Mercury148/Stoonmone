@@ -1768,7 +1768,10 @@ body { font-variant-numeric: lining-nums; }
 
 /* Rundgang durch die Gameview: dunkle Ebene mit Ausschnitt um den erklärten Bereich */
 html.touring, html.touring body { overflow: hidden; }
-.tour-layer { position: fixed; inset: 0; z-index: 30; }
+.tour-layer { position: fixed; inset: 0; z-index: 30; pointer-events: none; }
+.tour-layer > * { pointer-events: auto; }
+.tour-layer > .tour-spot { pointer-events: none; }
+.tour-shade { position: fixed; inset: 0; }   /* Loch für den hervorgehobenen Bereich setzt app.js (clip-path) */
 .tour-spot {
   position: fixed;
   border-radius: 12px;
@@ -1776,7 +1779,7 @@ html.touring, html.touring body { overflow: hidden; }
   outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
   outline-offset: 2px;
   pointer-events: none;
-  transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
+  transition: left 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), height 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .tour-box {
   position: fixed;

@@ -2890,7 +2890,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { do
   };
   document.addEventListener("touchstart", (e) => {
     start = null;
-    if (e.touches.length !== 1 || document.querySelector("dialog[open]")) return;
+    if (e.touches.length !== 1 || document.querySelector("dialog[open], .tour-layer")) return;   // nicht während eines Fensters oder Rundgangs
     if (!TAB_ORDER.includes(currentView())) return;
     const t = e.touches[0];
     if (t.clientX < 16 || t.clientX > window.innerWidth - 16) return;   // Bildschirmrand: dort liegt die Zurück-Geste des Systems
@@ -3019,6 +3019,8 @@ function startSetupTour() {
   ]);
 }
 
+const reduceMotion = () => Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
 // Rundgang: der erklärte Bereich wird hervorgehoben, daneben eine Infobox mit Pfeil,
 // unten Schritt x/y und "Next tip"; im letzten Schritt "Don't show this again".
 // target darf auch eine Liste von Elementen liefern: dann wird der Bereich um alle zusammen hervorgehoben.
@@ -3036,7 +3038,7 @@ function runTour(key, allSteps, { once = false } = {}) {
   if (!steps.length) return;
   tipsShown.add(key);
 
-  const spot = el("div", { class: "tour-spot" });
+  const spot = el("div", { class: "tour-spot", style: "transition: none" });
   const box = el("div", { class: "tour-box", role: "dialog", "aria-live": "polite" });
   const count = el("span", { class: "tour-count" });
   const check = el("input", { type: "checkbox", id: "tour-off" });
@@ -3045,7 +3047,9 @@ function runTour(key, allSteps, { once = false } = {}) {
   // Mit Maus (Desktop): Schrittzahl und "Next tip" direkt in der Sprechblase; auf dem Handy als Leiste am Bildschirmrand
   const inBox = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const bar = el("div", { class: inBox ? "tour-bar in-box" : "tour-bar" }, count, checkLabel, nextBtn);
-  const layer = el("div", { class: "tour-layer" }, spot, box, inBox ? null : bar);
+  // Unsichtbare Fläche mit Loch: blockiert Klicks auf den abgedunkelten Rest, der hervorgehobene Bereich bleibt bedienbar
+  const shade = el("div", { class: "tour-shade" });
+  const layer = el("div", { class: "tour-layer" }, shade, spot, box, inBox ? null : bar);
   let index = 0;
 
   const place = () => {
@@ -3053,6 +3057,8 @@ function runTour(key, allSteps, { once = false } = {}) {
     const r = rectOf(steps[index]);
     const pad = 6;
     Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + 2 * pad}px`, height: `${r.height + 2 * pad}px` });
+    const [l, t, rr, bb] = [r.left - pad, r.top - pad, r.right + pad, r.bottom + pad].map((v) => `${Math.round(v)}px`);
+    shade.style.clipPath = `polygon(evenodd, 0 0, 100% 0, 100% 100%, 0 100%, 0 0, ${l} ${t}, ${rr} ${t}, ${rr} ${bb}, ${l} ${bb}, ${l} ${t})`;
     // Infobox unter dem Bereich, wenn dort Platz ist, sonst darüber; der Pfeil zeigt auf die Mitte des Bereichs
     const vw = window.innerWidth, vh = window.innerHeight;
     const width = Math.min(320, vw - 32);
@@ -3077,20 +3083,45 @@ function runTour(key, allSteps, { once = false } = {}) {
     nextBtn.textContent = last ? "Got it" : "Next tip";
     checkLabel.hidden = !last || once;
     targetsOf(step)[0].scrollIntoView({ block: "center", behavior: "auto" });
-    requestAnimationFrame(place);
+    requestAnimationFrame(() => {
+      place();
+      requestAnimationFrame(() => { spot.style.transition = ""; });   // erst ab dem zweiten Schritt gleitet die Markierung
+      // Ganz dezenter Übergang: die Sprechblase blendet leicht verschoben ein, die Markierung gleitet (siehe .tour-spot in style.css)
+      if (!reduceMotion()) {
+        const from = box.classList.contains("above") ? "4px" : "-4px";
+        box.animate([{ opacity: 0, transform: `translateY(${from})` }, { opacity: 1, transform: "none" }], { duration: 260, easing: "ease-out" });
+      }
+    });
   };
   const end = () => {
     if (check.checked || once) setTipOff(key);
-    layer.remove();
+    // sanft ausblenden; während dessen nimmt die Ebene keine Klicks mehr an
+    layer.style.pointerEvents = "none";
+    for (const part of layer.children) part.style.pointerEvents = "none";
+    if (!reduceMotion()) layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: "ease-in", fill: "forwards" }).finished.then(() => layer.remove(), () => layer.remove());
+    else layer.remove();
     document.documentElement.classList.remove("touring");
     window.removeEventListener("resize", place);
+    document.removeEventListener("click", onAction, true);
   };
-  nextBtn.addEventListener("click", () => {
-    if (index === steps.length - 1) return end();
-    index += 1;
+  // Weiter zum nächsten Schritt, dessen Bereich gerade zu sehen ist (z. B. nach einem Seitenwechsel); sonst Ende
+  const advance = () => {
+    let next = index + 1;
+    while (next < steps.length && !targetsOf(steps[next]).length) next += 1;
+    if (next >= steps.length) return end();
+    index = next;
     show();
-  });
+  };
+  nextBtn.addEventListener("click", advance);
+  // Wer die erklärte Aktion gleich ausführt (z. B. auf ein Portrait tippt), kommt damit auch weiter, wie mit "Next tip"/"Got it"
+  const onAction = (e) => {
+    if (!layer.isConnected || layer.contains(e.target)) return;
+    if (!targetsOf(steps[index]).some((t) => t.contains(e.target))) return;
+    setTimeout(advance, 0);   // erst die Aktion selbst, dann weiter
+  };
+  document.addEventListener("click", onAction, true);
   document.body.append(layer);
+  if (!reduceMotion()) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });   // Rundgang blendet sanft ein
   document.documentElement.classList.add("touring");
   window.addEventListener("resize", place);
   show();
