@@ -20,6 +20,37 @@
 </head>
 <body>
 
+  <!-- Hintergrund in den freien Rändern (nur breite Bildschirme): ein Schreibtisch, auf dem sich jemand
+       auf die Reise nach Tauber vorbereitet. Lage: --x/--y/--w in % der Randspalte, --r in Grad (siehe style.css).
+       Weiter unten stehende Blätter liegen oben. -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="backdrop-side backdrop-left">
+      <img src="images/backdrop/sketch-knight.webp" style="--x:0;--y:3;--w:36;--r:-9" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/map-tauber.webp" style="--x:9;--y:8;--w:84;--r:-2" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-mount-skull.webp" style="--x:50;--y:8;--w:38;--r:-87" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-duchess.webp" style="--x:2;--y:60;--w:56;--r:-6" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-troll.webp" style="--x:63;--y:71;--w:34;--r:6" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/wanted-girl.webp" style="--x:55;--y:65;--w:46;--r:7" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/ad-toodles.webp" style="--x:18;--y:79;--w:50;--r:-4" alt="" loading="lazy" decoding="async" draggable="false">
+    </div>
+    <div class="backdrop-side backdrop-right">
+      <img src="images/backdrop/family-tree-stormguard.webp" style="--x:48;--y:1;--w:55;--r:6" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/ad-circus.webp" style="--x:2;--y:3;--w:56;--r:-7" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-mortician.webp" style="--x:1;--y:20;--w:40;--r:4" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-crone.webp" style="--x:72;--y:18;--w:28;--r:-6" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/ad-gertrude.webp" style="--x:22;--y:27;--w:52;--r:-2" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/notice-rogues.webp" style="--x:52;--y:37;--w:48;--r:-5" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-faun.webp" style="--x:2;--y:39;--w:38;--r:-11" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-skull-mask.webp" style="--x:40;--y:46;--w:30;--r:4" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-fairy.webp" style="--x:55;--y:58;--w:42;--r:9" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/sketch-teapot.webp" style="--x:2;--y:59;--w:36;--r:-10" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/wanted-pirate.webp" style="--x:34;--y:64;--w:38;--r:-3" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/notice-apothecary.webp" style="--x:-3;--y:81;--w:46;--r:5" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/family-tree-de-faulte.webp" style="--x:32;--y:80;--w:42;--r:-4" alt="" loading="lazy" decoding="async" draggable="false">
+      <img src="images/backdrop/notice-pawnshop.webp" style="--x:58;--y:88;--w:42;--r:-8" alt="" loading="lazy" decoding="async" draggable="false">
+    </div>
+  </div>
+
   <header class="topbar">
     <h1>
       <span class="logo-wrap" aria-hidden="true"><img class="logo logo-moon" src="images/moon.webp" alt="" draggable="false"></span>

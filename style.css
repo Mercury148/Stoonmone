@@ -24,6 +24,10 @@
   --accent-fg: #ffffff;
   --accent-soft: #f0e3bd;
   --danger: #a3262a;
+  /* Schatten unter allen Flächen der App (hebt sie vom Hintergrund ab): Farbe, naher und weicher Anteil */
+  --shadow-rgb: 20 16 10;
+  --shadow-near: 0.12;
+  --shadow-far: 0.17;
 
   /* Fraktionsfarbe = Farbton (--h, kommt aus der JSON) + Sättigung + Helligkeit */
   --portrait-bg: #383838;   /* neutraler Hintergrund hinter den (transparenten) Charakter-Portraits */
@@ -57,6 +61,9 @@
     --accent-fg: #1a1608;
     --accent-soft: #3a3322;
     --danger: #ff8a8d;
+    --shadow-rgb: 0 0 0;
+    --shadow-near: 0.5;
+    --shadow-far: 0.5;
     --fac-l: 62%;
     --portrait-fg: #10121a;
     color-scheme: dark;
@@ -73,6 +80,9 @@
   --accent-fg: #1a1608;
   --accent-soft: #3a3322;
   --danger: #ff8a8d;
+  --shadow-rgb: 0 0 0;
+  --shadow-near: 0.5;
+  --shadow-far: 0.5;
   --fac-l: 62%;
   --portrait-fg: #10121a;
   color-scheme: dark;
@@ -103,6 +113,94 @@ body {
 body.editing { padding-block-end: calc(2rem + var(--safe-b)); }
 
 main, .topbar { max-width: 62rem; margin-inline: auto; }
+
+/* ---------- Hintergrund in den Rändern: Reisevorbereitung auf dem Schreibtisch ----------
+   Links die Karte von Tauber, rechts liegen Zeitungsausschnitte, Aushänge und Skizzen durcheinander.
+   Erst ab 88rem Breite, dann ist neben dem Inhalt (62rem) auf jeder Seite genug Platz.
+   Auf dem Handy bleibt alles aus, die Bilder werden dort auch nicht geladen (loading="lazy").
+   Lage jedes Blatts steht in index.html: --x/--y = linke obere Ecke in % der Randspalte,
+   --w = Breite in % der Spalte, --r = Drehung in Grad. Spätere Blätter liegen oben. */
+.backdrop { display: none; }
+@media (min-width: 88rem) {
+  .backdrop {
+    --margin: calc((100vw - 62rem) / 2);   /* freier Rand neben dem Inhalt */
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    /* entsättigt und blasser, damit der Schreibtisch hinter dem Inhalt zurücktritt */
+    opacity: 0.72;
+    filter: saturate(0.4) contrast(0.85);
+  }
+  .backdrop-side {
+    position: absolute;
+    top: 0;
+    bottom: 4rem;   /* darunter liegt die untere Leiste */
+    width: calc(var(--margin) - 1.5rem);
+  }
+  .backdrop-left { left: 0; }
+  .backdrop-right { right: 0; }
+  .backdrop img {
+    position: absolute;
+    left: calc(var(--x) * 1%);
+    top: calc(var(--y) * 1%);
+    width: calc(var(--w) * 1%);
+    height: auto;
+    rotate: calc(var(--r) * 1deg);
+    filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.3)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.22));
+  }
+}
+/* Dunkel: alles abgedunkelt, damit das helle Papier nicht blendet */
+@media (min-width: 88rem) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .backdrop { opacity: 1; filter: brightness(0.42) saturate(0.35) contrast(0.9); }
+}
+@media (min-width: 88rem) {
+  :root[data-theme="dark"] .backdrop { opacity: 1; filter: brightness(0.42) saturate(0.35) contrast(0.9); }
+}
+
+/* Alle Flächen der App liegen mit einem dunklen Schatten über dem Hintergrund.
+   Der weiche Anteil wabert leicht: Versatz (--sh-x/--sh-y), Unschärfe (--sh-b) und Stärke (--sh-a) werden animiert.
+   @property macht diese Werte animierbar; ohne Unterstützung bleibt der Schatten einfach still. */
+@property --sh-x { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --sh-y { syntax: "<length>"; inherits: false; initial-value: 6px; }
+@property --sh-b { syntax: "<length>"; inherits: false; initial-value: 18px; }
+@property --sh-a { syntax: "<number>"; inherits: false; initial-value: 1; }
+.filter-box, .keyword-box, .card, .troupe-card, .new-wrap.as-card, .tile, .slot-portrait, .slot-empty,
+.share, .rule-section, .summon-menu > summary, dialog {
+  box-shadow:
+    0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)),
+    var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
+}
+.filter-box .keyword-box { box-shadow: none; }   /* liegt schon in der Filterbox */
+.tabs { box-shadow: 0 -1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)), 0 -4px 16px rgb(var(--shadow-rgb) / var(--shadow-far)); }
+
+/* Wabern nur am Rechner (Maus) und ohne "Bewegung reduzieren": spart auf dem Handy Akku.
+   Unterschiedliche Dauer, Verzögerung und Richtung je Position, damit nicht alle Schatten im Gleichtakt atmen. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  /* :not(...): kurze Hinweis-Animationen (Aufblitzen bei Suchtreffern) nicht überschreiben */
+  :is(.filter-box, .card, .troupe-card, .new-wrap.as-card, .tile, .slot-portrait, .slot-empty, .share, .rule-section):not(.flash, .hit-flash) {
+    animation: shadow-drift 11s ease-in-out -3s infinite alternate;
+  }
+  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(3n) { animation-duration: 14s; animation-delay: -9s; }
+  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(3n + 1) { animation-duration: 9s; animation-delay: -1s; }
+  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(5n) { animation-direction: alternate-reverse; }
+  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(7n + 2) { animation-duration: 17s; animation-delay: -12s; }
+  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(4n + 3) { animation-name: shadow-drift-2; }
+}
+@keyframes shadow-drift {
+  0%   { --sh-x: 0px;  --sh-y: 6px;  --sh-b: 18px; --sh-a: 1; }
+  30%  { --sh-x: 3px;  --sh-y: 9px;  --sh-b: 23px; --sh-a: 1.15; }
+  55%  { --sh-x: -2px; --sh-y: 5px;  --sh-b: 15px; --sh-a: 0.88; }
+  80%  { --sh-x: -4px; --sh-y: 10px; --sh-b: 25px; --sh-a: 1.1; }
+  100% { --sh-x: 1px;  --sh-y: 7px;  --sh-b: 19px; --sh-a: 0.95; }
+}
+@keyframes shadow-drift-2 {
+  0%   { --sh-x: -2px; --sh-y: 8px;  --sh-b: 21px; --sh-a: 1.05; }
+  35%  { --sh-x: 2px;  --sh-y: 5px;  --sh-b: 16px; --sh-a: 0.9; }
+  65%  { --sh-x: 4px;  --sh-y: 10px; --sh-b: 24px; --sh-a: 1.18; }
+  100% { --sh-x: -1px; --sh-y: 6px;  --sh-b: 17px; --sh-a: 0.97; }
+}
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
