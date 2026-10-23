@@ -1836,3 +1836,40 @@ html.touring, html.touring body { overflow: hidden; }
 .tour-layer.tour-waiting { opacity: 0; transition: opacity 0.2s ease; }
 .tour-layer.tour-waiting, .tour-layer.tour-waiting > * { pointer-events: none !important; }
 @media (pointer: coarse) { .tour-bar.in-box .tour-next { min-height: 46px; padding: 0.5rem 1.3rem; } }   /* Handy, Leiste in der Sprechblase: trotzdem gut zu treffen */
+
+/* Mond aus dem Dominion-Wappen als Logo in der Titelzeile (nur die Sichel, ohne den Rest der Scheibe) */
+.logo-moon { position: relative; display: block; width: auto; height: 2.06rem; object-fit: contain; -webkit-user-drag: none; user-select: none; }
+/* Sanftes blaues Leuchten HINTER dem Mond, in der Farbe des Dominion-Wappens (wie der Schein hinter den Wappen im Filter).
+   Es pulsiert langsam (Helligkeit und Größe) und flackert dabei leicht; krumme Dauern, damit sich nichts erkennbar wiederholt */
+.logo-wrap { position: relative; isolation: isolate; display: inline-grid; place-items: center; margin-right: -0.1rem; --h: 210; --fac-s: 38%; }
+.logo-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 3.4rem;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(var(--swell));
+  background: radial-gradient(circle,
+    hsl(var(--h) var(--fac-s) var(--fac-l) / calc(0.3 * var(--pulse))) 0%,
+    hsl(var(--h) var(--fac-s) var(--fac-l) / calc(0.12 * var(--pulse))) 45%,
+    transparent 70%);
+  animation: crest-pulse 5.3s ease-in-out infinite, crest-swell 7.1s ease-in-out infinite, moon-flicker 3.7s linear infinite;
+  pointer-events: none;
+}
+@keyframes moon-flicker {
+  0%, 100% { opacity: 1; }
+  6% { opacity: 0.86; }
+  8% { opacity: 1; }
+  31% { opacity: 0.93; }
+  33% { opacity: 0.8; }
+  35% { opacity: 0.97; }
+  58% { opacity: 1; }
+  61% { opacity: 0.88; }
+  64% { opacity: 1; }
+  83% { opacity: 0.9; }
+  86% { opacity: 0.99; }
+}
+@media (prefers-reduced-motion: reduce) { .logo-wrap::before { animation: none; } }
