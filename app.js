@@ -2870,9 +2870,37 @@ new MutationObserver(fitAllText).observe(document.body, { childList: true, subtr
 window.addEventListener("resize", fitAllText);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { document.querySelectorAll(FIT_SELECTOR).forEach((n) => delete n.dataset.fit); fitAllText(); });
 
-// Kein Zoomen mit zwei Fingern: Safari auf iPhone/iPad ignoriert "user-scalable=no" im viewport, deshalb hier zusätzlich
-for (const type of ["gesturestart", "gesturechange", "gestureend"]) document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
-document.addEventListener("touchmove", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+// Wischen zwischen den Seiten (Handy): nach links = nächster Reiter (Compendium → Troupes → Rules → FAQs), nach rechts = vorheriger.
+// Nur auf diesen vier Seiten und ohne geöffnetes Fenster; nicht in Eingabefeldern und nicht in Bereichen, die selbst seitlich scrollen.
+// Deutlich waagerecht und zügig, damit normales Scrollen nach oben/unten keinen Seitenwechsel auslöst.
+{
+  let start = null;
+  const scrollsSideways = (node) => {
+    for (let n = node; n && n !== document.body; n = n.parentElement) {
+      if (n.scrollWidth > n.clientWidth + 1 && /(auto|scroll)/.test(getComputedStyle(n).overflowX)) return true;
+    }
+    return false;
+  };
+  document.addEventListener("touchstart", (e) => {
+    start = null;
+    if (e.touches.length !== 1 || document.querySelector("dialog[open]")) return;
+    if (!TAB_ORDER.includes(currentView())) return;
+    const t = e.touches[0];
+    if (t.clientX < 16 || t.clientX > window.innerWidth - 16) return;   // Bildschirmrand: dort liegt die Zurück-Geste des Systems
+    if (e.target.closest("input, textarea, select") || scrollsSideways(e.target)) return;
+    start = { x: t.clientX, y: t.clientY, time: Date.now() };
+  }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    if (!start || (window.visualViewport && window.visualViewport.scale > 1.01)) { start = null; return; }   // gezoomt: Wischen verschiebt nur
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x, dy = t.clientY - start.y;
+    const quick = Date.now() - start.time < 600;
+    start = null;
+    if (!quick || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    const next = TAB_ORDER[TAB_ORDER.indexOf(currentView()) + (dx < 0 ? 1 : -1)];
+    if (next) document.querySelector(`[role=tab][data-tab="${next}"]`).click();
+  }, { passive: true });
+}
 
 // Bilder (auch die Charakterkarten) lassen sich nicht herausziehen
 document.addEventListener("dragstart", (e) => { if (e.target instanceof HTMLImageElement) e.preventDefault(); });
