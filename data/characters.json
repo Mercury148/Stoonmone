@@ -743,7 +743,7 @@
       "name": "Joanna, Nordic Princess",
       "factions": ["commonwealth"],
       "keywords": ["Gnome","Norse","Noble"],
-      "synergies": [],
+      "synergies": ["Wooden Patch"],
       "health": [1,1,0,1,0,0,0],
       "image": "portraits/joanna.webp",
       "card": "images/Joanna_Nordic_Princess_front.webp",
