@@ -851,6 +851,11 @@ dialog.card-view {
   border: 0;
 }
 dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
+/* Geöffnete Karte: die Seite dahinter scrollt nicht mit, und der Browser verschiebt nichts beim Wischen.
+   So kommt jedes Wischen nach links/rechts beim Blättern an. Zoomen mit zwei Fingern bleibt möglich. */
+html:has(dialog.card-view[open]), html:has(dialog.card-view[open]) body { overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; }
+dialog.card-view { touch-action: pinch-zoom; overscroll-behavior: contain; }
+dialog.card-view * { touch-action: pinch-zoom; }
 .card-view .detail { padding: 0; gap: 0.75rem; justify-items: center; }
 
 .card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.9rem; }
@@ -881,6 +886,18 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   height: 100%;
   object-fit: fill;
 }
+
+/* Knöpfe unter der Karte: Zoom (nur am Computer) und Schließen */
+.card-buttons { display: flex; gap: 0.6rem; justify-content: center; width: 75%; }
+.card-buttons .card-close { flex: 1; width: auto; }
+.card-zoom { display: none; flex: 1; min-height: 56px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); font-size: 1.1rem; }
+.card-zoom[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+@media (hover: hover) and (pointer: fine) {
+  .card-zoom { display: block; }
+  .card-buttons { width: min(100%, 22rem); }
+}
+/* Vergrößert: so groß, wie die Fensterhöhe es zulässt (Platz für die Knöpfe bleibt) */
+dialog.card-view.zoomed { width: min(calc((100dvh - 9rem) / 1.4), calc(100vw - 2rem)); }
 
 .card-close {
   width: 75%;
@@ -1003,6 +1020,7 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
   background: none;
 }
 .gcell-name { font: 690 0.6rem/1.15 var(--font-display); text-align: center; overflow-wrap: anywhere; min-height: 3.5em; }
+.gcell-portrait, .gcell-name { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }   /* Halten öffnet die Karte, ohne Text zu markieren */
 /* Name als Knopf zum Öffnen der Karte: sieht aus wie der normale Name */
 button.gcell-open { display: block; width: 100%; padding: 0; background: none; color: var(--fg); border-radius: 4px; }
 
@@ -1084,7 +1102,29 @@ button.gcell-open { display: block; width: 100%; padding: 0; background: none; c
   animation-delay: var(--d, 0ms);
 }
 .hbox.fill::before { transform: translateY(0); animation-name: hbox-rise, hbox-wave; animation-timing-function: ease-out, linear; }
-.hbox.drain::before { transform: translateY(100%); animation-name: hbox-sink, hbox-wave; animation-timing-function: ease-in-out, linear; }
+/* Heilen: ein sehr helles, entsättigtes Leshavult-Grün steigt von unten über das Rot, danach blendet es aus
+   und das Kästchen zeigt seine normale Farbe (Dauer = HBOX_HEAL_MS in app.js) */
+.hbox.drain { animation-duration: 0.9s; animation-name: hbox-rim-heal, hbox-red-off; animation-timing-function: ease-in-out, linear; }
+.hbox.drain::before {
+  transform: translateY(100%);
+  animation-duration: 0.9s;
+  animation-name: hbox-heal, hbox-wave;
+  animation-timing-function: ease-out, linear;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 26' preserveAspectRatio='none'%3E%3Cpath d='M0 4 Q5 0 10 4 T20 4 V26 H0Z' fill='%23cedbc7'/%3E%3C/svg%3E") 0 0 / 0.5rem 100% repeat-x,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 26' preserveAspectRatio='none'%3E%3Cpath d='M0 5 Q5 2 10 5 T20 5 V26 H0Z' fill='%23cedbc7'/%3E%3C/svg%3E") 0 0 / 0.33rem 100% repeat-x;
+}
+@keyframes hbox-heal {
+  0% { transform: translateY(100%); opacity: 1; }
+  60% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+/* Das Rot bleibt unter dem steigenden Grün, bis es ganz bedeckt ist */
+@keyframes hbox-red-off {
+  0%, 59% { background-image: linear-gradient(#d94141, #d94141); }
+  60%, 100% { background-image: none; }
+}
+@keyframes hbox-rim-heal { 0% { border-color: #d94141; } 60% { border-color: #cedbc7; } 100% { border-color: var(--rim); } }
 @keyframes hbox-rise { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes hbox-sink { from { transform: translateY(0); } to { transform: translateY(100%); } }
 @keyframes hbox-wave { from { background-position: 0 0, 0 0; } to { background-position: -1rem 0, 0.66rem 0; } }

@@ -1289,6 +1289,9 @@ function buildFlipHint() {
   return box;
 }
 
+let cardZoomed = false;   // vergrößerte Karte; bleibt beim Blättern erhalten, beim Schließen zurückgesetzt
+$("#detail").addEventListener("close", () => { cardZoomed = false; $("#detail").classList.remove("zoomed"); });
+
 function openCardView(c) {
   const hasBack = Boolean(c.cardBack);
   let hint = hasBack && !hintDisabled() && !hintShownThisSession ? buildFlipHint() : null;
@@ -1321,10 +1324,20 @@ function openCardView(c) {
     el("div", { class: "detail card-wrap" },
       side,
       el("div", { class: "card-stage" }, card, hint),
-      el("button", { class: "card-close", type: "button", text: "Close", onclick: () => $("#detail").close() })
+      el("div", { class: "card-buttons" },
+        // Zoom (nur am Computer sichtbar, siehe style.css): Karte so groß, wie das Fenster es zulässt
+        el("button", { class: "card-zoom", type: "button", text: cardZoomed ? "Zoom out" : "Zoom", "aria-pressed": String(cardZoomed), onclick: (e) => {
+          cardZoomed = !cardZoomed;
+          $("#detail").classList.toggle("zoomed", cardZoomed);
+          e.currentTarget.textContent = cardZoomed ? "Zoom out" : "Zoom";
+          e.currentTarget.setAttribute("aria-pressed", String(cardZoomed));
+        } }),
+        el("button", { class: "card-close", type: "button", text: "Close", onclick: () => $("#detail").close() })
+      )
     )
   );
   $("#detail").classList.add("card-view");
+  $("#detail").classList.toggle("zoomed", cardZoomed);
   if (!$("#detail").open) $("#detail").showModal();
 }
 
@@ -1626,6 +1639,7 @@ function tileFor(c, selected, onclick, extraClass = "") {
 // Lebenspunkte beim letzten Zeichnen und laufende Kästchen-Animationen, je Modell-Eintrag des Spiels (neues Spiel = neue Einträge).
 // Wird während einer Animation neu gezeichnet (schnelles Klicken), läuft sie mit negativer Verzögerung an derselben Stelle weiter.
 const HBOX_ANIM_MS = 600;
+const HBOX_HEAL_MS = 900;   // Heilen dauert etwas länger (grünes Füllen, dann normale Farbe), siehe style.css
 const healthAnim = new WeakMap();   // Modell-Eintrag → { remaining, boxes: Map(Index → { kind: "fill" | "drain", start }) }
 
 function hboxAnimations(m, remaining) {
@@ -1639,11 +1653,13 @@ function hboxAnimations(m, remaining) {
     const kind = i >= remaining ? "fill" : "drain";
     const old = track.boxes.get(i);
     // Umkehr mitten in einer Animation: beim aktuellen Füllstand weitermachen statt neu von leer/voll zu beginnen
-    const left = old && old.kind !== kind ? Math.max(0, HBOX_ANIM_MS - (now - old.start)) : 0;
+    // (Wunde ↔ Heilen haben unterschiedliche Dauer: der bereits gelaufene Anteil wird umgerechnet)
+    const dur = (k) => (k === "drain" ? HBOX_HEAL_MS : HBOX_ANIM_MS);
+    const left = old && old.kind !== kind ? Math.max(0, dur(kind) * (1 - (now - old.start) / dur(old.kind))) : 0;
     track.boxes.set(i, { kind, start: now - left });
   }
   for (const [i, a] of track.boxes) {
-    if (now - a.start >= HBOX_ANIM_MS || (a.kind === "fill") !== (i >= remaining)) track.boxes.delete(i);
+    if (now - a.start >= (a.kind === "drain" ? HBOX_HEAL_MS : HBOX_ANIM_MS) || (a.kind === "fill") !== (i >= remaining)) track.boxes.delete(i);
   }
   return (i) => {
     const a = track.boxes.get(i);
@@ -1702,6 +1718,21 @@ function takeFlash(model, half) {
   return style;
 }
 
+// Portraits der Gameview werden wiederverwendet statt bei jedem Antippen neu erzeugt.
+// Ein neues <img> muss der Browser erst wieder laden und zeichnen, das ließ die Portraits flackern.
+const gamePortraits = new Map();
+function gamePortrait(side, c) {
+  const key = `${side}:${c.id}`;
+  let node = gamePortraits.get(key);
+  if (!node) {
+    node = portraitCard(c);
+    const img = node.querySelector("img");
+    if (img) img.loading = "eager";
+    gamePortraits.set(key, node);
+  }
+  return node;
+}
+
 function gameCell(side, c) {
   const m = gameModel(side, c.id);
   const health = healthOf(c);
@@ -1715,7 +1746,7 @@ function gameCell(side, c) {
   if (twinOf(c) && !sideIds(side).includes(c.id)) {
     return el("div", { class: "gcell unsummoned", "data-char": c.id },
       el("div", { class: "gcell-media" },
-        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: (e) => openDetail(c.id, e.currentTarget) }, portraitCard(c)),
+        el("div", { class: "gcell-portrait", ...cardPress(c, () => {}) }, gamePortrait(side, c)),   // Karte nur per Rechtsklick oder Halten
         el("div", { class: "summon-note", text: "Transformed" })
       ),
       el("div", { class: "gcell-name", text: c.name })
@@ -1727,7 +1758,7 @@ function gameCell(side, c) {
     return el("div", { class: "gcell unsummoned", "data-char": c.id },
       // Der Summon-Knopf liegt auf dem Portrait, die Kachel wird dadurch nicht größer
       el("div", { class: "gcell-media" },
-        el("button", { class: "gcell-portrait", type: "button", "aria-label": `${c.name}: open card`, onclick: (e) => openDetail(c.id, e.currentTarget) }, portraitCard(c)),
+        el("div", { class: "gcell-portrait", ...cardPress(c, () => {}) }, gamePortrait(side, c)),   // Karte nur per Rechtsklick oder Halten
         el("button", { class: "summon-btn", type: "button", text: "Summon", onclick: () => change({ summoned: true, wounds: 0, energy: 0 }) })
       ),
       el("div", { class: "gcell-name", text: c.name })
@@ -1772,13 +1803,14 @@ function gameCell(side, c) {
     : `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:230; --flash-s2:8%; --flash-l2:22%`;
   return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}`, "data-char": c.id },
     el("div", { class: "gcell-media", style: flash, "data-mono": f2 ? null : "1" },
-      el("div", { class: "gcell-portrait" }, portraitCard(c)),
+      el("div", { class: "gcell-portrait" }, gamePortrait(side, c)),
       // Rechtsklick oder Halten auf dem Portrait öffnet die Karte (wie im Troupe Builder), ohne zu heilen oder zu verwunden
       hpButton("up", `${c.name}: heal 1`, heal),
       hpButton("down", `${c.name}: 1 wound`, wound)
     ),
-    // Karte öffnen auch über den Namen
-    el("button", { class: "gcell-name gcell-open", type: "button", text: c.name, "aria-label": `${c.name}: open card`, onclick: (e) => openDetail(c.id, e.currentTarget) }),
+    // Der Name öffnet keine Karte mehr (sonst öffnet sie sich beim schnellen Tippen auf die Lebenspunkte aus Versehen);
+    // die Karte gibt es per Rechtsklick oder Halten auf dem Portrait
+    el("div", { class: "gcell-name", text: c.name }),
     // Transform-Knopf (Anya / Striga Anya) zwischen Name und Lebenspunkten. Ist so ein Modell im Spiel, bekommen alle
     // anderen einen unsichtbaren Platzhalter gleicher Größe: alle Kacheln gleich hoch, Lebenspunkte auf gleicher Höhe
     twinOf(c) ? el("button", { class: "transform-btn transform-inline", type: "button", text: "Transform", "aria-label": `Transform ${c.name} into ${twinOf(c).name}`, onclick: () => transformModel(side, c) })
