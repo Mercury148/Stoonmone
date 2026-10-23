@@ -2870,6 +2870,10 @@ new MutationObserver(fitAllText).observe(document.body, { childList: true, subtr
 window.addEventListener("resize", fitAllText);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { document.querySelectorAll(FIT_SELECTOR).forEach((n) => delete n.dataset.fit); fitAllText(); });
 
+// Kein Zoomen mit zwei Fingern: Safari auf iPhone/iPad ignoriert "user-scalable=no" im viewport, deshalb hier zusätzlich
+for (const type of ["gesturestart", "gesturechange", "gestureend"]) document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+document.addEventListener("touchmove", (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+
 // Bilder (auch die Charakterkarten) lassen sich nicht herausziehen
 document.addEventListener("dragstart", (e) => { if (e.target instanceof HTMLImageElement) e.preventDefault(); });
 

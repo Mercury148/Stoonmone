@@ -1174,7 +1174,13 @@ button.gcell-open { display: block; width: 100%; padding: 0; background: none; c
 
 /* Kein Doppeltipp-Zoom: schnelles mehrfaches Tippen (z. B. auf + und -) soll nicht zoomen.
    Das Zusammenziehen mit zwei Fingern bleibt erlaubt. */
-html, body, button, input, summary { touch-action: manipulation; }
+/* Kein Zoomen per Doppeltippen (z. B. beim schnellen Tippen auf die Wappen); Scrollen und Zoomen mit zwei Fingern bleiben möglich */
+html, body, * { touch-action: manipulation; }
+/* Kein dunkles Aufflackern beim Antippen (Standard-Hervorhebung von Safari/Chrome auf dem Handy) */
+html, body, * { -webkit-tap-highlight-color: transparent; }
+.faction-btn, .faction-btn img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+/* iPhone/iPad: Safari zoomt beim Antippen eines Eingabefelds mit Schrift unter 16 px automatisch hinein */
+@supports (-webkit-touch-callout: none) { input, select, textarea { font-size: max(16px, 1em); } }
 .summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
 /* Format-Auswahl: auf dem Handy eine eigene Zeile unter der Kopfzeile, am Computer rechts neben dem Namen */
