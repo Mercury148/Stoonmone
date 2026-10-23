@@ -2982,7 +2982,7 @@ const EDITOR_TOUR_KEY = "ttg-hint-editor-tour-v1";
 function startEditorTour() {
   if (currentView() !== "editor" || document.querySelector("dialog[open]")) return;
   runTour(EDITOR_TOUR_KEY, [
-    { target: () => $("#editor-format"),
+    { target: () => $("#editor-format"), idle: 4000,   // längere Pause: in Ruhe die Formate ansehen
       text: () => ["Choose the ", el("strong", { text: "format" }), " here: how many models your troupe has and how many of them play in a game."] },
     { target: () => $("#editor-tiles .tile"),
       text: () => ["Tap a model to ", el("strong", { text: "add" }), " it, tap it again to remove it. Press and hold (or right-click) to see its card."] },
@@ -3116,6 +3116,7 @@ function runTour(key, allSteps, { once = false } = {}) {
     window.removeEventListener("resize", place);
     document.removeEventListener("click", onAction, true);
     document.removeEventListener("pointerdown", onTouch, true);
+    document.removeEventListener("change", onTouch, true);
   };
   // Fertig (Got it, letzter Schritt erledigt): Fortschritt löschen, ggf. nie mehr zeigen
   const end = () => {
@@ -3156,7 +3157,8 @@ function runTour(key, allSteps, { once = false } = {}) {
     document.documentElement.classList.remove("touring");
     armIdle();
   };
-  const armIdle = () => { clearTimeout(idleTimer); idleTimer = setTimeout(resume, TOUR_IDLE_MS); };
+  // Wartezeit: pro Schritt einstellbar (idle), sonst TOUR_IDLE_MS
+  const armIdle = () => { clearTimeout(idleTimer); idleTimer = setTimeout(resume, steps[index].idle || TOUR_IDLE_MS); };
   const onTouch = () => { if (waiting) armIdle(); };   // solange weiter getippt wird, warten
   const resume = () => {
     if (!waiting) return;
@@ -3180,6 +3182,7 @@ function runTour(key, allSteps, { once = false } = {}) {
   activeTour = { key, viewChanged: (name) => { if (waiting && name !== startView) pause(index + 1); } };
   document.addEventListener("click", onAction, true);
   document.addEventListener("pointerdown", onTouch, true);
+  document.addEventListener("change", onTouch, true);   // z. B. ein anderes Format gewählt: Pause beginnt von vorn
   document.body.append(layer);
   if (!reduceMotion()) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });   // Rundgang blendet sanft ein
   document.documentElement.classList.add("touring");
