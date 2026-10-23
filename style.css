@@ -1822,3 +1822,8 @@ html.touring, html.touring body { overflow: hidden; }
 .tour-bar .hint-check[hidden] { display: none; }
 .tour-next { margin-left: auto; }
 @media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } .tip-pulse { animation: none; } }
+
+/* Desktop (Maus): Schrittzahl, Haken und "Next tip" in der Sprechblase statt am unteren Rand */
+.tour-bar.in-box { position: static; flex-wrap: wrap; gap: 0.5rem 0.75rem; margin-top: 0.7rem; padding: 0.6rem 0 0; background: none; border: 0; border-top: 1px solid var(--line); }
+.tour-bar.in-box .tour-next { min-height: 38px; padding: 0.35rem 0.9rem; }
+.tour-bar.in-box .hint-check { min-height: 32px; }

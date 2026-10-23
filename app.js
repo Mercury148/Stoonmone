@@ -2616,6 +2616,7 @@ function openEditor(id) {
   $("#editor-name").value = current.name;
   renderEditor();
   showView("editor");
+  setTimeout(startEditorTour, 400);   // erstes Öffnen: kurzer Rundgang
 }
 
 function closeEditor() {
@@ -2640,7 +2641,7 @@ function wireEvents() {
         if (pendingTab !== name) return;
         pendingTab = null;
         showView(name);
-        if (name === "troupes") renderTroupes();
+        if (name === "troupes") { renderTroupes(); setTimeout(startTroupesTour, 400); }   // erster Besuch: kurzer Rundgang
       }, 0));
     });
   }
@@ -2962,6 +2963,32 @@ function startWelcomeTour() {
   ], { once: true });
 }
 
+// Troupes-Übersicht beim ersten Besuch: erstellen, importieren, sichern
+const TROUPES_TOUR_KEY = "ttg-hint-troupes-tour-v1";
+function startTroupesTour() {
+  if (currentView() !== "troupes" || document.querySelector("dialog[open]")) return;
+  runTour(TROUPES_TOUR_KEY, [
+    { target: () => [$("#new-troupe"), $("#import-open")],
+      text: () => [el("strong", { text: "New troupe" }), " creates a troupe. ", el("strong", { text: "Import" }), " adds a troupe someone shared with you."] },
+    { target: () => [$("#backup-export"), $("#backup-import")],
+      text: () => [el("strong", { text: "Back up all troupes" }), " saves them to a file, ", el("strong", { text: "Restore from file" }), " loads them back, e.g. on a new device."] },
+  ], { once: true });
+}
+
+// Troupe Builder beim ersten Öffnen: Format, Modelle hinzufügen, teilen
+const EDITOR_TOUR_KEY = "ttg-hint-editor-tour-v1";
+function startEditorTour() {
+  if (currentView() !== "editor" || document.querySelector("dialog[open]")) return;
+  runTour(EDITOR_TOUR_KEY, [
+    { target: () => $("#editor-format"),
+      text: () => ["Choose the ", el("strong", { text: "format" }), " here: how many models your troupe has and how many of them play in a game."] },
+    { target: () => $("#editor-tiles .tile"),
+      text: () => ["Tap a model to ", el("strong", { text: "add" }), " it, tap it again to remove it. Press and hold (or right-click) to see its card."] },
+    { target: () => $("#copy"),
+      text: () => [el("strong", { text: "Export" }), " shares your troupe as a link or code."] },
+  ], { once: true });
+}
+
 // Rundgang über der Gameview nach dem Spielstart
 function startGameTour() {
   runTour(TOUR_KEY, [
@@ -3015,8 +3042,10 @@ function runTour(key, allSteps, { once = false } = {}) {
   const check = el("input", { type: "checkbox", id: "tour-off" });
   const checkLabel = el("label", { class: "hint-check", for: "tour-off" }, check, "Don't show this again");
   const nextBtn = el("button", { type: "button", class: "tour-next" });
-  const bar = el("div", { class: "tour-bar" }, count, checkLabel, nextBtn);
-  const layer = el("div", { class: "tour-layer" }, spot, box, bar);
+  // Mit Maus (Desktop): Schrittzahl und "Next tip" direkt in der Sprechblase; auf dem Handy als Leiste am Bildschirmrand
+  const inBox = window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const bar = el("div", { class: inBox ? "tour-bar in-box" : "tour-bar" }, count, checkLabel, nextBtn);
+  const layer = el("div", { class: "tour-layer" }, spot, box, inBox ? null : bar);
   let index = 0;
 
   const place = () => {
@@ -3032,10 +3061,10 @@ function runTour(key, allSteps, { once = false } = {}) {
     box.style.left = `${left}px`;
     box.style.setProperty("--arrow-x", `${Math.min(Math.max(18, r.left + r.width / 2 - left), width - 18)}px`);
     // Liegt der Bereich ganz unten (z. B. die Reiter), wandert die Leiste mit "Next tip" nach oben
-    bar.classList.toggle("top", r.bottom > vh - bar.offsetHeight - 8);
+    if (!inBox) bar.classList.toggle("top", r.bottom > vh - bar.offsetHeight - 8);
     const barRect = bar.getBoundingClientRect();
-    const floor = bar.classList.contains("top") ? vh : barRect.top;
-    const ceiling = bar.classList.contains("top") ? barRect.bottom : 0;
+    const floor = inBox ? vh : bar.classList.contains("top") ? vh : barRect.top;
+    const ceiling = !inBox && bar.classList.contains("top") ? barRect.bottom : 0;
     const below = r.bottom + pad + 14 + box.offsetHeight < floor - 8;
     box.classList.toggle("above", !below);
     box.style.top = below ? `${r.bottom + pad + 14}px` : `${Math.max(ceiling + 8, r.top - pad - 14 - box.offsetHeight)}px`;
@@ -3043,7 +3072,7 @@ function runTour(key, allSteps, { once = false } = {}) {
   const show = () => {
     const step = steps[index];
     const last = index === steps.length - 1;
-    box.replaceChildren(el("p", {}, ...step.text()));
+    box.replaceChildren(el("p", {}, ...step.text()), inBox ? bar : null);
     count.textContent = `${index + 1}/${steps.length}`;
     nextBtn.textContent = last ? "Got it" : "Next tip";
     checkLabel.hidden = !last || once;
