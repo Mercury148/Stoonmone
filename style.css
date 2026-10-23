@@ -1830,3 +1830,7 @@ html.touring, html.touring body { overflow: hidden; }
 .tour-bar.in-box { position: static; flex-wrap: wrap; gap: 0.5rem 0.75rem; margin-top: 0.7rem; padding: 0.6rem 0 0; background: none; border: 0; border-top: 1px solid var(--line); }
 .tour-bar.in-box .tour-next { min-height: 38px; padding: 0.35rem 0.9rem; }
 .tour-bar.in-box .hint-check { min-height: 32px; }
+
+/* Rundgang wartet, während man sich das Ergebnis einer Aktion ansieht: unsichtbar und durchlässig */
+.tour-layer.tour-waiting { opacity: 0; transition: opacity 0.2s ease; }
+.tour-layer.tour-waiting, .tour-layer.tour-waiting > * { pointer-events: none !important; }

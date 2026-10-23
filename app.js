@@ -2566,6 +2566,7 @@ function currentView() {
 
 function showView(name) {
   const before = currentView();
+  if (activeTour) activeTour.viewChanged(name);   // Rundgang wartet nach einer Aktion: auf neuer Seite unterbrechen
   if (name !== "editor") for (const tip of document.querySelectorAll(".play-hint")) tip.remove();   // Tipp zum Play-Knopf gehört nur zum Editor
   $("#start-game").classList.remove("tip-pulse");
   $("#view-compendium").hidden = name !== "compendium";
@@ -2642,6 +2643,7 @@ function wireEvents() {
         pendingTab = null;
         showView(name);
         if (name === "troupes") { renderTroupes(); setTimeout(startTroupesTour, 400); }   // erster Besuch: kurzer Rundgang
+        if (name === "compendium") setTimeout(startWelcomeTour, 400);   // unterbrochener Willkommens-Rundgang geht hier weiter
       }, 0));
     });
   }
@@ -2890,7 +2892,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { do
   };
   document.addEventListener("touchstart", (e) => {
     start = null;
-    if (e.touches.length !== 1 || document.querySelector("dialog[open], .tour-layer")) return;   // nicht während eines Fensters oder Rundgangs
+    if (e.touches.length !== 1 || document.querySelector("dialog[open], .tour-layer:not(.tour-waiting)")) return;   // nicht während eines Fensters oder Rundgangs
     if (!TAB_ORDER.includes(currentView())) return;
     const t = e.touches[0];
     if (t.clientX < 16 || t.clientX > window.innerWidth - 16) return;   // Bildschirmrand: dort liegt die Zurück-Geste des Systems
@@ -3025,8 +3027,16 @@ const reduceMotion = () => Boolean(window.matchMedia && window.matchMedia("(pref
 // unten Schritt x/y und "Next tip"; im letzten Schritt "Don't show this again".
 // target darf auch eine Liste von Elementen liefern: dann wird der Bereich um alle zusammen hervorgehoben.
 // once: true = der Rundgang erscheint nur ein einziges Mal (ohne "Don't show this again").
+//
+// Führt man die erklärte Aktion selbst aus (z. B. Tippen auf ein Portrait), blendet der Rundgang aus und lässt einen
+// erst einmal schauen. Nach einer kurzen Ruhepause geht es mit dem nächsten Schritt weiter. Hat die Aktion auf eine
+// andere Seite geführt, wird der Rundgang an dieser Stelle gespeichert und beim nächsten Mal auf seiner Seite fortgesetzt;
+// auf der neuen Seite läuft derweil deren eigener Rundgang (falls man dort noch nicht war).
+let activeTour = null;   // { key, viewChanged(name) } des gerade laufenden Rundgangs
+const TOUR_IDLE_MS = 1600;   // so lange nach der letzten Berührung warten, bevor der nächste Schritt erscheint
+
 function runTour(key, allSteps, { once = false } = {}) {
-  if (tipOff(key) || tipsShown.has(key) || document.querySelector(".tour-layer")) return;
+  if (tipOff(key) || tipsShown.has(key) || activeTour) return;
   const targetsOf = (st) => [].concat(st.target() || []).filter((t) => t && t.getClientRects().length);
   const rectOf = (st) => {
     const rs = targetsOf(st).map((t) => t.getBoundingClientRect());
@@ -3034,9 +3044,15 @@ function runTour(key, allSteps, { once = false } = {}) {
     const right = Math.max(...rs.map((r) => r.right)), bottom = Math.max(...rs.map((r) => r.bottom));
     return { left, top, right, bottom, width: right - left, height: bottom - top };
   };
-  const steps = allSteps.filter((st) => targetsOf(st).length);
-  if (!steps.length) return;
+  const steps = allSteps;
+  const atKey = `${key}-at`;   // gespeicherter Schritt eines unterbrochenen Rundgangs
+  let saved = 0;
+  try { saved = Math.max(0, Number(localStorage.getItem(atKey)) || 0); } catch { /* ignorieren */ }
+  let index = saved;
+  while (index < steps.length && !targetsOf(steps[index]).length) index += 1;
+  if (index >= steps.length) return;
   tipsShown.add(key);
+  const startView = currentView();
 
   const spot = el("div", { class: "tour-spot", style: "transition: none" });
   const box = el("div", { class: "tour-box", role: "dialog", "aria-live": "polite" });
@@ -3050,10 +3066,10 @@ function runTour(key, allSteps, { once = false } = {}) {
   // Unsichtbare Fläche mit Loch: blockiert Klicks auf den abgedunkelten Rest, der hervorgehobene Bereich bleibt bedienbar
   const shade = el("div", { class: "tour-shade" });
   const layer = el("div", { class: "tour-layer" }, shade, spot, box, inBox ? null : bar);
-  let index = 0;
+  let waiting = false, idleTimer = null;
 
   const place = () => {
-    if (!targetsOf(steps[index]).length) return;
+    if (waiting || !targetsOf(steps[index]).length) return;
     const r = rectOf(steps[index]);
     const pad = 6;
     Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + 2 * pad}px`, height: `${r.height + 2 * pad}px` });
@@ -3077,7 +3093,7 @@ function runTour(key, allSteps, { once = false } = {}) {
   };
   const show = () => {
     const step = steps[index];
-    const last = index === steps.length - 1;
+    const last = !steps.slice(index + 1).some((st) => targetsOf(st).length);
     box.replaceChildren(el("p", {}, ...step.text()), inBox ? bar : null);
     count.textContent = `${index + 1}/${steps.length}`;
     nextBtn.textContent = last ? "Got it" : "Next tip";
@@ -3093,33 +3109,77 @@ function runTour(key, allSteps, { once = false } = {}) {
       }
     });
   };
-  const end = () => {
-    if (check.checked || once) setTipOff(key);
-    // sanft ausblenden; während dessen nimmt die Ebene keine Klicks mehr an
-    layer.style.pointerEvents = "none";
-    for (const part of layer.children) part.style.pointerEvents = "none";
-    if (!reduceMotion()) layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: "ease-in", fill: "forwards" }).finished.then(() => layer.remove(), () => layer.remove());
-    else layer.remove();
+  const cleanup = () => {
+    clearTimeout(idleTimer);
+    activeTour = null;
     document.documentElement.classList.remove("touring");
     window.removeEventListener("resize", place);
     document.removeEventListener("click", onAction, true);
+    document.removeEventListener("pointerdown", onTouch, true);
   };
-  // Weiter zum nächsten Schritt, dessen Bereich gerade zu sehen ist (z. B. nach einem Seitenwechsel); sonst Ende
-  const advance = () => {
+  // Fertig (Got it, letzter Schritt erledigt): Fortschritt löschen, ggf. nie mehr zeigen
+  const end = () => {
+    if (check.checked || once) setTipOff(key);
+    try { localStorage.removeItem(atKey); } catch { /* ignorieren */ }
+    cleanup();
+    // sanft ausblenden; während dessen nimmt die Ebene keine Klicks mehr an
+    layer.style.pointerEvents = "none";
+    for (const part of layer.children) part.style.pointerEvents = "none";
+    if (!reduceMotion() && !waiting) layer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: "ease-in", fill: "forwards" }).finished.then(() => layer.remove(), () => layer.remove());
+    else layer.remove();
+  };
+  // Unterbrochen (die Aktion führte auf eine andere Seite): Stelle merken, später auf dieser Seite weitermachen
+  const pause = (resumeAt) => {
+    try { localStorage.setItem(atKey, String(resumeAt)); } catch { /* ignorieren */ }
+    tipsShown.delete(key);
+    cleanup();
+    layer.remove();
+  };
+  // Nächster Schritt, dessen Bereich gerade zu sehen ist; sonst Ende
+  const nextVisible = () => {
     let next = index + 1;
     while (next < steps.length && !targetsOf(steps[next]).length) next += 1;
+    return next;
+  };
+  const advance = () => {
+    const next = nextVisible();
     if (next >= steps.length) return end();
     index = next;
     show();
   };
   nextBtn.addEventListener("click", advance);
-  // Wer die erklärte Aktion gleich ausführt (z. B. auf ein Portrait tippt), kommt damit auch weiter, wie mit "Next tip"/"Got it"
-  const onAction = (e) => {
-    if (!layer.isConnected || layer.contains(e.target)) return;
-    if (!targetsOf(steps[index]).some((t) => t.contains(e.target))) return;
-    setTimeout(advance, 0);   // erst die Aktion selbst, dann weiter
+
+  // Nach der Aktion: Ebene ausblenden und erst einmal schauen lassen
+  const hideForNow = () => {
+    waiting = true;
+    layer.classList.add("tour-waiting");
+    document.documentElement.classList.remove("touring");
+    armIdle();
   };
+  const armIdle = () => { clearTimeout(idleTimer); idleTimer = setTimeout(resume, TOUR_IDLE_MS); };
+  const onTouch = () => { if (waiting) armIdle(); };   // solange weiter getippt wird, warten
+  const resume = () => {
+    if (!waiting) return;
+    if (document.querySelector("dialog[open]")) return armIdle();   // erst, wenn ein geöffnetes Fenster wieder zu ist
+    if (currentView() !== startView) return pause(index + 1);
+    const next = nextVisible();
+    if (next >= steps.length) return end();
+    waiting = false;
+    layer.classList.remove("tour-waiting");
+    document.documentElement.classList.add("touring");
+    index = next;
+    show();
+  };
+  // Wer die erklärte Aktion gleich ausführt, kommt damit weiter (wie mit "Next tip"/"Got it")
+  const onAction = (e) => {
+    if (waiting || !layer.isConnected || layer.contains(e.target)) return;
+    if (!targetsOf(steps[index]).some((t) => t.contains(e.target))) return;
+    if (nextVisible() >= steps.length && !steps.slice(index + 1).length) { setTimeout(end, 0); return; }   // letzter Schritt: fertig
+    hideForNow();
+  };
+  activeTour = { key, viewChanged: (name) => { if (waiting && name !== startView) pause(index + 1); } };
   document.addEventListener("click", onAction, true);
+  document.addEventListener("pointerdown", onTouch, true);
   document.body.append(layer);
   if (!reduceMotion()) layer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });   // Rundgang blendet sanft ein
   document.documentElement.classList.add("touring");
