@@ -1728,3 +1728,97 @@ html, body { overflow-x: clip; }
 #faqs-guide .rule-group.leaf > summary, #faqs-guide .rule-q { font: 690 1.09rem/1.4 var(--font-text); }
 /* Zahlen in Cormorant Garamond in normaler Höhe (statt der kleinen, alten Ziffern) */
 body { font-variant-numeric: lining-nums; }
+
+/* ---------- Tipps ---------- */
+/* Sprechblase über dem runden Play-Knopf (Handy), mit kleinem Pfeil nach unten auf den Knopf */
+.play-hint {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(1.5rem + var(--safe-b) + 4.5rem);
+  z-index: 20;
+  width: min(18rem, calc(100vw - 2rem));
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  font-size: 0.9rem;
+}
+.play-hint::after {
+  content: "";
+  position: absolute;
+  right: 1.35rem;
+  bottom: -0.45rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  background: var(--surface);
+  border-right: 1px solid var(--accent);
+  border-bottom: 1px solid var(--accent);
+  transform: rotate(45deg);
+}
+.play-hint p { margin: 0; }
+.play-hint .hint-check, .tour-bar .hint-check { display: flex; align-items: center; gap: 0.5rem; min-height: 44px; margin: 0; color: var(--muted); font-size: 0.85rem; }
+.play-hint .hint-check input, .tour-bar .hint-check input { width: 1.25rem; height: 1.25rem; flex: none; }
+/* Der Play-Knopf pulsiert dezent, solange der Tipp offen ist */
+.tip-pulse { animation: tip-pulse 1.6s ease-out infinite; }
+@keyframes tip-pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent), 0 4px 14px rgba(0, 0, 0, 0.35); } 100% { box-shadow: 0 0 0 0.9rem transparent, 0 4px 14px rgba(0, 0, 0, 0.35); } }
+
+/* Rundgang durch die Gameview: dunkle Ebene mit Ausschnitt um den erklärten Bereich */
+html.touring, html.touring body { overflow: hidden; }
+.tour-layer { position: fixed; inset: 0; z-index: 30; }
+.tour-spot {
+  position: fixed;
+  border-radius: 12px;
+  box-shadow: 0 0 0 200vmax rgba(8, 9, 16, 0.74);
+  outline: 2px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  outline-offset: 2px;
+  pointer-events: none;
+  transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+.tour-box {
+  position: fixed;
+  padding: 0.8rem 0.9rem;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+.tour-box p { margin: 0; }
+/* dezenter Pfeil: zeigt nach oben auf den Bereich, bzw. nach unten, wenn die Box darüber steht */
+.tour-box::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--arrow-x, 50%) - 0.45rem);
+  top: -0.48rem;
+  width: 0.8rem;
+  height: 0.8rem;
+  background: var(--surface);
+  border-left: 1px solid var(--accent);
+  border-top: 1px solid var(--accent);
+  transform: rotate(45deg);
+}
+.tour-box.above::before { top: auto; bottom: -0.48rem; transform: rotate(225deg); }
+.tour-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem max(1rem, env(safe-area-inset-right, 0px)) calc(0.75rem + var(--safe-b)) max(1rem, env(safe-area-inset-left, 0px));
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+}
+.tour-bar.top { top: 0; bottom: auto; border-top: 0; border-bottom: 1px solid var(--line); padding-top: calc(0.75rem + env(safe-area-inset-top, 0px)); padding-bottom: 0.75rem; }
+.tour-count { color: var(--muted); font-variant-numeric: tabular-nums lining-nums; min-width: 2.5rem; }
+.tour-bar .hint-check { flex: 1; }
+.tour-bar .hint-check[hidden] { display: none; }
+.tour-next { margin-left: auto; }
+@media (prefers-reduced-motion: reduce) { .tour-spot { transition: none; } .tip-pulse { animation: none; } }

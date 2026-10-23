@@ -656,6 +656,7 @@ function toggleMember(id) {
     const problem = checkAdd(current, id);
     if (problem) return toast(problem);
     current.ids.push(id);
+    if (current.ids.length === formatOf(current).max) showPlayHint();   // Troupe gerade vollständig geworden
   }
   saveTroupes();
   renderEditor();
@@ -1563,6 +1564,7 @@ function openGame() {
   showView("game");
   // Frisches Spiel: gleich nach dem Namen des Gegners fragen (überspringbar)
   if (game.stage === "setup" && game.opps.length === 1 && !game.opps[0].name.trim() && game.opps[0].ids.length === 0) openAddOpponent("name");
+  if (game.stage === "setup") startSetupTour();
 }
 
 const summonMenuOpen = {};   // Summon-Menü pro Seite aufgeklappt? (standardmäßig nicht)
@@ -1909,6 +1911,7 @@ function startGame() {
   saveGame();
   renderGame();
   window.scrollTo(0, 0);
+  startGameTour();
 }
 
 // Neue Runde: übrige Energy verfällt, danach erzeugt jedes Modell Energy gemäß seiner verbleibenden Lebenspunkte
@@ -2563,6 +2566,8 @@ function currentView() {
 
 function showView(name) {
   const before = currentView();
+  if (name !== "editor") for (const tip of document.querySelectorAll(".play-hint")) tip.remove();   // Tipp zum Play-Knopf gehört nur zum Editor
+  $("#start-game").classList.remove("tip-pulse");
   $("#view-compendium").hidden = name !== "compendium";
   $("#view-troupes").hidden = name !== "troupes";
   $("#view-editor").hidden = name !== "editor";
@@ -2831,6 +2836,7 @@ async function boot() {
 
   // Geteilter Link (…/#t=Code): Vorschau zum Importieren öffnen
   checkIncomingLink();
+  setTimeout(startWelcomeTour, 600);   // allererstes Öffnen: kurzer Rundgang durch die Reiter
   window.addEventListener("hashchange", checkIncomingLink);
 
   // Offline-Funktion einschalten. Wenn das nicht klappt, läuft die App einfach ohne.
@@ -2872,7 +2878,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { do
 
 // Wischen zwischen den Seiten (Handy): nach links = nächster Reiter (Compendium → Troupes → Rules → FAQs), nach rechts = vorheriger.
 // Nur auf diesen vier Seiten und ohne geöffnetes Fenster; nicht in Eingabefeldern und nicht in Bereichen, die selbst seitlich scrollen.
-// Deutlich waagerecht und zügig, damit normales Scrollen nach oben/unten keinen Seitenwechsel auslöst.
+// Zügig und mindestens 60 px weit; die Richtung legt die Deadzone weiter unten fest.
 {
   let start = null;
   const scrollsSideways = (node) => {
@@ -2888,18 +2894,177 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { do
     const t = e.touches[0];
     if (t.clientX < 16 || t.clientX > window.innerWidth - 16) return;   // Bildschirmrand: dort liegt die Zurück-Geste des Systems
     if (e.target.closest("input, textarea, select") || scrollsSideways(e.target)) return;
-    start = { x: t.clientX, y: t.clientY, time: Date.now() };
+    start = { x: t.clientX, y: t.clientY, time: Date.now(), axis: null };
   }, { passive: true });
-  document.addEventListener("touchend", (e) => {
-    if (!start || (window.visualViewport && window.visualViewport.scale > 1.01)) { start = null; return; }   // gezoomt: Wischen verschiebt nur
-    const t = e.changedTouches[0];
+  // Deadzone mit Richtungs-Sperre: Nach den ersten 12 px Bewegung steht fest, ob gewischt (waagerecht) oder gescrollt (senkrecht) wird.
+  // Waagerecht: die Seite scrollt nicht mehr nach oben/unten. Senkrecht: es wird nur gescrollt, ein Seitenwechsel ist ausgeschlossen.
+  document.addEventListener("touchmove", (e) => {
+    if (!start || e.touches.length !== 1) { start = null; return; }
+    if (window.visualViewport && window.visualViewport.scale > 1.01) { start = null; return; }   // gezoomt: Wischen verschiebt nur
+    const t = e.touches[0];
     const dx = t.clientX - start.x, dy = t.clientY - start.y;
-    const quick = Date.now() - start.time < 600;
+    if (!start.axis) {
+      if (Math.hypot(dx, dy) < 12) return;   // noch in der Deadzone
+      start.axis = Math.abs(dx) > Math.abs(dy) * 1.2 ? "x" : "y";
+    }
+    if (start.axis === "x" && e.cancelable) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener("touchend", (e) => {
+    if (!start || start.axis !== "x") { start = null; return; }
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const quick = Date.now() - start.time < 700;
     start = null;
-    if (!quick || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    if (!quick || Math.abs(dx) < 60) return;
     const next = TAB_ORDER[TAB_ORDER.indexOf(currentView()) + (dx < 0 ? 1 : -1)];
     if (next) document.querySelector(`[role=tab][data-tab="${next}"]`).click();
   }, { passive: true });
+}
+
+/* ---------- Tipps: Play-Knopf nach fertiger Troupe, Rundgang durch die Gameview ---------- */
+// Jeder Tipp erscheint höchstens einmal pro App-Start und nie mehr, sobald "Don't show this again" angehakt wurde.
+const tipsShown = new Set();
+function tipOff(key) { try { return localStorage.getItem(key) === "1"; } catch { return false; } }
+function setTipOff(key) { try { localStorage.setItem(key, "1"); } catch { /* ignorieren */ } }
+const PLAY_HINT_KEY = "ttg-hint-play-v1";
+const TOUR_KEY = "ttg-hint-game-tour-v1";
+const isPhoneLayout = () => window.matchMedia && window.matchMedia("(max-width: 719.98px)").matches;
+
+// Handy: Sprechblase über dem runden Play-Knopf, sobald die Troupe zum ersten Mal vollständig ist
+function showPlayHint() {
+  if (!isPhoneLayout() || tipOff(PLAY_HINT_KEY) || tipsShown.has(PLAY_HINT_KEY)) return;
+  const button = $("#start-game");
+  if (!button || !button.getClientRects().length) return;   // Knopf nicht sichtbar (offsetParent hilft hier nicht: er ist position: fixed)
+  tipsShown.add(PLAY_HINT_KEY);
+  const check = el("input", { type: "checkbox", id: "play-hint-off" });
+  const close = () => { if (check.checked) setTipOff(PLAY_HINT_KEY); bubble.remove(); button.classList.remove("tip-pulse"); };
+  const bubble = el("div", { class: "play-hint", role: "note" },
+    el("p", {}, "Your troupe is complete! Tap the ", el("strong", { text: "play button" }), " to start a game with it."),
+    el("label", { class: "hint-check", for: "play-hint-off" }, check, "Don't show this again"),
+    el("button", { type: "button", text: "Got it", onclick: close })
+  );
+  document.body.append(bubble);
+  button.classList.add("tip-pulse");
+  button.addEventListener("click", close, { once: true });   // wer gleich auf Play tippt, braucht den Tipp nicht mehr
+}
+
+// Willkommens-Rundgang beim allerersten Öffnen: was die Reiter unten machen
+const WELCOME_KEY = "ttg-hint-welcome-v1";
+function startWelcomeTour() {
+  if (currentView() !== "compendium" || document.querySelector("dialog[open]")) return;
+  runTour(WELCOME_KEY, [
+    { target: () => $("#tab-compendium"),
+      text: () => [el("strong", { text: "Compendium:" }), " here you'll find every character. Filter them by faction, keyword or synergy, and open a character to see the card and its signature move."] },
+    { target: () => $("#tab-troupes"),
+      text: () => [el("strong", { text: "Troupes:" }), " build your troupes here and take them into a game."] },
+    { target: () => [$("#tab-rules"), $("#tab-faqs")],
+      text: () => [el("strong", { text: "Rules and FAQs:" }), " everything you need to play a game of Moonstone, with a search."] },
+  ], { once: true });
+}
+
+// Rundgang über der Gameview nach dem Spielstart
+function startGameTour() {
+  runTour(TOUR_KEY, [
+    { target: () => $("#game-own-row .gcell-media"),
+      text: () => ["Tap the ", el("strong", { text: "upper half" }), " of a portrait to heal 1 wound, the ", el("strong", { text: "lower half" }), " to deal 1 wound. Press and hold (or right-click) a portrait to see the character card."] },
+    { target: () => $("#game-next-round"),
+      text: () => ["Tap ", el("strong", { text: "Next round" }), " when everyone has activated. Leftover energy is discarded and each model gets new energy. The current round is shown at the top."] },
+    { target: () => $("#game-reset"),
+      text: () => ["Tap ", el("strong", { text: "Reset game" }), " twice to end this game and choose models for a new one."] },
+  ]);
+}
+
+// Kurzer Rundgang beim Aufstellen: gegnerische Modelle und weitere Gegner hinzufügen.
+// Ist gerade die Abfrage nach dem Gegnernamen offen, startet er erst, wenn sie geschlossen ist.
+const SETUP_TOUR_KEY = "ttg-hint-setup-tour-v1";
+function startSetupTour() {
+  if (tipOff(SETUP_TOUR_KEY) || tipsShown.has(SETUP_TOUR_KEY)) return;
+  const dlg = $("#opp-add-dialog");
+  if (dlg.open) { dlg.addEventListener("close", () => setTimeout(startSetupTour, 250), { once: true }); return; }
+  if (!game || game.stage !== "setup" || currentView() !== "game") return;
+  runTour(SETUP_TOUR_KEY, [
+    { target: () => $("#game-foe-filters .filter-box"),
+      text: () => ["Here you can filter the models by faction or keyword."] },
+    { target: () => $("#game-foe-toggle"),
+      text: () => ["Tap ", el("strong", { text: "Show all Characters" }), " to see every model, then tap a model to add it to your opponent. Tap a chosen model again to remove it."] },
+    { target: () => $("#game-add-foe"),
+      text: () => ["More players? ", el("strong", { text: "Add opponent" }), " adds up to 4 opponents. If a model fits several of them, you'll be asked who gets it."] },
+  ]);
+}
+
+// Rundgang: der erklärte Bereich wird hervorgehoben, daneben eine Infobox mit Pfeil,
+// unten Schritt x/y und "Next tip"; im letzten Schritt "Don't show this again".
+// target darf auch eine Liste von Elementen liefern: dann wird der Bereich um alle zusammen hervorgehoben.
+// once: true = der Rundgang erscheint nur ein einziges Mal (ohne "Don't show this again").
+function runTour(key, allSteps, { once = false } = {}) {
+  if (tipOff(key) || tipsShown.has(key) || document.querySelector(".tour-layer")) return;
+  const targetsOf = (st) => [].concat(st.target() || []).filter((t) => t && t.getClientRects().length);
+  const rectOf = (st) => {
+    const rs = targetsOf(st).map((t) => t.getBoundingClientRect());
+    const left = Math.min(...rs.map((r) => r.left)), top = Math.min(...rs.map((r) => r.top));
+    const right = Math.max(...rs.map((r) => r.right)), bottom = Math.max(...rs.map((r) => r.bottom));
+    return { left, top, right, bottom, width: right - left, height: bottom - top };
+  };
+  const steps = allSteps.filter((st) => targetsOf(st).length);
+  if (!steps.length) return;
+  tipsShown.add(key);
+
+  const spot = el("div", { class: "tour-spot" });
+  const box = el("div", { class: "tour-box", role: "dialog", "aria-live": "polite" });
+  const count = el("span", { class: "tour-count" });
+  const check = el("input", { type: "checkbox", id: "tour-off" });
+  const checkLabel = el("label", { class: "hint-check", for: "tour-off" }, check, "Don't show this again");
+  const nextBtn = el("button", { type: "button", class: "tour-next" });
+  const bar = el("div", { class: "tour-bar" }, count, checkLabel, nextBtn);
+  const layer = el("div", { class: "tour-layer" }, spot, box, bar);
+  let index = 0;
+
+  const place = () => {
+    if (!targetsOf(steps[index]).length) return;
+    const r = rectOf(steps[index]);
+    const pad = 6;
+    Object.assign(spot.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`, width: `${r.width + 2 * pad}px`, height: `${r.height + 2 * pad}px` });
+    // Infobox unter dem Bereich, wenn dort Platz ist, sonst darüber; der Pfeil zeigt auf die Mitte des Bereichs
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const width = Math.min(320, vw - 32);
+    const left = Math.min(Math.max(16, r.left + r.width / 2 - width / 2), vw - 16 - width);
+    box.style.width = `${width}px`;
+    box.style.left = `${left}px`;
+    box.style.setProperty("--arrow-x", `${Math.min(Math.max(18, r.left + r.width / 2 - left), width - 18)}px`);
+    // Liegt der Bereich ganz unten (z. B. die Reiter), wandert die Leiste mit "Next tip" nach oben
+    bar.classList.toggle("top", r.bottom > vh - bar.offsetHeight - 8);
+    const barRect = bar.getBoundingClientRect();
+    const floor = bar.classList.contains("top") ? vh : barRect.top;
+    const ceiling = bar.classList.contains("top") ? barRect.bottom : 0;
+    const below = r.bottom + pad + 14 + box.offsetHeight < floor - 8;
+    box.classList.toggle("above", !below);
+    box.style.top = below ? `${r.bottom + pad + 14}px` : `${Math.max(ceiling + 8, r.top - pad - 14 - box.offsetHeight)}px`;
+  };
+  const show = () => {
+    const step = steps[index];
+    const last = index === steps.length - 1;
+    box.replaceChildren(el("p", {}, ...step.text()));
+    count.textContent = `${index + 1}/${steps.length}`;
+    nextBtn.textContent = last ? "Got it" : "Next tip";
+    checkLabel.hidden = !last || once;
+    targetsOf(step)[0].scrollIntoView({ block: "center", behavior: "auto" });
+    requestAnimationFrame(place);
+  };
+  const end = () => {
+    if (check.checked || once) setTipOff(key);
+    layer.remove();
+    document.documentElement.classList.remove("touring");
+    window.removeEventListener("resize", place);
+  };
+  nextBtn.addEventListener("click", () => {
+    if (index === steps.length - 1) return end();
+    index += 1;
+    show();
+  });
+  document.body.append(layer);
+  document.documentElement.classList.add("touring");
+  window.addEventListener("resize", place);
+  show();
 }
 
 // Bilder (auch die Charakterkarten) lassen sich nicht herausziehen
