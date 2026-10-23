@@ -2984,7 +2984,8 @@ function startEditorTour() {
   runTour(EDITOR_TOUR_KEY, [
     { target: () => $("#editor-format"), idle: 4000,   // längere Pause: in Ruhe die Formate ansehen
       text: () => ["Choose the ", el("strong", { text: "format" }), " here: how many models your troupe has and how many of them play in a game."] },
-    { target: () => $("#editor-tiles .tile"),
+    // Beispiel-Kachel: Agatha (ohne Summons, die sonst gleich mit in die Troupe kommen); passt sie nicht, die erste Kachel
+    { target: () => [...document.querySelectorAll('#editor-tiles .tile[data-char="agatha-tavernfrau"]')].find((t) => t.getClientRects().length) || $("#editor-tiles .tile"),
       text: () => ["Tap a model to ", el("strong", { text: "add" }), " it, tap it again to remove it. Press and hold (or right-click) to see its card."] },
     { target: () => $("#copy"),
       text: () => [el("strong", { text: "Export" }), " shares your troupe as a link or code."] },
