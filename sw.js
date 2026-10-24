@@ -5,9 +5,10 @@
 //   Änderungen sind also sofort beim nächsten Öffnen da.
 // - Bilder: erst Cache, dann im Hintergrund aktualisieren.
 //
-// CACHE_NAME nur erhöhen, wenn sich die Liste DATEIEN ändert.
+// CACHE_NAME erhöhen, wenn sich die Liste DATEIEN ändert oder vorhandene Bilder ersetzt wurden:
+// dann wird der alte Speicher gelöscht, sonst zeigen Geräte beim ersten Öffnen noch das alte Bild.
 
-const CACHE_NAME = "TTG-v0.9.3";
+const CACHE_NAME = "TTG-v0.9.4";   // 0.9.4: Kartenbilder ohne weiße obere Zeile, neues Shades-Wappen
 const DATEIEN = [
   "./",
   "index.html",
