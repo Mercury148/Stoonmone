@@ -34,59 +34,59 @@
    "blocks": [
     {
      "t": "p",
-     "x": "**Character** – A unique inhabitant of Tauber represented by both a model and a character card."
+     "x": "[[accent:Character]] – A unique inhabitant of Tauber represented by both a model and a character card."
     },
     {
      "t": "p",
-     "x": "**Target** – Many abilities require you to choose a target. The target is any single model (friendly, enemy or even the originator) that fits the requirements listed in the ability, such as range or keyword."
+     "x": "[[accent:Target]] – Many abilities require you to choose a target. The target is any single model (friendly, enemy or even the originator) that fits the requirements listed in the ability, such as range or keyword."
     },
     {
      "t": "p",
-     "x": "**Originator** – A character that is currently using an ability with a target."
+     "x": "[[accent:Originator]] – A character that is currently using an ability with a target."
     },
     {
      "t": "p",
-     "x": "**Range** – All distances are measured in inches. Players can take measurements at any time and for any reason."
+     "x": "[[accent:Range]] – All distances are measured in inches. Players can take measurements at any time and for any reason."
     },
     {
      "t": "p",
-     "x": "**Within** – The distance between the originator’s base (or other given point) and the nearest part of the target’s base is equal to or less than the given range."
+     "x": "[[accent:Within]] – The distance between the originator’s base (or other given point) and the nearest part of the target’s base is equal to or less than the given range."
     },
     {
      "t": "p",
-     "x": "**Entirely Within** – Where the distance between the originator’s base (or other given point) and the furthest part of the target’s base is equal to or less than the given range."
+     "x": "[[accent:Entirely Within]] – Where the distance between the originator’s base (or other given point) and the furthest part of the target’s base is equal to or less than the given range."
     },
     {
      "t": "p",
-     "x": "**Line of Sight / LoS** – The ability to draw an unobstructed line along the playing surface from one model’s base to another model, Moonstone or terrain piece that the active player wishes to target with an ability."
+     "x": "[[accent:Line of Sight / LoS]] – The ability to draw an unobstructed line along the playing surface from one model’s base to another model, Moonstone or terrain piece that the active player wishes to target with an ability."
     },
     {
      "t": "p",
-     "x": "**Pulse** – An area of effect (AoE) that affects all models within a given range, including the originator, regardless of LoS."
+     "x": "[[accent:Pulse]] – An area of effect (AoE) that affects all models within a given range, including the originator, regardless of LoS."
     },
     {
      "t": "p",
-     "x": "**Friendly** – Characters you brought into the game."
+     "x": "[[accent:Friendly]] – Characters you brought into the game."
     },
     {
      "t": "p",
-     "x": "**Enemy** – Characters brought into the game by another player."
+     "x": "[[accent:Enemy]] – Characters brought into the game by another player."
     },
     {
      "t": "p",
-     "x": "**Damage / Dmg** – A common effect that causes a player to fill in health boxes on the affected model’s character card. Damage always has a type: *Impact*, *Piercing*, *Slicing* or *Magical*, which can cause its value to be modified by other abilities or effects."
+     "x": "[[accent:Damage / Dmg]] – A common effect that causes a player to fill in health boxes on the affected model’s character card. Damage always has a type: *Impact*, *Piercing*, *Slicing* or *Magical*, which can cause its value to be modified by other abilities or effects."
     },
     {
      "t": "p",
-     "x": "**Wounds / Wds** – Similar to damage, but does not have a type and cannot be modified. Filled in health boxes are also referred to as Wds."
+     "x": "[[accent:Wounds / Wds]] – Similar to damage, but does not have a type and cannot be modified. Filled in health boxes are also referred to as Wds."
     },
     {
      "t": "p",
-     "x": "**Slain** – A character that has filled in all their character card’s health boxes as a result of wounds and must now be removed from the game, after first dropping any Moonstones carried."
+     "x": "[[accent:Slain]] – A character that has filled in all their character card’s health boxes as a result of wounds and must now be removed from the game, after first dropping any Moonstones carried."
     },
     {
      "t": "p",
-     "x": "**Gains / Restores** – Some abilities allow characters to ‘restore’ resources such as energy or Wds while others specify that the resource is ‘gained’. When ‘gain’ is used the character can exceed their usual maximum, whereas ‘restore’ does not allow a character to exceed the starting values printed on their card."
+     "x": "[[accent:Gains / Restores]] – Some abilities allow characters to ‘restore’ resources such as energy or Wds while others specify that the resource is ‘gained’. When ‘gain’ is used the character can exceed their usual maximum, whereas ‘restore’ does not allow a character to exceed the starting values printed on their card."
     }
    ]
   },
