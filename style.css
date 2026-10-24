@@ -2017,3 +2017,7 @@ html.touring, html.touring body { overflow: hidden; }
 
 /* Verweise zwischen Regel-Abschnitten */
 .rule-link { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+/* Namen der Fraktionen in der Einführung stehen pro Reihe auf gleicher Höhe (oben bündig), auch wenn die Beschreibung unterschiedlich lang ist */
+.intro-box .rule-gallery.described { align-items: start; }
+.intro-box .rule-gallery.described figure { align-items: start; }
+.intro-box .rule-gallery.described figcaption { padding-top: 0.35rem; }
