@@ -221,23 +221,19 @@
        "items": [
         {
          "src": "images/rules/crest-commonwealth.webp",
-         "caption": "Commonwealth",
-         "x": "Typically includes humans, giants and gnomes."
+         "caption": "Commonwealth"
         },
         {
          "src": "images/rules/crest-dominion.webp",
-         "caption": "Dominion",
-         "x": "Typically includes goblins, faeries and trolls."
+         "caption": "Dominion"
         },
         {
          "src": "images/rules/crest-leshavult.webp",
-         "caption": "Leshavult",
-         "x": "Typically includes fauns, spirits and cultists."
+         "caption": "Leshavult"
         },
         {
          "src": "images/rules/crest-shades.webp",
-         "caption": "Shades of Moonreach",
-         "x": "Typically include spirits, risen and psychopomps."
+         "caption": "Shades of Moonreach"
         }
        ]
       },
