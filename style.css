@@ -392,7 +392,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
 .filter-meta { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; color: var(--muted); font-size: 0.9rem; }
-.filter-meta[hidden] { display: none; }
+.filter-meta.is-off { visibility: hidden; }   /* Platz bleibt reserviert: nichts springt, wenn "Reset filters" erscheint */
 /* Anzahl der Treffer rechts im Suchfeld */
 .search-wrap { position: relative; }
 .search-wrap input[type="search"] { padding-right: 10rem; }
@@ -1977,3 +1977,36 @@ html.touring, html.touring body { overflow: hidden; }
 .tour-skip-row { display: flex; margin-top: 0.4rem; }
 .tour-bar.in-box .tour-skip { margin-right: auto; }
 .tour-bar.in-box .hint-check:not([hidden]) { flex: 1 1 100%; order: -1; }   /* in der Blase: Haken in eigener Zeile über Skip / Schritt / Knopf */
+
+/* "Collapse all" in Regeln und FAQs */
+.guide-collapse.is-off { visibility: hidden; }   /* Platz bleibt reserviert: nichts springt, wenn der Knopf erscheint */
+.guide-collapse { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
+.guide-collapse .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Desktop: rechtsbündig unter der Suchzeile (die Leiste bleibt beim Scrollen oben stehen) */
+@media (min-width: 720px) {
+  .guide-collapse { justify-self: end; min-height: 36px; padding: 0 0.9rem; font-size: 0.85rem; }
+}
+/* Handy: runder Knopf unten rechts über der unteren Leiste, gut mit dem rechten Daumen erreichbar */
+@media (max-width: 719.98px) {
+  button.guide-collapse {   /* "button." schlägt die durchsichtige Fläche von .ghost */
+    position: fixed;
+    right: max(1rem, env(safe-area-inset-right, 0px));
+    bottom: calc(5rem + var(--safe-b));
+    z-index: 4;
+    width: 3.5rem;
+    height: 3.5rem;
+    min-height: 0;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--fg);
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+  .guide-collapse span { display: none; }
+  .guide-collapse .ico { width: 1.5rem; height: 1.5rem; }
+}
+
+/* Einführung über dem Suchblock im Compendium: aufklappbar wie ein Regel-Abschnitt, Text in Cormorant Garamond */
+.intro-box { margin-bottom: 0.75rem; }
+.intro-box .intro-text { font-family: var(--font-body); font-size: 1.1rem; line-height: 1.5; }

@@ -550,7 +550,7 @@ function createFilterPanel(container, onChange) {
     // Zählzeile aktualisieren
     showCount(shown, total = data.characters.length) {
       count.replaceChildren(`${shown} of ${total}`, el("span", { class: "search-count-word", text: " characters" }));
-      meta.hidden = !(state.query || state.factions.size || state.synergies.size);
+      meta.classList.toggle("is-off", !(state.query || state.factions.size || state.synergies.size));   // Platz bleibt reserviert (siehe style.css)
     },
     // Alle Filter leeren (zum Beispiel beim Öffnen des Editors)
     clear() {
@@ -2276,7 +2276,21 @@ function createGuide(container, config) {
   const list = el("div", { class: "guide-list" });
   const foot = el("p", { class: "guide-note", hidden: "" });
   const row = el("div", { class: "guide-row", hidden: "" }, status, next);
-  container.replaceChildren(el("div", { class: "guide-bar" }, search, row), list, foot);
+  // "Collapse all": schließt alle aufgeklappten Abschnitte. Handy: runder Knopf unten rechts (Daumen),
+  // Desktop: unter der Suchzeile, bleibt mit ihr oben stehen. Nur sichtbar, wenn etwas aufgeklappt ist.
+  const collapse = el("button", { class: "ghost guide-collapse is-off", type: "button", "aria-label": "Collapse all", title: "Collapse all" });
+  collapse.innerHTML = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l5 5 5-5M7 20l5-5 5 5"/></svg><span>Collapse all</span>';
+  container.replaceChildren(el("div", { class: "guide-bar" }, search, row, collapse), list, foot);
+  // unsichtbar statt ausgeblendet: der Platz bleibt reserviert, nichts springt (siehe style.css)
+  const updateCollapse = () => { collapse.classList.toggle("is-off", !list.querySelector("details[open]")); };
+  list.addEventListener("toggle", updateCollapse, true);   // toggle steigt nicht auf, deshalb beim Abfangen lauschen
+  collapse.addEventListener("click", () => {
+    for (const d of list.querySelectorAll("details[open]")) d.open = false;
+    if (openBefore) openBefore = new Set();   // während einer Suche: nach dem Leeren der Suche bleibt alles zu
+    updateCollapse();
+    const top = container.getBoundingClientRect().top + window.scrollY - 8;
+    if (window.scrollY > top) window.scrollTo({ top, behavior: reduceMotion() ? "auto" : "smooth" });
+  });
 
   // Statuszeile nur zeigen, wenn es etwas zu melden gibt
   function setStatus(text) {
