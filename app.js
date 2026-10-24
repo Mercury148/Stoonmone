@@ -2993,6 +2993,11 @@ const WELCOME_KEY = "ttg-hint-welcome-v1";
 function startWelcomeTour() {
   if (currentView() !== "compendium" || document.querySelector("dialog[open]")) return;
   runTour(WELCOME_KEY, [
+    // Wer die Einführung aufklappt, kann in Ruhe lesen: weiter geht es erst, wenn sie wieder zugeklappt ist
+    { target: () => $(".intro-box > summary"), until: () => !$(".intro-box").open,
+      text: () => ["Your first time visiting Tauber? ", el("strong", { text: "Start here" }), " for a quick overview."] },
+    { target: () => $("#compendium-filters .filter-box"),
+      text: () => ["Here you can explore the citizens of Tauber: search by name, keyword or synergy, or filter by faction."] },
     { target: () => $("#tab-compendium"),
       text: () => [el("strong", { text: "Compendium:" }), " here you'll find every character. Filter them by faction, keyword or synergy, and open a character to see the card and its signature move."] },
     { target: () => $("#tab-troupes"),
@@ -3213,6 +3218,7 @@ function runTour(key, allSteps, { once = false } = {}) {
   const resume = () => {
     if (!waiting) return;
     if (document.querySelector("dialog[open]")) return armIdle();   // erst, wenn ein geöffnetes Fenster wieder zu ist
+    if (steps[index].until && !steps[index].until()) return armIdle();   // z. B. erst weiter, wenn die Einführung wieder zugeklappt ist
     if (currentView() !== startView) return pause(index + 1);
     const next = nextVisible();
     if (next >= steps.length) return end();
