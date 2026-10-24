@@ -19,8 +19,8 @@
       "A 3’ by 3’ playing surface with fantasy terrain",
       "3–6 ***Moonstone Miniatures*** for each player, with accompanying ***Character Cards***.",
       "A tape measure or precision measuring instrument(s)",
-      "A 21-card ***Arcane Deck***",
-      "An 18-card ***Melee Deck***",
+      "A 21-card [[link:arcane-deck|Arcane Deck]]",
+      "An 18-card [[link:melee-deck|Melee Deck]]",
       "A pile of small blue disks to use as ***Energy Tokens***",
       "7x four-sided dice to act as ***Moonstones***",
       "1x six-sided die for each player"
@@ -541,6 +541,7 @@
    "blocks": [
     {
      "t": "group",
+     "id": "arcane-deck",
      "title": "The Arcane Deck",
      "blocks": [
       {
@@ -993,6 +994,7 @@
    "blocks": [
     {
      "t": "group",
+     "id": "melee-deck",
      "title": "The Melee Deck",
      "blocks": [
       {

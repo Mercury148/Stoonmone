@@ -2134,6 +2134,11 @@ function inlineNodes(text) {
     else if (/^\[\[[a-z]+:[^\]]+\]\]$/.test(piece)) {
       const [color, symbol] = piece.slice(2, -2).split(":");
       if (color === "accent") out.push(el("strong", { class: "accent-text", text: symbol }));   // [[accent:Text]] = fett in Akzentfarbe
+      else if (color === "link") {
+        // [[link:ziel-id|Text]] = Verweis auf einen Abschnitt mit "id": "ziel-id" (im selben Regelwerk); öffnet ihn und springt hin
+        const [target, label] = piece.slice(2, -2).slice(5).split("|");
+        out.push(el("a", { class: "rule-link", href: `#${target}`, "data-goto": target }, el("strong", {}, el("em", { text: label || target }))));
+      }
       else out.push(el("span", { class: `arc arc-${color}`, text: symbol }));   // farbiges Arcane-Symbol
     }
     else plain(piece);
@@ -2142,7 +2147,7 @@ function inlineNodes(text) {
 }
 
 function plainText(text) {
-  return String(text).replace(/\[\[[a-z]+:([^\]]+)\]\]/g, "$1").replace(/\*+/g, "").replace(/\s+/g, " ").trim();
+  return String(text).replace(/\[\[link:[^|\]]*\|([^\]]+)\]\]/g, "$1").replace(/\[\[[a-z]+:([^\]]+)\]\]/g, "$1").replace(/\*+/g, "").replace(/\s+/g, " ").trim();
 }
 
 // Beim Suchen: Anführungszeichen und Groß-/Kleinschreibung gleichsetzen (die Länge bleibt gleich)
@@ -2447,6 +2452,22 @@ function createGuide(container, config) {
     updateStatus(terms);
     if (hits.length) jumpTimer = setTimeout(() => goTo(0), 350);   // kurz warten, falls noch weitergetippt wird
   }
+
+  // Verweise im Text ([[link:…]]): Ziel-Abschnitt samt übergeordneten Abschnitten aufklappen, hinscrollen, kurz aufleuchten
+  list.addEventListener("click", (e) => {
+    const link = e.target.closest("a[data-goto]");
+    if (!link) return;
+    e.preventDefault();
+    const target = document.getElementById(`${config.container.slice(1)}-${link.dataset.goto}`);
+    if (!target) return;
+    for (let d = target; d && list.contains(d); d = d.parentElement.closest("details")) d.open = true;
+    const summary = target.querySelector(":scope > summary");
+    summary.scrollIntoView({ block: "start", behavior: reduceMotion() ? "auto" : "smooth" });
+    summary.classList.remove("hit-flash");
+    void summary.offsetWidth;
+    summary.classList.add("hit-flash");
+    setTimeout(() => summary.classList.remove("hit-flash"), 2000);
+  });
 
   search.addEventListener("input", apply);
   search.addEventListener("keydown", (event) => {

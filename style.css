@@ -2014,3 +2014,6 @@ html.touring, html.touring body { overflow: hidden; }
 .intro-box .rule-gallery.described figcaption { font-size: inherit; line-height: inherit; }
 .intro-box .rule-gallery.described figcaption strong { font-weight: 690; }
 .intro-box .rule-gallery.described figcaption span { font-weight: 460; color: inherit; }   /* 460 = wie der Einführungstext */
+
+/* Verweise zwischen Regel-Abschnitten */
+.rule-link { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
