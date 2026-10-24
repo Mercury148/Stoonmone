@@ -2010,3 +2010,7 @@ html.touring, html.touring body { overflow: hidden; }
 /* Einführung über dem Suchblock im Compendium: aufklappbar wie ein Regel-Abschnitt, Text in Cormorant Garamond */
 .intro-box { margin-bottom: 0.75rem; }
 .intro-box .intro-text { font-family: var(--font-body); font-size: 1.1rem; line-height: 1.5; }
+/* Wappen in der Einführung: Beschriftung so groß und in derselben Farbe wie der übrige Einführungstext */
+.intro-box .rule-gallery.described figcaption { font-size: inherit; line-height: inherit; }
+.intro-box .rule-gallery.described figcaption strong { font-weight: 690; }
+.intro-box .rule-gallery.described figcaption span { font-weight: 460; color: inherit; }   /* 460 = wie der Einführungstext */
