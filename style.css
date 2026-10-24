@@ -942,7 +942,7 @@ body.editing .toast { bottom: calc(1.5rem + var(--safe-b)); }
 
 /* ---------- Kartenansicht (Karte groß, Tipp = umdrehen) ---------- */
 dialog.card-view {
-  width: min(22rem, calc((100dvh - 10rem) / 1.4), calc(100vw - 2rem));
+  width: min(calc((100dvh - 9rem) / 1.4), calc(100vw - 2rem));   /* so groß, wie die Fensterhöhe es zulässt (früher die Zoom-Größe) */
   max-height: none;
   overflow: visible;
   background: transparent;
@@ -986,16 +986,8 @@ dialog.card-view * { touch-action: pinch-zoom; }
 }
 
 /* Knöpfe unter der Karte: Zoom (nur am Computer) und Schließen */
-.card-buttons { display: flex; gap: 0.6rem; justify-content: center; width: 75%; }
+.card-buttons { display: flex; gap: 0.6rem; justify-content: center; width: min(75%, 22rem); }
 .card-buttons .card-close { flex: 1; width: auto; }
-.card-zoom { display: none; flex: 1; min-height: 56px; background: var(--surface); color: var(--fg); border: 1px solid var(--line); font-size: 1.1rem; }
-.card-zoom[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
-@media (hover: hover) and (pointer: fine) {
-  .card-zoom { display: block; }
-  .card-buttons { width: min(100%, 22rem); }
-}
-/* Vergrößert: so groß, wie die Fensterhöhe es zulässt (Platz für die Knöpfe bleibt) */
-dialog.card-view.zoomed { width: min(calc((100dvh - 9rem) / 1.4), calc(100vw - 2rem)); }
 
 .card-close {
   width: 75%;

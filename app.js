@@ -1290,8 +1290,6 @@ function buildFlipHint() {
   return box;
 }
 
-let cardZoomed = false;   // vergrößerte Karte; bleibt beim Blättern erhalten, beim Schließen zurückgesetzt
-$("#detail").addEventListener("close", () => { cardZoomed = false; $("#detail").classList.remove("zoomed"); });
 
 function openCardView(c) {
   const hasBack = Boolean(c.cardBack);
@@ -1326,19 +1324,11 @@ function openCardView(c) {
       side,
       el("div", { class: "card-stage" }, card, hint),
       el("div", { class: "card-buttons" },
-        // Zoom (nur am Computer sichtbar, siehe style.css): Karte so groß, wie das Fenster es zulässt
-        el("button", { class: "card-zoom", type: "button", text: cardZoomed ? "Zoom out" : "Zoom", "aria-pressed": String(cardZoomed), onclick: (e) => {
-          cardZoomed = !cardZoomed;
-          $("#detail").classList.toggle("zoomed", cardZoomed);
-          e.currentTarget.textContent = cardZoomed ? "Zoom out" : "Zoom";
-          e.currentTarget.setAttribute("aria-pressed", String(cardZoomed));
-        } }),
         el("button", { class: "card-close", type: "button", text: "Close", onclick: () => $("#detail").close() })
       )
     )
   );
   $("#detail").classList.add("card-view");
-  $("#detail").classList.toggle("zoomed", cardZoomed);
   if (!$("#detail").open) $("#detail").showModal();
 }
 
