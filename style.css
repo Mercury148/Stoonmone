@@ -237,12 +237,12 @@ button { cursor: pointer; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-block: 0.5rem 1rem; }
 .topbar h1 { min-width: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; font: 690 1.6rem/1.1 var(--font-display); letter-spacing: 0.01em; }
 .logo { width: 1.5rem; height: 1.5rem; color: var(--accent); }
-/* "Replay tutorials" oben rechts: zurückhaltend, damit er dem Titel nicht die Show stiehlt */
-.replay-btn { flex: none; padding: 0.25rem 0.9rem; border-radius: 99px; color: var(--muted); font-size: 0.85rem; font-weight: 575; }
+/* "Replay tutorials" oben rechts: sieht aus wie "Back up all troupes" / "Restore from file" (ghost-Knopf) */
+.replay-btn { flex: none; }
 .replay-btn .ico { width: 1rem; height: 1rem; }
-.replay-btn:hover { color: var(--fg); border-color: var(--muted); }
+.replay-btn:hover { border-color: var(--muted); }
 .replay-btn.is-off { visibility: hidden; }   /* Seiten ohne Tutorial: Platz bleibt reserviert, der Titel steht überall gleich hoch */
-/* Handy: nur das Symbol als runder Knopf, damit er neben dem Titel Platz hat */
+/* Handy: nur das Symbol, damit er neben dem Titel Platz hat */
 @media (max-width: 719.98px) {
   .topbar { gap: 0.5rem; }
   .topbar h1 { font-size: 1.4rem; }   /* Titel und Knopf passen so auch auf schmalen Handys in eine Zeile */
@@ -701,6 +701,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Backup-Zeile unter der Troupe-Liste */
 .backup-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+.backup-row button:hover { border-color: var(--muted); }   /* wie "Replay tutorials": kräftigerer Rahmen beim Darüberfahren */
 .troupe-name { font: 690 1.15rem/1.25 var(--font-display); overflow-wrap: anywhere; }
 .troupe-meta { color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .mini-row { display: flex; flex-wrap: wrap; gap: 0.25rem; min-height: 1.9rem; }
