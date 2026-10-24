@@ -383,7 +383,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   border-right: 2px solid var(--muted);
   border-bottom: 2px solid var(--muted);
   transform: rotate(-45deg);
-  transition: transform 0.26s ease, border-color 0.26s ease;
+  transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.26s ease;
 }
 .keyword-box[open] summary::before { transform: rotate(45deg); }
 .keyword-box.closing summary::before { transform: rotate(-45deg); }   /* beim Zuklappen dreht der Pfeil sofort mit zurück */
@@ -1625,6 +1625,11 @@ img { -webkit-user-drag: none; -webkit-user-select: none; user-select: none; }
 /* Einzelne Frage ohne eigenes Aufklappen: sieht aus wie eine geöffnete Frage */
 .rule-q { font: 690 0.95rem/1.4 var(--font-body); color: var(--accent); }
 .rule-body > details { margin: 0; }
+/* Pfeile drehen beim Auf- und Zuklappen mit (Animation in app.js); beim Zuklappen sofort zurück,
+   denn das <details> ist bis zum Ende der Animation noch offen und trägt solange "closing" */
+.rule-section > summary::before, .rule-group > summary::before { transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.26s ease; }
+.rule-section.closing > summary::before, .rule-group.closing > summary::before { transform: rotate(-45deg); border-color: var(--muted); }
+.rule-group .rule-group.closing > summary { color: inherit; }
 
 /* Farbige Arcane-Symbole im Text */
 .arc { display: inline-block; min-width: 1.15em; padding: 0 0.2em; border-radius: 0.25em; color: #fff; font-weight: 700; font-size: 0.9em; line-height: 1.3; text-align: center; vertical-align: 0.05em; }
@@ -1738,8 +1743,9 @@ mark { background: color-mix(in srgb, var(--accent) 40%, transparent); color: in
 .summon-menu { margin-top: 0.5rem; }
 .summon-menu > summary { cursor: pointer; padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); font-weight: 690; font-size: 0.9rem; list-style: none; }
 .summon-menu > summary::-webkit-details-marker { display: none; }
-.summon-menu > summary::before { content: "›"; display: inline-block; margin-right: 0.5rem; transition: transform 0.15s; }
+.summon-menu > summary::before { content: "›"; display: inline-block; margin-right: 0.5rem; transition: transform 0.26s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .summon-menu[open] > summary::before { transform: rotate(90deg); }
+.summon-menu.closing > summary::before { transform: none; }   /* beim Zuklappen sofort zurück (Animation in app.js) */
 .summon-menu > .grow { margin-top: 0.4rem; }
 
 /* Nicht beschworene Summons: ca. 30 % flacher. Unter dem Namen steht nichts mehr, der Rest wird mittig (oben und unten gleich viel) vom Bild abgeschnitten */
@@ -2039,9 +2045,6 @@ html.touring, html.touring body { overflow: hidden; }
 
 /* Einführung über dem Suchblock im Compendium: aufklappbar wie ein Regel-Abschnitt, Text in Cormorant Garamond */
 .intro-box { margin-bottom: 0.75rem; }
-/* Pfeil dreht beim Auf- und Zuklappen mit; beim Zuklappen sofort zurück (das <details> ist bis zum Ende noch offen) */
-.intro-box > summary::before { transition: transform 0.38s ease, border-color 0.38s ease; }
-.intro-box.closing > summary::before { transform: rotate(-45deg); border-color: var(--muted); }
 /* etwas kleiner als die Charakternamen; echtes Normal (400 statt 460), damit der lange Text nicht halbfett wirkt.
    Fraktionsnamen und Überschrift haben eigene, feste Größen und bleiben größer. */
 .intro-box .intro-text { font-family: var(--font-body); font-size: 0.95rem; font-weight: 400; line-height: 1.5; }

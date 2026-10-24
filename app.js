@@ -78,31 +78,47 @@ function el(tag, props = {}, ...children) {
   return node;
 }
 
-// Sanftes Auf- und Zuklappen eines <details>: der Inhalt gleitet in der Höhe auf bzw. zu und blendet dabei ein bzw. aus.
+// Sanftes Auf- und Zuklappen für alle <details> der App (Synergien, Einführung, Regeln, FAQs, Summons):
+// das ganze <details> gleitet in der Höhe auf bzw. zu, der Inhalt blendet dabei ein bzw. aus.
+// Die Bewegung beginnt sofort mit voller Geschwindigkeit und bremst am Ende ab (in beide Richtungen),
+// damit zwischen Klick und sichtbarer Bewegung keine Verzögerung spürbar ist.
 // Während des Zuklappens trägt das <details> die Klasse "closing" (für den Pfeil), "open" fällt erst am Ende weg.
 // Ein Klick mitten in der Animation kehrt sie an der aktuellen Stelle um.
-function smoothDetails(box, summary, body, duration = 260) {
-  let anim = null;
-  summary.addEventListener("click", (e) => {
-    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    e.preventDefault();
-    const opening = !box.open || box.classList.contains("closing");
-    const cs = getComputedStyle(body);
-    const from = anim ? { height: `${body.offsetHeight}px`, opacity: cs.opacity } : null;   // mitten in einer Animation umkehren
-    if (anim) anim.cancel();
-    box.classList.toggle("closing", !opening);
-    if (opening) box.open = true;
-    const full = { height: `${body.scrollHeight}px`, opacity: 1 };
-    const none = { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
-    body.style.overflow = "hidden";
-    anim = body.animate(opening ? [from || none, full] : [from || full, none], { duration, easing: opening ? "ease-out" : "ease-in" });
-    anim.onfinish = () => {
-      anim = null;
-      body.style.overflow = "";
-      if (!opening) { box.open = false; box.classList.remove("closing"); }
-    };
-  });
-}
+const detailsAnims = new WeakMap();   // <details> -> { box, parts } der laufenden Animation
+document.addEventListener("click", (e) => {
+  const summary = e.target.closest("summary");
+  const box = summary && summary.parentElement;
+  if (!box || box.tagName !== "DETAILS" || box.querySelector(":scope > summary") !== summary) return;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  e.preventDefault();
+  const running = detailsAnims.get(box);
+  const opening = !box.open || box.classList.contains("closing");
+  const parts = [...box.children].filter((c) => c !== summary);
+  const fromHeight = box.offsetHeight;   // aktuelle Höhe, auch mitten in einer Animation
+  const fromOpacity = running && parts[0] ? getComputedStyle(parts[0]).opacity : (opening ? 0 : 1);
+  if (running) { running.box.cancel(); running.parts.forEach((a) => a.cancel()); }
+  box.classList.toggle("closing", !opening);
+  if (opening) box.open = true;
+  // Zielhöhe: offen = volle Höhe, zu = nur die Titelzeile samt Rahmen und Innenabstand
+  const cs = getComputedStyle(box);
+  const frame = box.offsetHeight - box.clientHeight + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+  const toHeight = opening ? box.offsetHeight : summary.offsetHeight + frame;
+  const duration = Math.round(Math.min(420, 200 + Math.abs(toHeight - fromHeight) * 0.12));   // lange Abschnitte etwas länger
+  const timing = { duration, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
+  box.style.overflow = "hidden";
+  const anim = {
+    box: box.animate([{ height: `${fromHeight}px` }, { height: `${toHeight}px` }], timing),
+    parts: parts.map((p) => p.animate([{ opacity: fromOpacity }, { opacity: opening ? 1 : 0 }], { ...timing, fill: "forwards" })),
+  };
+  detailsAnims.set(box, anim);
+  anim.box.onfinish = () => {
+    if (detailsAnims.get(box) !== anim) return;
+    detailsAnims.delete(box);
+    box.style.overflow = "";
+    anim.parts.forEach((a) => a.cancel());
+    if (!opening) { box.open = false; box.classList.remove("closing"); }
+  };
+});
 
 function initials(name) {
   return name.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
@@ -377,8 +393,6 @@ function createFilterPanel(container, onChange) {
   modeBtn.addEventListener("click", () => { state.all = !state.all; renderMode(); onChange(); });
   renderMode();
   const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
-  // Sanftes Auf- und Zuklappen: die Begriffe gleiten in der Höhe auf bzw. zu und blenden dabei ein bzw. aus
-  smoothDetails(synBox, synSummary, synChips);
   const synWrap = el("div", { class: "synergy-wrap" }, synBox);
   // Suchzeile: Eingabe und ganz rechts in der Ecke der OR/AND-Schalter; die Anzahl steht rechts in der Synergies-Zeile; "Reset filters" darunter nur, wenn etwas gefiltert ist
   const count = el("span", { class: "search-count" });
@@ -2623,6 +2637,7 @@ function showView(name) {
     lastTab = name;
     markTab(name);
   }
+  updateReplayButton(name);
   window.scrollTo(0, 0);
   animateViewChange(before, name);
 }
@@ -2686,8 +2701,6 @@ function wireEvents() {
   }
 
   $("#replay-tutorials").addEventListener("click", replayTutorials);
-  // Einführung im Kompendium: gleitet auf und zu wie die Synergien (etwas länger, der Text ist lang)
-  smoothDetails($(".intro-box"), $(".intro-box > summary"), $(".intro-box > .intro-text"), 380);
   $("#new-troupe").addEventListener("click", createTroupe);
   $("#editor-back").addEventListener("click", closeEditor);
 
@@ -2993,18 +3006,27 @@ function showPlayHint() {
   button.addEventListener("click", close, { once: true });   // wer gleich auf Play tippt, braucht den Tipp nicht mehr
 }
 
-// "Replay tutorials" (oben rechts): alle Rundgänge und Tipps wieder einschalten, auch nach "Skip all" oder
-// "Don't show this again", und mit dem Willkommens-Rundgang neu beginnen. Die übrigen erscheinen dann wieder
-// beim nächsten Besuch ihrer Seite.
+// "Replay tutorials" (oben rechts): nur die Rundgänge und Tipps der gerade offenen Seite wieder einschalten
+// (auch nach "Skip all" oder "Don't show this again") und den Rundgang der Seite gleich neu starten.
+// Seiten ohne eigenes Tutorial (Rules, FAQs) zeigen den Knopf nicht (siehe updateReplayButton).
+function pageTutorials(view) {
+  if (view === "compendium") return { keys: [WELCOME_KEY, HINT_KEY], start: startWelcomeTour };   // Rundgang und Umdreh-Tipp der Karten
+  if (view === "troupes") return { keys: [TROUPES_TOUR_KEY], start: startTroupesTour };
+  return null;
+}
+function updateReplayButton(view) {
+  $("#replay-tutorials").hidden = !pageTutorials(view);
+}
 function replayTutorials() {
   if (activeTour) return;   // läuft gerade ein Rundgang, nichts durcheinanderbringen
-  for (const k of ALL_TIP_KEYS) {
+  const page = pageTutorials(currentView());
+  if (!page) return;
+  for (const k of page.keys) {
     try { localStorage.removeItem(k); localStorage.removeItem(`${k}-at`); } catch { /* ignorieren */ }
+    tipsShown.delete(k);
   }
-  tipsShown.clear();
-  hintShownThisSession = false;
-  if (currentView() === "compendium") startWelcomeTour();
-  else $("#tab-compendium").click();   // der Reiter startet den Willkommens-Rundgang selbst
+  if (page.keys.includes(HINT_KEY)) hintShownThisSession = false;
+  page.start();
 }
 
 // Willkommens-Rundgang beim allerersten Öffnen: was die Reiter unten machen
