@@ -101,6 +101,8 @@ function istNetzZuerst(url) {
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  // Anfragen an andere Server (z. B. die Besucherzählung) nicht anfassen und nicht speichern
+  if (new URL(event.request.url).origin !== location.origin) return;
 
   if (istNetzZuerst(new URL(event.request.url))) {
     const ausNetz = fetch(event.request, { cache: "no-cache" }).then((antwort) => {
