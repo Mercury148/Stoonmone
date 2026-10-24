@@ -1377,9 +1377,10 @@ function stepDetail(dir) {
   showDetail(ids[detailNav.index]);
   // Der fokussierte Knopf wurde eben ersetzt: Fokus zurück ins Fenster (auf die Karte), sonst landet er auf der Seite dahinter
   ($("#detail .card-flip") || $("#detail")).focus({ preventScroll: true });
-  // Die neue Karte gleitet kurz aus der Richtung herein, aus der geblättert wurde
+  // Die neue Karte gleitet kurz aus der Richtung herein, aus der geblättert wurde.
+  // In der Kartenansicht nur die Karte selbst: die dunkle Fläche dahinter (style.css) bleibt stehen.
   if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
-    $("#detail-body").animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
+    ($("#detail .card-flip") || $("#detail-body")).animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
   }
 }
 
@@ -3018,8 +3019,9 @@ function pageTutorials(view) {
   if (view === "troupes") return { keys: [TROUPES_TOUR_KEY], start: startTroupesTour };
   return null;
 }
+// unsichtbar statt ausgeblendet: der Platz bleibt, sonst wird die Kopfzeile niedriger und der Titel springt
 function updateReplayButton(view) {
-  $("#replay-tutorials").hidden = !pageTutorials(view);
+  $("#replay-tutorials").classList.toggle("is-off", !pageTutorials(view));
 }
 function replayTutorials() {
   if (activeTour) return;   // läuft gerade ein Rundgang, nichts durcheinanderbringen

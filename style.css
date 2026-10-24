@@ -173,6 +173,21 @@ main, .topbar { max-width: 62rem; margin-inline: auto; }
     var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
 }
 .filter-box .keyword-box { box-shadow: none; }   /* liegt schon in der Filterbox */
+/* Freistehende Knöpfe, Eingabefelder und Hinweise bekommen denselben Schatten.
+   :where() hat keine Spezifität: eigene Schatten (runde Handy-Knöpfe, pulsierender Play-Knopf) gewinnen weiterhin. */
+:where(#replay-tutorials, .backup-row button, .action-row button, .editor-bar .back, #editor-name, #editor-format,
+  .editor-bar .badge.big, #game-add-foe, .foe-actions button, .foe-name, .game-startbar button, .game-tools button,
+  .card-close, .guide-bar input[type="search"], .guide-next, .guide-collapse, .note) {
+  box-shadow:
+    0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)),
+    var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
+}
+/* Schriftzüge ohne Box (Titel, Seitenüberschriften): nur ein weicher Schatten unter der Schrift, halb so weit */
+:where(.topbar h1, .page-head h2, .section-label, .game-title) {
+  text-shadow:
+    0 1px 1px rgb(var(--shadow-rgb) / var(--shadow-near)),
+    calc(var(--sh-x, 0px) * 0.5) calc(var(--sh-y, 6px) * 0.5) calc(var(--sh-b, 18px) * 0.5) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
+}
 .tabs { box-shadow: 0 -1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)), 0 -4px 16px rgb(var(--shadow-rgb) / var(--shadow-far)); }
 
 /* Wabern nur am Rechner (Maus) und ohne "Bewegung reduzieren": spart auf dem Handy Akku.
@@ -187,6 +202,12 @@ main, .topbar { max-width: 62rem; margin-inline: auto; }
   :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(5n) { animation-direction: alternate-reverse; }
   :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(7n + 2) { animation-duration: 17s; animation-delay: -12s; }
   :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(4n + 3) { animation-name: shadow-drift-2; }
+  /* freistehende Knöpfe und Schriftzüge wabern mit (ohne Spezifität, eigene Animationen wie das Pulsieren gehen vor) */
+  :where(#replay-tutorials, .backup-row button, .action-row button, .editor-bar .back, #editor-name, #editor-format,
+    .editor-bar .badge.big, #game-add-foe, .foe-actions button, .foe-name, .game-startbar button, .game-tools button,
+    .card-close, .guide-bar input[type="search"], .guide-next, .guide-collapse, .note) { animation: shadow-drift 13s ease-in-out -5s infinite alternate; }
+  :where(.backup-row button:nth-child(2), .action-row button:nth-child(2), .foe-actions button:nth-child(2), .game-tools button:nth-child(2)) { animation-name: shadow-drift-2; animation-duration: 10s; }
+  :where(.topbar h1, .page-head h2, .section-label, .game-title) { animation: shadow-drift-2 12s ease-in-out -4s infinite alternate; }
 }
 @keyframes shadow-drift {
   0%   { --sh-x: 0px;  --sh-y: 6px;  --sh-b: 18px; --sh-a: 1; }
@@ -220,6 +241,7 @@ button { cursor: pointer; }
 .replay-btn { flex: none; padding: 0.25rem 0.9rem; border-radius: 99px; color: var(--muted); font-size: 0.85rem; font-weight: 575; }
 .replay-btn .ico { width: 1rem; height: 1rem; }
 .replay-btn:hover { color: var(--fg); border-color: var(--muted); }
+.replay-btn.is-off { visibility: hidden; }   /* Seiten ohne Tutorial: Platz bleibt reserviert, der Titel steht überall gleich hoch */
 /* Handy: nur das Symbol als runder Knopf, damit er neben dem Titel Platz hat */
 @media (max-width: 719.98px) {
   .topbar { gap: 0.5rem; }
@@ -958,6 +980,7 @@ dialog.card-view {
   overflow: visible;
   background: transparent;
   border: 0;
+  box-shadow: none;   /* das Fenster ist durchsichtig: sein Schatten wäre nur ein Rahmen um Karte und Close-Knopf */
 }
 dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 /* Beim Blättern mit den Pfeiltasten wird die Karte ersetzt; manche Browser fokussieren dann das Fenster selbst.
@@ -974,6 +997,27 @@ dialog.card-view * { touch-action: pinch-zoom; }
 
 .card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.9rem; cursor: default; user-select: none; -webkit-user-select: none; }   /* nur Beschriftung: kein Textcursor, nicht markierbar */
 .card-stage { position: relative; width: 100%; }
+/* Deckende dunkle Fläche in Kartengröße hinter der Karte: sie bleibt beim Blättern stehen, die neue Karte gleitet
+   darüber herein. So scheint die Seite dahinter (z. B. das Kompendium) nicht durch die halb eingeblendete Karte. */
+.card-view .card-stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 5 / 7;   /* wie .card-flip */
+  border-radius: 14px;
+  background: #0e0d15;   /* Ton des schwarzen Kartenrands */
+  /* derselbe weiche Schatten wie bei den Boxen im Kompendium (Werte des dunklen Modus, die Kartenansicht ist immer dunkel) */
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.5),
+    var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(0 0 0 / calc(0.5 * var(--sh-a, 1)));
+}
+.card-view .card-flip { position: relative; }   /* liegt über der Fläche */
+/* Wabern wie bei den Boxen (nur am Rechner und ohne "Bewegung reduzieren") */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .card-view .card-stage::before { animation: shadow-drift 11s ease-in-out -3s infinite alternate; }
+}
 
 .card-flip {
   display: block;
