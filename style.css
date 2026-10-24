@@ -963,6 +963,8 @@ dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
 /* Beim Blättern mit den Pfeiltasten wird die Karte ersetzt; manche Browser fokussieren dann das Fenster selbst.
    Das Fenster bekommt deshalb keinen gelben Fokusrahmen (die Knöpfe darin behalten ihren). */
 dialog.card-view:focus, dialog.card-view:focus-visible { outline: none; }
+/* Die Karte selbst ebenfalls ohne Rahmen: nach einem Pfeiltasten-Druck zeigt der Browser sonst den Tastatur-Fokus an */
+dialog.card-view .card-flip:focus, dialog.card-view .card-flip:focus-visible { outline: none; }
 /* Geöffnete Karte: die Seite dahinter scrollt nicht mit, und der Browser verschiebt nichts beim Wischen.
    So kommt jedes Wischen nach links/rechts beim Blättern an. Zoomen mit zwei Fingern bleibt möglich. */
 html:has(dialog.card-view[open]), html:has(dialog.card-view[open]) body { overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; }

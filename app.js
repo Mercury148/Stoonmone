@@ -1375,13 +1375,17 @@ function stepDetail(dir) {
   if (ids.length < 2 || !$("#detail").open) return;
   detailNav.index = (detailNav.index + dir + ids.length) % ids.length;   // am Ende geht es vorne weiter
   showDetail(ids[detailNav.index]);
+  // Der fokussierte Knopf wurde eben ersetzt: Fokus zurück ins Fenster (auf die Karte), sonst landet er auf der Seite dahinter
+  ($("#detail .card-flip") || $("#detail")).focus({ preventScroll: true });
   // Die neue Karte gleitet kurz aus der Richtung herein, aus der geblättert wurde
   if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
     $("#detail-body").animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
   }
 }
 
-$("#detail").addEventListener("keydown", (e) => {
+// Auf dem ganzen Dokument lauschen, nicht nur im Fenster: so kommt jeder Tastendruck an, egal wo der Fokus gerade liegt
+document.addEventListener("keydown", (e) => {
+  if (!$("#detail").open || e.altKey || e.ctrlKey || e.metaKey) return;
   if (e.key === "ArrowRight") { e.preventDefault(); stepDetail(1); }
   else if (e.key === "ArrowLeft") { e.preventDefault(); stepDetail(-1); }
 });
