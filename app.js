@@ -78,6 +78,32 @@ function el(tag, props = {}, ...children) {
   return node;
 }
 
+// Sanftes Auf- und Zuklappen eines <details>: der Inhalt gleitet in der Höhe auf bzw. zu und blendet dabei ein bzw. aus.
+// Während des Zuklappens trägt das <details> die Klasse "closing" (für den Pfeil), "open" fällt erst am Ende weg.
+// Ein Klick mitten in der Animation kehrt sie an der aktuellen Stelle um.
+function smoothDetails(box, summary, body, duration = 260) {
+  let anim = null;
+  summary.addEventListener("click", (e) => {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    e.preventDefault();
+    const opening = !box.open || box.classList.contains("closing");
+    const cs = getComputedStyle(body);
+    const from = anim ? { height: `${body.offsetHeight}px`, opacity: cs.opacity } : null;   // mitten in einer Animation umkehren
+    if (anim) anim.cancel();
+    box.classList.toggle("closing", !opening);
+    if (opening) box.open = true;
+    const full = { height: `${body.scrollHeight}px`, opacity: 1 };
+    const none = { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
+    body.style.overflow = "hidden";
+    anim = body.animate(opening ? [from || none, full] : [from || full, none], { duration, easing: opening ? "ease-out" : "ease-in" });
+    anim.onfinish = () => {
+      anim = null;
+      body.style.overflow = "";
+      if (!opening) { box.open = false; box.classList.remove("closing"); }
+    };
+  });
+}
+
 function initials(name) {
   return name.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 }
@@ -352,26 +378,7 @@ function createFilterPanel(container, onChange) {
   renderMode();
   const synBox = el("details", { class: "keyword-box synergy-box" }, synSummary, synChips);
   // Sanftes Auf- und Zuklappen: die Begriffe gleiten in der Höhe auf bzw. zu und blenden dabei ein bzw. aus
-  let synAnim = null;
-  synSummary.addEventListener("click", (e) => {
-    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    e.preventDefault();
-    const opening = !synBox.open || synBox.classList.contains("closing");
-    const cs = getComputedStyle(synChips);
-    const from = synAnim ? { height: `${synChips.offsetHeight}px`, opacity: cs.opacity } : null;   // mitten in einer Animation umkehren
-    if (synAnim) synAnim.cancel();
-    synBox.classList.toggle("closing", !opening);
-    if (opening) synBox.open = true;
-    const full = { height: `${synChips.scrollHeight}px`, opacity: 1 };
-    const none = { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
-    synChips.style.overflow = "hidden";
-    synAnim = synChips.animate(opening ? [from || none, full] : [from || full, none], { duration: 260, easing: opening ? "ease-out" : "ease-in" });
-    synAnim.onfinish = () => {
-      synAnim = null;
-      synChips.style.overflow = "";
-      if (!opening) { synBox.open = false; synBox.classList.remove("closing"); }
-    };
-  });
+  smoothDetails(synBox, synSummary, synChips);
   const synWrap = el("div", { class: "synergy-wrap" }, synBox);
   // Suchzeile: Eingabe und ganz rechts in der Ecke der OR/AND-Schalter; die Anzahl steht rechts in der Synergies-Zeile; "Reset filters" darunter nur, wenn etwas gefiltert ist
   const count = el("span", { class: "search-count" });
@@ -1296,12 +1303,17 @@ function openCardView(c) {
   let hint = hasBack && !hintDisabled() && !hintShownThisSession ? buildFlipHint() : null;
 
   const side = el("div", { class: "card-side", text: hasBack ? "Front" : "" });
-  const faces = [
-    el("div", { class: "card-face" }, el("img", { src: c.card, alt: `Character card: ${c.name}` })),
-  ];
-  if (hasBack) {
-    faces.push(el("div", { class: "card-face back" }, el("img", { src: c.cardBack, alt: `Back of the card with the signature move: ${c.name}` })));
-  }
+  // Jede Seite zeigt einen Lade-Platzhalter in Kartengröße (siehe style.css), bis ihr Bild da ist; dann blendet das Bild ein
+  const face = (cls, src, alt) => {
+    const box = el("div", { class: cls });
+    const done = () => box.classList.add("loaded");
+    const img = el("img", { src, alt, onload: done, onerror: done });
+    if (img.complete && img.naturalWidth) done();
+    box.append(img);
+    return box;
+  };
+  const faces = [face("card-face", c.card, `Character card: ${c.name}`)];
+  if (hasBack) faces.push(face("card-face back", c.cardBack, `Back of the card with the signature move: ${c.name}`));
   const inner = el("div", { class: "card-inner" }, ...faces);
 
   let card;
@@ -2673,6 +2685,9 @@ function wireEvents() {
     });
   }
 
+  $("#replay-tutorials").addEventListener("click", replayTutorials);
+  // Einführung im Kompendium: gleitet auf und zu wie die Synergien (etwas länger, der Text ist lang)
+  smoothDetails($(".intro-box"), $(".intro-box > summary"), $(".intro-box > .intro-text"), 380);
   $("#new-troupe").addEventListener("click", createTroupe);
   $("#editor-back").addEventListener("click", closeEditor);
 
@@ -2976,6 +2991,20 @@ function showPlayHint() {
   document.body.append(bubble);
   button.classList.add("tip-pulse");
   button.addEventListener("click", close, { once: true });   // wer gleich auf Play tippt, braucht den Tipp nicht mehr
+}
+
+// "Replay tutorials" (oben rechts): alle Rundgänge und Tipps wieder einschalten, auch nach "Skip all" oder
+// "Don't show this again", und mit dem Willkommens-Rundgang neu beginnen. Die übrigen erscheinen dann wieder
+// beim nächsten Besuch ihrer Seite.
+function replayTutorials() {
+  if (activeTour) return;   // läuft gerade ein Rundgang, nichts durcheinanderbringen
+  for (const k of ALL_TIP_KEYS) {
+    try { localStorage.removeItem(k); localStorage.removeItem(`${k}-at`); } catch { /* ignorieren */ }
+  }
+  tipsShown.clear();
+  hintShownThisSession = false;
+  if (currentView() === "compendium") startWelcomeTour();
+  else $("#tab-compendium").click();   // der Reiter startet den Willkommens-Rundgang selbst
 }
 
 // Willkommens-Rundgang beim allerersten Öffnen: was die Reiter unten machen

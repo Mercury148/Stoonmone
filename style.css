@@ -213,10 +213,21 @@ button { cursor: pointer; }
 :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- Kopfzeile ---------- */
-.topbar { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; padding-block: 0.5rem 1rem; }
-.topbar h1 { margin: 0; display: flex; align-items: center; gap: 0.5rem; font: 690 1.6rem/1.1 var(--font-display); letter-spacing: 0.01em; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-block: 0.5rem 1rem; }
+.topbar h1 { min-width: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; font: 690 1.6rem/1.1 var(--font-display); letter-spacing: 0.01em; }
 .logo { width: 1.5rem; height: 1.5rem; color: var(--accent); }
-.sub { margin: 0; color: var(--muted); font-size: 0.85rem; }
+/* "Replay tutorials" oben rechts: zurückhaltend, damit er dem Titel nicht die Show stiehlt */
+.replay-btn { flex: none; padding: 0.25rem 0.9rem; border-radius: 99px; color: var(--muted); font-size: 0.85rem; font-weight: 575; }
+.replay-btn .ico { width: 1rem; height: 1rem; }
+.replay-btn:hover { color: var(--fg); border-color: var(--muted); }
+/* Handy: nur das Symbol als runder Knopf, damit er neben dem Titel Platz hat */
+@media (max-width: 719.98px) {
+  .topbar { gap: 0.5rem; }
+  .topbar h1 { font-size: 1.4rem; }   /* Titel und Knopf passen so auch auf schmalen Handys in eine Zeile */
+  .replay-btn { width: 44px; padding: 0; }
+  .replay-btn span { display: none; }
+  .replay-btn .ico { width: 1.25rem; height: 1.25rem; }
+}
 body.editing .topbar { display: none; }
 
 .note { margin: 0 0 1rem; padding: 0.6rem 0.8rem; background: var(--accent-soft); border-radius: var(--radius); font-size: 0.9rem; }
@@ -949,6 +960,9 @@ dialog.card-view {
   border: 0;
 }
 dialog.card-view::backdrop { background: rgba(8, 9, 16, 0.88); }
+/* Beim Blättern mit den Pfeiltasten wird die Karte ersetzt; manche Browser fokussieren dann das Fenster selbst.
+   Das Fenster bekommt deshalb keinen gelben Fokusrahmen (die Knöpfe darin behalten ihren). */
+dialog.card-view:focus, dialog.card-view:focus-visible { outline: none; }
 /* Geöffnete Karte: die Seite dahinter scrollt nicht mit, und der Browser verschiebt nichts beim Wischen.
    So kommt jedes Wischen nach links/rechts beim Blättern an. Zoomen mit zwei Fingern bleibt möglich. */
 html:has(dialog.card-view[open]), html:has(dialog.card-view[open]) body { overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; }
@@ -956,7 +970,7 @@ dialog.card-view { touch-action: pinch-zoom; overscroll-behavior: contain; }
 dialog.card-view * { touch-action: pinch-zoom; }
 .card-view .detail { padding: 0; gap: 0.75rem; justify-items: center; }
 
-.card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.9rem; }
+.card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.9rem; cursor: default; user-select: none; -webkit-user-select: none; }   /* nur Beschriftung: kein Textcursor, nicht markierbar */
 .card-stage { position: relative; width: 100%; }
 
 .card-flip {
@@ -983,6 +997,30 @@ dialog.card-view * { touch-action: pinch-zoom; }
   width: 100%;
   height: 100%;
   object-fit: fill;
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+/* Lade-Platzhalter: füllt genau das Kartenfeld, ein heller Streifen streicht von links unten nach rechts oben.
+   Sobald das Bild geladen ist (Klasse "loaded"), blendet es darüber ein und der Platzhalter verschwindet. */
+/* deckend, im dunklen Ton des Kartenrands, damit die Seite dahinter nicht durchscheint */
+.card-face { background: #1b1c28; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
+.card-face::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top right, transparent 35%, rgba(255, 255, 255, 0.05) 43%, rgba(255, 255, 255, 0.14) 50%, rgba(255, 255, 255, 0.05) 57%, transparent 65%) 100% 0% / 300% 300% no-repeat;
+  animation: card-sweep 1.8s ease-in-out infinite;
+}
+@keyframes card-sweep {
+  0% { background-position: 100% 0%; }
+  75%, 100% { background-position: 0% 100%; }   /* kurze Pause zwischen zwei Durchgängen */
+}
+.card-face.loaded { background: none; box-shadow: none; }
+.card-face.loaded::before { content: none; }
+.card-face.loaded img { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .card-face::before { animation: none; }
+  .card-face img { transition: none; }
 }
 
 /* Knöpfe unter der Karte: Zoom (nur am Computer) und Schließen */
@@ -2001,11 +2039,17 @@ html.touring, html.touring body { overflow: hidden; }
 
 /* Einführung über dem Suchblock im Compendium: aufklappbar wie ein Regel-Abschnitt, Text in Cormorant Garamond */
 .intro-box { margin-bottom: 0.75rem; }
-.intro-box .intro-text { font-family: var(--font-body); font-size: 1.1rem; line-height: 1.5; }
+/* Pfeil dreht beim Auf- und Zuklappen mit; beim Zuklappen sofort zurück (das <details> ist bis zum Ende noch offen) */
+.intro-box > summary::before { transition: transform 0.38s ease, border-color 0.38s ease; }
+.intro-box.closing > summary::before { transform: rotate(-45deg); border-color: var(--muted); }
+/* etwas kleiner als die Charakternamen; echtes Normal (400 statt 460), damit der lange Text nicht halbfett wirkt.
+   Fraktionsnamen und Überschrift haben eigene, feste Größen und bleiben größer. */
+.intro-box .intro-text { font-family: var(--font-body); font-size: 0.95rem; font-weight: 400; line-height: 1.5; }
+@media (max-width: 599px) { .intro-box .intro-text { font-size: 0.85rem; } }
 /* Wappen in der Einführung: Beschriftung so groß und in derselben Farbe wie der übrige Einführungstext */
 .intro-box .rule-gallery.described figcaption { font-size: inherit; line-height: inherit; }
-.intro-box .rule-gallery.described figcaption strong { font-weight: 690; }
-.intro-box .rule-gallery.described figcaption span { font-weight: 460; color: inherit; }   /* 460 = wie der Einführungstext */
+.intro-box .rule-gallery.described figcaption strong { font-weight: 690; font-size: 1.1rem; }   /* Fraktionsnamen bleiben größer als der Text */
+.intro-box .rule-gallery.described figcaption span { font-weight: 400; color: inherit; }   /* 400 = wie der Einführungstext */
 
 /* Verweise zwischen Regel-Abschnitten */
 .rule-link { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
