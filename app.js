@@ -1082,6 +1082,10 @@ function updateGlow() {
     // Erst alle Positionen lesen, dann schreiben (sonst rechnet der Browser bei jedem Wappen das Layout neu)
     for (const t of glowTargets) {
       for (const node of t.container.querySelectorAll(t.measure)) {
+        // erst die Kachel selbst: liegt sie außerhalb, nicht hineinmessen (sonst müsste der Browser
+        // den übersprungenen Inhalt der Kompendium-Kacheln, siehe content-visibility, doch berechnen)
+        const box = node.closest(t.host).getBoundingClientRect();
+        if (box.bottom < 0 || box.top > innerHeight) continue;
         const r = node.getBoundingClientRect();
         if (!r.width || r.bottom < 0 || r.top > innerHeight) continue;   // ausgeblendet oder nicht im Bild
         const near = 1 - Math.min(1, Math.hypot(glowPos.x - (r.left + r.width / 2), glowPos.y - (r.top + r.height / 2)) / (r.width * t.range));

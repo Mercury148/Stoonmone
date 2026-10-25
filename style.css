@@ -1880,6 +1880,12 @@ ul.plain-list li + li { margin-top: 0.35rem; }
 
 .card-kw .kw-hit { color: var(--accent); font-weight: 700; }
 
+/* Kacheln außerhalb des Bildschirms überspringt der Browser (kein Stil, kein Layout für ihren Inhalt): macht den Wechsel
+   zum Kompendium und das Filtern schneller. Bis zum ersten Zeichnen gilt die geschätzte Höhe, danach merkt er sich die echte (auto).
+   Höhe ohne den 1px-Rahmen oben und unten, gemessen: Kacheln sind 89.55 px hoch (Handy 149.27 px) */
+.cards .card { content-visibility: auto; contain-intrinsic-block-size: auto 87.55px; }
+@media (max-width: 599px) { .cards .card { contain-intrinsic-block-size: auto 147.27px; } }
+
 /* Handy-Ansicht des Kompendiums: zwei Kacheln nebeneinander, Portrait links oben, Wappen rechts oben */
 .card-crest { display: none; }
 .card-main .card-faction { display: none; }   /* Fraktion zeigt nur das blasse Wappen, keine Punkte und Namen */
