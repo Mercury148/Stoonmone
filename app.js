@@ -366,7 +366,8 @@ function factionBadge(faction) {
 // Baut Suchfeld, Fraktionsauswahl und Keyword-Box in einen Container.
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
-function createFilterPanel(container, onChange) {
+// onEnter (optional): wird bei Enter im Suchfeld zuerst gefragt; gibt es true zurück, ist Enter damit erledigt
+function createFilterPanel(container, onChange, { onEnter } = {}) {
   const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
@@ -512,7 +513,12 @@ function createFilterPanel(container, onChange) {
     clearTimeout(tagTimer);
     tagTimer = setTimeout(() => applyTagMatch(false), 1000);
   });
-  search.addEventListener("keydown", (e) => { if (e.key === "Enter") applyTagMatch(true); });
+  search.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    // Zuerst darf der Bereich selbst reagieren (Editor: genau ein Treffer -> zur Troupe hinzufügen)
+    if (search.value.trim() && onEnter && onEnter()) { e.preventDefault(); clearTimeout(tagTimer); return; }
+    applyTagMatch(true);
+  });
   reset.addEventListener("click", () => {
     state.query = ""; state.factions.clear(); state.synergies.clear(); state.all = false; renderMode();
     search.value = "";
@@ -580,6 +586,13 @@ function createFilterPanel(container, onChange) {
         renderSynergies();
       renderFactions();
       synBox.open = false;
+    },
+    // Nach dem Hinzufügen aus einer Suche: Suchfeld wieder auswählen, der Text ist markiert und wird beim Weitertippen ersetzt.
+    // Ohne Suchtext passiert nichts (sonst springt beim Antippen der Kacheln auf dem Handy die Tastatur auf).
+    refocusSearch() {
+      if (!search.value.trim()) return;
+      search.focus({ preventScroll: true });
+      search.select();
     },
     // Fraktionen, die nicht mehr möglich sind, werden abgedunkelt (null = alle möglich)
     setAllowed(set) {
@@ -681,6 +694,7 @@ function toggleMember(id) {
   }
   saveTroupes();
   renderEditor();
+  if (index < 0) editorPanel.refocusSearch();   // hinzugefügt: gleich den nächsten Charakter suchen können
 }
 
 // Charakter über sein Platz-Symbol oben aus der Troupe nehmen
@@ -1263,10 +1277,24 @@ function renderSummons() {
 }
 
 // Nur die Kacheln neu zeichnen (beim Filtern bleibt so das Suchfeld unberührt)
+// Die Kacheln, die der Editor gerade zeigt:
+// Charaktere, die nicht zu den Fraktionen der Troupe passen, werden ausgeblendet.
+// Beschworene Charaktere stehen nicht zur Auswahl, sie erscheinen automatisch in ihrer eigenen Zeile.
+function editorTileList() {
+  return editorPanel.list().filter((c) => !isSummoned(c) && (current.ids.includes(c.id) || fitsFactions(current, c)));
+}
+
+// Enter im Suchfeld des Editors: bleibt genau ein Modell übrig, das noch nicht in der Troupe ist, wird es hinzugefügt
+// (passt es nicht in die Troupe, erklärt ein Hinweis warum). Sonst wie bisher (Synergie-Begriff anwählen).
+function addSingleHit() {
+  const list = editorTileList();
+  if (list.length !== 1 || current.ids.includes(list[0].id)) return false;
+  toggleMember(list[0].id);
+  return true;
+}
+
 function renderTiles() {
-  // Charaktere, die nicht zu den Fraktionen der Troupe passen, werden ausgeblendet
-  // Beschworene Charaktere stehen nicht zur Auswahl, sie erscheinen automatisch in ihrer eigenen Zeile
-  const fitting = editorPanel.list().filter((c) => !isSummoned(c) && (current.ids.includes(c.id) || fitsFactions(current, c)));
+  const fitting = editorTileList();
   editorPanel.showCount(fitting.length, data.characters.filter((c) => !isSummoned(c)).length);
 
   const list = fitting;   // feste Reihenfolge, nichts springt beim Auswählen
@@ -2890,7 +2918,7 @@ async function boot() {
 
   loadTroupes();
   compendiumPanel = createFilterPanel($("#compendium-filters"), renderCards);
-  editorPanel = createFilterPanel($("#editor-filters"), renderTiles);
+  editorPanel = createFilterPanel($("#editor-filters"), renderTiles, { onEnter: addSingleHit });
   foePanel = createFilterPanel($("#game-foe-filters"), renderGame);
   renderCards();
   renderTroupes();
