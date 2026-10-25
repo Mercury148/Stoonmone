@@ -349,7 +349,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   position: relative;
   isolation: isolate;   /* alle Leuchtflächen (z-index -1) liegen hinter allen Wappen, aber vor dem Hintergrund */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+  /* 4 Wappen nebeneinander; passen keine 4 (4 × 4.5rem + 3 Lücken = 19.5rem), dann 2 × 2 statt 3 + 1:
+     unter 19.5rem wird die Mindestbreite sprunghaft zur halben Zeile */
+  grid-template-columns: repeat(auto-fit, minmax(clamp(4.5rem, (19.5rem - 100%) * 999, 50% - 0.25rem), 1fr));
   gap: 0.5rem;
   padding: 0.95rem 0.5rem 0.3rem;   /* oben etwas mehr Platz für das Geweih von Leshavult */
   background: var(--surface);
