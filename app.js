@@ -742,8 +742,15 @@ function deleteButton(t) {
       button.replaceChildren(el("span", { class: "del-text", text: "Delete?" }));
       timer = setTimeout(() => {
         armed = false;
-        button.classList.remove("armed");
-        button.replaceChildren(el("span", { class: "slot-x", "aria-hidden": "true", text: "×" }));
+        // erst zuklappen lassen, dann wieder das X zeigen (ohne Animation, etwa bei "Bewegung reduzieren", sofort)
+        const text = button.querySelector(".del-text");
+        const reset = () => {
+          button.classList.remove("armed");
+          button.replaceChildren(el("span", { class: "slot-x reappear", "aria-hidden": "true", text: "×" }));
+        };
+        text.classList.add("closing");
+        if (text.getAnimations().length) text.addEventListener("animationend", reset, { once: true });
+        else reset();
       }, 3000);
       return;
     }
@@ -1176,7 +1183,35 @@ function placeBackdropEyes() {
   }
 }
 
+// Beim Filtern springen die Kacheln nicht an ihren neuen Platz, sondern gleiten sehr schnell dorthin;
+// neu hinzukommende blenden kurz ein. Gemerkt wird die Lage vor dem Neuaufbau (über data-char), danach
+// startet jede Kachel um den Unterschied versetzt und läuft zurück auf 0 (FLIP).
+function animateTiles(container, rebuild) {
+  const before = new Map();
+  // (reduceMotion ist erst weiter unten definiert; der erste Aufbau läuft früher)
+  if (container.offsetParent && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const node of container.querySelectorAll("[data-char]")) before.set(node.dataset.char, node.getBoundingClientRect());
+  }
+  rebuild();
+  if (!before.size) return;   // erster Aufbau oder Seite nicht sichtbar: nichts animieren
+  for (const node of container.querySelectorAll("[data-char]")) {
+    const r = node.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) continue;   // außerhalb des Bildschirms lohnt es nicht
+    const old = before.get(node.dataset.char);
+    if (!old) {
+      node.animate([{ opacity: 0, transform: "scale(0.96)" }, { opacity: 1, transform: "none" }], { duration: 180, easing: "ease-out" });
+      continue;
+    }
+    const dx = old.left - r.left, dy = old.top - r.top;
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
+    node.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }], { duration: 220, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
+  }
+}
+
 function renderCards() {
+  animateTiles($("#cards"), renderCardsNow);
+}
+function renderCardsNow() {
   // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
   const list = compendiumPanel.list().filter((c) => c.compendium !== false);
   compendiumPanel.showCount(list.length, data.characters.filter((c) => c.compendium !== false).length);
@@ -1369,6 +1404,9 @@ function addSingleHit() {
 }
 
 function renderTiles() {
+  animateTiles($("#editor-tiles"), renderTilesNow);
+}
+function renderTilesNow() {
   const fitting = editorTileList();
   editorPanel.showCount(fitting.length, data.characters.filter((c) => !isSummoned(c)).length);
 
@@ -2700,9 +2738,9 @@ function createGuide(container, config) {
 
 let lastTab = "compendium";
 
-// Seitenwechsel über die untere Leiste: die neue Seite blendet ein und gleitet ein Stück aus der Richtung des Tabs herein
-// (Tab weiter rechts: von rechts, sonst von links). Teile mit fest am Rand stehenden Knöpfen (Plus, Import) gleiten nicht mit,
-// denn ein Verschieben würde diese Knöpfe kurz mitnehmen; sie blenden nur ein.
+// Seitenwechsel über die untere Leiste: die neue Seite ist sofort voll da (kein Einblenden, das wirkt wie Warten)
+// und gleitet nur ein kleines Stück aus der Richtung des Tabs herein (Tab weiter rechts: von rechts, sonst von links).
+// Teile mit fest am Rand stehenden Knöpfen (Plus, Import) gleiten nicht mit, denn ein Verschieben würde diese Knöpfe kurz mitnehmen.
 const TAB_ORDER = ["compendium", "troupes", "rules", "faqs"];
 const FIXED_BUTTONS = ".add-btn, #import-open";
 function animateViewChange(from, to) {
@@ -2710,8 +2748,7 @@ function animateViewChange(from, to) {
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const view = $(`#view-${to}`);
   const dir = TAB_ORDER.indexOf(to) > TAB_ORDER.indexOf(from) ? 1 : -1;
-  const timing = { duration: 240, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
-  view.animate([{ opacity: 0 }, { opacity: 1 }], timing);
+  const timing = { duration: 180, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" };
   for (const part of view.children) {
     if (part.matches(FIXED_BUTTONS) || part.querySelector(FIXED_BUTTONS)) continue;
     part.animate([{ transform: `translateX(${dir * 18}px)` }, { transform: "none" }], timing);
@@ -2790,21 +2827,13 @@ function closeEditor() {
 /* ---------- 8. Start ---------- */
 
 function wireEvents() {
-  // Erst die Markierung umsetzen (sie gleitet sofort los), die neue Seite erst im nächsten Bild aufbauen.
-  // Bei schnellen Klicks hintereinander wird nur die Seite des letzten Klicks aufgebaut.
-  let pendingTab = null;
+  // Die neue Seite erscheint sofort im selben Bild wie die Markierung (kein Warten auf das nächste Bild)
   for (const tab of document.querySelectorAll("[role=tab]")) {
     tab.addEventListener("click", () => {
       const name = tab.dataset.tab;
-      pendingTab = name;
-      markTab(name);
-      requestAnimationFrame(() => setTimeout(() => {
-        if (pendingTab !== name) return;
-        pendingTab = null;
-        showView(name);
-        if (name === "troupes") { renderTroupes(); setTimeout(startTroupesTour, 400); }   // erster Besuch: kurzer Rundgang
-        if (name === "compendium") setTimeout(startWelcomeTour, 400);   // unterbrochener Willkommens-Rundgang geht hier weiter
-      }, 0));
+      showView(name);
+      if (name === "troupes") { renderTroupes(); setTimeout(startTroupesTour, 400); }   // erster Besuch: kurzer Rundgang
+      if (name === "compendium") setTimeout(startWelcomeTour, 400);   // unterbrochener Willkommens-Rundgang geht hier weiter
     });
   }
 

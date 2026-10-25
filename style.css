@@ -185,6 +185,8 @@ main, .topbar { max-width: 62rem; margin-inline: auto; }
 /* Blinzeln (app.js setzt .blink kurz, wenn die Maus länger auf den Augen ruht) */
 .backdrop-eyes.blink span { transform: scaleY(0.06); }
 @media (prefers-reduced-motion: reduce) { .backdrop-eyes span { animation: none; } }
+/* Unsichtbar (Maus weit weg, app.js hat --near entfernt): nicht animieren, sonst rechnet der Browser jedes Bild neu */
+.backdrop-eyes:not([style*="--near"]) span, .backdrop-moonstone:not([style*="--near"])::before { animation: none; }
 
 /* Easter Egg: Mondstein im Beutel der Duchess. Schwächer als die Augen, dafür weiter gestreut; pulsiert langsam */
 .backdrop-moonstone {
@@ -219,17 +221,13 @@ main, .topbar { max-width: 62rem; margin-inline: auto; }
 }
 
 /* Alle Flächen der App liegen mit einem dunklen Schatten über dem Hintergrund.
-   Der weiche Anteil wabert leicht: Versatz (--sh-x/--sh-y), Unschärfe (--sh-b) und Stärke (--sh-a) werden animiert.
-   @property macht diese Werte animierbar; ohne Unterstützung bleibt der Schatten einfach still. */
-@property --sh-x { syntax: "<length>"; inherits: false; initial-value: 0px; }
-@property --sh-y { syntax: "<length>"; inherits: false; initial-value: 6px; }
-@property --sh-b { syntax: "<length>"; inherits: false; initial-value: 18px; }
-@property --sh-a { syntax: "<number>"; inherits: false; initial-value: 1; }
+   Der Schatten steht still: ein Wabern (animierte Schattenwerte) ließ den Browser jedes Bild neu berechnen,
+   das hielt ihn dauerhaft beschäftigt und machte jeden Klick (etwa den Wechsel der Reiter) spürbar träge. */
 .filter-box, .keyword-box, .card, .troupe-card, .new-wrap.as-card, .tile, .slot-portrait, .slot-empty,
 .share, .rule-section, .summon-menu > summary, dialog {
   box-shadow:
     0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)),
-    var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
+    0 6px 18px rgb(var(--shadow-rgb) / var(--shadow-far));
 }
 .filter-box .keyword-box { box-shadow: none; }   /* liegt schon in der Filterbox */
 /* Freistehende Knöpfe, Eingabefelder und Hinweise bekommen denselben Schatten.
@@ -239,48 +237,16 @@ main, .topbar { max-width: 62rem; margin-inline: auto; }
   .card-close, .guide-bar input[type="search"], .guide-next, .guide-collapse, .note) {
   box-shadow:
     0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)),
-    var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
+    0 6px 18px rgb(var(--shadow-rgb) / var(--shadow-far));
 }
 /* Schriftzüge ohne Box (Titel, Seitenüberschriften): nur ein weicher Schatten unter der Schrift, halb so weit */
 :where(.topbar h1, .page-head h2, .section-label, .game-title) {
   text-shadow:
     0 1px 1px rgb(var(--shadow-rgb) / var(--shadow-near)),
-    calc(var(--sh-x, 0px) * 0.5) calc(var(--sh-y, 6px) * 0.5) calc(var(--sh-b, 18px) * 0.5) rgb(var(--shadow-rgb) / calc(var(--shadow-far) * var(--sh-a, 1)));
+    0 3px 9px rgb(var(--shadow-rgb) / var(--shadow-far));
 }
 .tabs { box-shadow: 0 -1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)), 0 -4px 16px rgb(var(--shadow-rgb) / var(--shadow-far)); }
 
-/* Wabern nur am Rechner (Maus) und ohne "Bewegung reduzieren": spart auf dem Handy Akku.
-   Unterschiedliche Dauer, Verzögerung und Richtung je Position, damit nicht alle Schatten im Gleichtakt atmen. */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  /* :not(...): kurze Hinweis-Animationen (Aufblitzen bei Suchtreffern) nicht überschreiben */
-  :is(.filter-box, .card, .troupe-card, .new-wrap.as-card, .tile, .slot-portrait, .slot-empty, .share, .rule-section):not(.flash, .hit-flash) {
-    animation: shadow-drift 11s ease-in-out -3s infinite alternate;
-  }
-  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(3n) { animation-duration: 14s; animation-delay: -9s; }
-  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(3n + 1) { animation-duration: 9s; animation-delay: -1s; }
-  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(5n) { animation-direction: alternate-reverse; }
-  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(7n + 2) { animation-duration: 17s; animation-delay: -12s; }
-  :is(.card, .troupe-card, .tile, .slot-portrait, .slot-empty, .rule-section):not(.flash, .hit-flash):nth-child(4n + 3) { animation-name: shadow-drift-2; }
-  /* freistehende Knöpfe und Schriftzüge wabern mit (ohne Spezifität, eigene Animationen wie das Pulsieren gehen vor) */
-  :where(#replay-tutorials, .backup-row button, .action-row button, .editor-bar .back, #editor-name, #editor-format,
-    .editor-bar .badge.big, #game-add-foe, .foe-actions button, .foe-name, .game-startbar button, .game-tools button,
-    .card-close, .guide-bar input[type="search"], .guide-next, .guide-collapse, .note) { animation: shadow-drift 13s ease-in-out -5s infinite alternate; }
-  :where(.backup-row button:nth-child(2), .action-row button:nth-child(2), .foe-actions button:nth-child(2), .game-tools button:nth-child(2)) { animation-name: shadow-drift-2; animation-duration: 10s; }
-  :where(.topbar h1, .page-head h2, .section-label, .game-title) { animation: shadow-drift-2 12s ease-in-out -4s infinite alternate; }
-}
-@keyframes shadow-drift {
-  0%   { --sh-x: 0px;  --sh-y: 6px;  --sh-b: 18px; --sh-a: 1; }
-  30%  { --sh-x: 3px;  --sh-y: 9px;  --sh-b: 23px; --sh-a: 1.15; }
-  55%  { --sh-x: -2px; --sh-y: 5px;  --sh-b: 15px; --sh-a: 0.88; }
-  80%  { --sh-x: -4px; --sh-y: 10px; --sh-b: 25px; --sh-a: 1.1; }
-  100% { --sh-x: 1px;  --sh-y: 7px;  --sh-b: 19px; --sh-a: 0.95; }
-}
-@keyframes shadow-drift-2 {
-  0%   { --sh-x: -2px; --sh-y: 8px;  --sh-b: 21px; --sh-a: 1.05; }
-  35%  { --sh-x: 2px;  --sh-y: 5px;  --sh-b: 16px; --sh-a: 0.9; }
-  65%  { --sh-x: 4px;  --sh-y: 10px; --sh-b: 24px; --sh-a: 1.18; }
-  100% { --sh-x: -1px; --sh-y: 6px;  --sh-b: 17px; --sh-a: 0.97; }
-}
 
 .sr-only {
   position: absolute; width: 1px; height: 1px; overflow: hidden;
@@ -403,6 +369,9 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .faction-btn:nth-child(2) { animation-duration: 5.9s, 7.7s; animation-delay: -2.1s, -4.6s; }
 .faction-btn:nth-child(3) { animation-duration: 4.3s, 8.9s; animation-delay: -3.4s, -1.3s; }
 .faction-btn:nth-child(4) { animation-duration: 6.7s, 5.6s; animation-delay: -0.8s, -3.9s; }
+/* Pulsieren nur, solange die Maus in der Nähe ist (trackGlow setzt dann --near am Wappen). Sonst angehalten statt entfernt:
+   kein Sprung, und ein laufendes Pulsieren würde den Browser jedes Bild neu rechnen lassen (macht jeden Klick träge) */
+.faction-btn:not([style*="--near"]) { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { .faction-btn { animation: none; } }
 .faction-icon { width: 1.7rem; height: 1.7rem; display: grid; place-items: center; font: 690 0.8rem/1 var(--font-display); }
 .faction-icon svg, .faction-icon img { width: 100%; height: 100%; }
@@ -739,7 +708,24 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   color: #fff;
   font-size: 0.85rem;
   font-weight: 690;
+  white-space: nowrap;
+  animation: del-open 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
+/* "Delete?" klappt aus dem runden X nach links auf (der Knopf hängt rechts), nach Ablauf wieder zu */
+.troupe-delete.armed .del-text.closing { animation: del-close 0.16s ease-in forwards; }
+@keyframes del-open {
+  from { clip-path: inset(0 0 0 calc(100% - 1.6rem) round 99px); color: transparent; }
+  60%  { color: transparent; }
+  to   { clip-path: inset(0 0 0 0 round 99px); }
+}
+@keyframes del-close {
+  from { clip-path: inset(0 0 0 0 round 99px); }
+  40%  { color: transparent; }
+  to   { clip-path: inset(0 0 0 calc(100% - 1.6rem) round 99px); color: transparent; }
+}
+.troupe-delete .slot-x.reappear { animation: del-x-in 0.18s ease-out; }
+@keyframes del-x-in { from { scale: 0.6; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .troupe-delete .del-text, .troupe-delete .slot-x { animation: none; } }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
 .icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .export-btn { margin-top: 0.75rem; }
@@ -875,9 +861,21 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   background: rgba(19, 21, 31, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.45);
   color: #fff;
-  font-size: 1.15rem;
-  line-height: 1;
+  font-size: 0;   /* das "×" der Schrift sitzt nicht mittig: stattdessen zwei gekreuzte Striche, genau in der Mitte */
+  position: relative;
 }
+.slot-x::before, .slot-x::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0.62rem;
+  height: 2px;
+  border-radius: 1px;
+  background: currentColor;
+  rotate: 45deg;
+}
+.slot-x::after { rotate: -45deg; }
 
 /* Auswahlkacheln: drei pro Reihe, Portrait mit Namen darunter */
 .tiles { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr)); }
@@ -1073,13 +1071,9 @@ dialog.card-view * { touch-action: pinch-zoom; }
   /* derselbe weiche Schatten wie bei den Boxen im Kompendium (Werte des dunklen Modus, die Kartenansicht ist immer dunkel) */
   box-shadow:
     0 1px 2px rgb(0 0 0 / 0.5),
-    var(--sh-x, 0px) var(--sh-y, 6px) var(--sh-b, 18px) rgb(0 0 0 / calc(0.5 * var(--sh-a, 1)));
+    0 6px 18px rgb(0 0 0 / 0.5);
 }
 .card-view .card-flip { position: relative; }   /* liegt über der Fläche */
-/* Wabern wie bei den Boxen (nur am Rechner und ohne "Bewegung reduzieren") */
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .card-view .card-stage::before { animation: shadow-drift 11s ease-in-out -3s infinite alternate; }
-}
 
 .card-flip {
   display: block;
@@ -2093,26 +2087,42 @@ html.touring, html.touring body { overflow: hidden; }
   width: 3.4rem;
   aspect-ratio: 1;
   border-radius: 50%;
-  transform: translate(-50%, -50%) scale(var(--swell));
+  translate: -50% -50%;
   background: radial-gradient(circle,
-    hsl(var(--h) var(--fac-s) var(--fac-l) / calc(0.3 * var(--pulse))) 0%,
-    hsl(var(--h) var(--fac-s) var(--fac-l) / calc(0.12 * var(--pulse))) 45%,
+    hsl(var(--h) var(--fac-s) var(--fac-l) / 0.3) 0%,
+    hsl(var(--h) var(--fac-s) var(--fac-l) / 0.12) 45%,
     transparent 70%);
-  animation: crest-pulse 5.3s ease-in-out infinite, crest-swell 7.1s ease-in-out infinite, moon-flicker 3.7s linear infinite;
+  /* Nur Deckkraft (Pulsieren mit Flackern) und Größe animiert: das erledigt die Grafikkarte nebenbei.
+     Animierte eigene Werte (--pulse/--swell wie bei den Wappen) ließen den Browser jedes Bild neu rechnen. */
+  animation: moon-glow 11.1s ease-in-out infinite, moon-swell 7.1s ease-in-out infinite;
   pointer-events: none;
 }
-@keyframes moon-flicker {
+@keyframes moon-glow {
   0%, 100% { opacity: 1; }
-  6% { opacity: 0.86; }
-  8% { opacity: 1; }
-  31% { opacity: 0.93; }
-  33% { opacity: 0.8; }
-  35% { opacity: 0.97; }
-  58% { opacity: 1; }
-  61% { opacity: 0.88; }
-  64% { opacity: 1; }
-  83% { opacity: 0.9; }
-  86% { opacity: 0.99; }
+  4% { opacity: 0.8; }
+  5% { opacity: 0.92; }
+  12% { opacity: 0.84; }
+  21% { opacity: 0.95; }
+  27% { opacity: 0.74; }
+  29% { opacity: 0.9; }
+  38% { opacity: 0.78; }
+  47% { opacity: 0.9; }
+  55% { opacity: 1; }
+  58% { opacity: 0.86; }
+  60% { opacity: 0.98; }
+  69% { opacity: 0.82; }
+  78% { opacity: 0.96; }
+  85% { opacity: 0.76; }
+  87% { opacity: 0.93; }
+  94% { opacity: 0.88; }
+}
+@keyframes moon-swell {
+  0%, 100% { scale: 1; }
+  17% { scale: 1.07; }
+  31% { scale: 0.95; }
+  52% { scale: 1.04; }
+  69% { scale: 0.92; }
+  84% { scale: 1.06; }
 }
 @media (prefers-reduced-motion: reduce) { .logo-wrap::before { animation: none; } }
 
