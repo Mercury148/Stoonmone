@@ -455,7 +455,14 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 
 .filter-meta { display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; color: var(--muted); font-size: 0.9rem; }
-.filter-meta.is-off { visibility: hidden; }   /* Platz bleibt reserviert: nichts springt, wenn "Reset filters" erscheint */
+.filter-meta.is-off > .link { visibility: hidden; }   /* Platz bleibt reserviert: nichts springt, wenn "Reset filters" erscheint */
+/* Hinweis auf die Website von Goblin King Games links in derselben Zeile (Kompendium) */
+.filter-meta .filter-note { margin: 0 auto 0 0.9rem; }   /* eingerückt wie "Search" in der Box darüber */
+.filter-meta .filter-note ~ .link { margin-right: 0.9rem; }   /* "Reset filters" rechts genauso weit eingerückt */
+/* derselbe weiche Schriftschatten wie bei den Überschriften (für den Hinweis und "Reset filters") */
+.filter-meta { text-shadow: 0 1px 1px rgb(var(--shadow-rgb) / var(--shadow-near)), 0 3px 9px rgb(var(--shadow-rgb) / var(--shadow-far)); }
+.filter-meta > .link { white-space: nowrap; }   /* neben dem Hinweis auf dem Handy nicht umbrechen */
+.filter-note a { color: var(--accent); text-underline-offset: 0.15em; }
 /* Anzahl der Treffer rechts im Suchfeld */
 .search-wrap { position: relative; }
 .search-wrap input[type="search"] { padding-right: 10rem; }

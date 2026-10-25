@@ -367,7 +367,8 @@ function factionBadge(faction) {
 // Jeder Bereich hat seinen eigenen Zustand, deshalb stören sich Kompendium und Editor nicht.
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 // onEnter (optional): wird bei Enter im Suchfeld zuerst gefragt; gibt es true zurück, ist Enter damit erledigt
-function createFilterPanel(container, onChange, { onEnter } = {}) {
+// note: optionaler Hinweis links in der Zeile unter der Box (bleibt sichtbar, auch ohne Filter)
+function createFilterPanel(container, onChange, { onEnter, note } = {}) {
   const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
@@ -399,7 +400,7 @@ function createFilterPanel(container, onChange, { onEnter } = {}) {
   const count = el("span", { class: "search-count" });
   const searchWrap = el("div", { class: "search-wrap" }, search, searchHint, modeBtn);
   const reset = el("button", { class: "link", type: "button", text: "Reset filters" });
-  const meta = el("div", { class: "filter-meta" }, reset);
+  const meta = el("div", { class: "filter-meta" }, note || null, reset);
 
   // Suche, Synergien und Fraktionen in einer gemeinsamen Box, getrennt durch Linien (wie die FAQs)
   const box = el("div", { class: "filter-box" }, searchWrap, synWrap, factionRow);
@@ -3025,7 +3026,10 @@ async function boot() {
   }
 
   loadTroupes();
-  compendiumPanel = createFilterPanel($("#compendium-filters"), renderCards);
+  compendiumPanel = createFilterPanel($("#compendium-filters"), renderCards, {
+    note: el("p", { class: "filter-note" }, "Find news, models and gameplay accessories at ",
+      el("a", { href: "https://www.moonstonethegame.com", target: "_blank", rel: "noopener", text: "moonstonethegame.com" }))
+  });
   editorPanel = createFilterPanel($("#editor-filters"), renderTiles, { onEnter: addSingleHit });
   foePanel = createFilterPanel($("#game-foe-filters"), renderGame);
   renderCards();
