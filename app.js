@@ -1101,6 +1101,81 @@ trackGlow($("#cards"), ".card-watermark-glow:not([hidden])", ".card", 2);
 // Troupe-Kacheln: Wappen in der Ecke, bis 10 Wappenbreiten (etwa so weit wie bei den Kompendium-Kacheln)
 trackGlow($("#troupe-list"), ".troupe-corner .faction-icon", ".faction-icon", 10);
 
+// Easter Eggs im Hintergrund: die Augen der Schädelmaske schimmern violett, der Mondstein im Beutel der Duchess türkis,
+// wenn die Maus in die Nähe kommt. Lage im Bild als Anteil von Breite und Höhe (gemessen an den Bildern)
+const SKULL_EYES = [[0.556, 0.28], [0.737, 0.276]];
+const MOONSTONE = [0.808, 0.578];
+// Punkt im Bild -> Punkt im Fenster. Das Blatt ist um seine Mitte gedreht: relativ zur Mitte berechnen, drehen, auf die Mitte im Fenster setzen
+function backdropPoints(img, points) {
+  const w = img.offsetWidth, h = img.offsetHeight;
+  const r = img.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const angle = parseFloat(getComputedStyle(img).rotate) || 0, rad = angle * Math.PI / 180;
+  return points.map(([fx, fy]) => {
+    const dx = (fx - 0.5) * w, dy = (fy - 0.5) * h;
+    return [cx + dx * Math.cos(rad) - dy * Math.sin(rad), cy + dx * Math.sin(rad) + dy * Math.cos(rad)];
+  });
+}
+// Hintergrund nicht sichtbar (schmales Fenster) oder Bild noch nicht geladen
+const backdropShown = (img) => img.offsetWidth && img.complete;
+function placeMoonstone() {
+  const glow = $(".backdrop-moonstone"), img = $("#backdrop-duchess");
+  if (!glow || !img) return;
+  if (!backdropShown(img)) { glow.hidden = true; return; }
+  const [[x, y]] = backdropPoints(img, [MOONSTONE]);
+  glow.style.left = `${x}px`;
+  glow.style.top = `${y}px`;
+  glow.style.setProperty("--stone", `${(img.offsetWidth * 0.17).toFixed(1)}px`);
+  glow.hidden = false;
+}
+function placeBackdropEyes() {
+  const eyes = $(".backdrop-eyes"), img = $("#backdrop-skull");
+  if (!eyes || !img) return;
+  if (!backdropShown(img)) { eyes.hidden = true; return; }
+  const w = img.offsetWidth;
+  const [a, b] = backdropPoints(img, SKULL_EYES);
+  const dist = Math.hypot(b[0] - a[0], b[1] - a[1]);
+  eyes.style.left = `${a[0]}px`;
+  eyes.style.top = `${a[1]}px`;
+  eyes.style.transformOrigin = "0 0";
+  eyes.style.setProperty("--eye-w", `${dist}px`);
+  eyes.style.setProperty("--eye-r", `${(w * 0.12).toFixed(1)}px`);
+  eyes.style.setProperty("--eye-rot", `${Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI}deg`);
+  eyes.hidden = false;
+}
+{
+  const img = $("#backdrop-skull");
+  if (img) {
+    img.addEventListener("load", placeBackdropEyes);
+    window.addEventListener("resize", placeBackdropEyes);
+    placeBackdropEyes();
+    // bis 12 Augenabstände (bei Full HD etwa 290 px) um die Augen herum wird der Schimmer stärker, je näher die Maus kommt
+    trackGlow(document.body, ".backdrop-eyes:not([hidden])", ".backdrop-eyes", 12);
+    // Ruht die Maus länger auf den Augen, blinzelt sie in unregelmäßigen Abständen (manchmal doppelt)
+    const eyes = $(".backdrop-eyes");
+    let restingSince = 0, nextBlink = 0;
+    const blink = (then) => {
+      eyes.classList.add("blink");
+      setTimeout(() => { eyes.classList.remove("blink"); if (then) setTimeout(then, 160); }, 130);
+    };
+    setInterval(() => {
+      const near = parseFloat(eyes.style.getPropertyValue("--near")) || 0, now = Date.now();
+      if (near < 0.6) { restingSince = 0; return; }   // etwa 60 px um die Augen bei Full HD
+      if (!restingSince) { restingSince = now; nextBlink = now + 1500 + Math.random() * 1500; }
+      if (now < nextBlink) return;
+      blink(Math.random() < 0.25 ? () => blink() : null);
+      nextBlink = now + 1800 + Math.random() * 4500;
+    }, 200);
+  }
+  const duchess = $("#backdrop-duchess");
+  if (duchess) {
+    duchess.addEventListener("load", placeMoonstone);
+    window.addEventListener("resize", placeMoonstone);
+    placeMoonstone();
+    // bis 8 Steinbreiten (bei Full HD etwa 330 px) um den Stein herum
+    trackGlow(document.body, ".backdrop-moonstone:not([hidden])", ".backdrop-moonstone", 8);
+  }
+}
+
 function renderCards() {
   // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
   const list = compendiumPanel.list().filter((c) => c.compendium !== false);
