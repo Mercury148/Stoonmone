@@ -187,7 +187,8 @@ function portrait(character, extraClass = "") {
   const second = factionById.get(character.factions[1]) || faction;
   const ring = `--h2:${second.hue}; --fac-s2:${second.sat ?? 55}%`;
   const box = el("div", { class: `portrait ${extraClass}`, style: `${factionStyle(faction)}; ${ring}`, "aria-hidden": "true" });
-  if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy" }));
+  // width/height: Seitenverhältnis der Porträts (alle 256 × 256), die Größe selbst setzt style.css
+  if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy", width: "256", height: "256" }));
   else box.textContent = initials(character.name);
   return box;
 }
@@ -372,7 +373,7 @@ function createFilterPanel(container, onChange, { onEnter, note } = {}) {
   const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
-  const search = el("input", { type: "search", placeholder: " ", "aria-label": "Search (name, keyword, synergy)", autocomplete: "off" });
+  const search = el("input", { type: "search", name: "character-search", placeholder: " ", "aria-label": "Search (name, keyword, synergy)", autocomplete: "off" });
   // Eigener Platzhalter, damit die Klammer kleiner sein kann als "Search" (verschwindet, sobald etwas getippt wird)
   const searchHint = el("span", { class: "search-hint", "aria-hidden": "true" }, "Search ", el("small", { text: "(name, keyword, synergy)" }));
   const factionRow = el("div", { class: "faction-row", role: "group", "aria-label": "Factions" });
@@ -874,7 +875,7 @@ async function copyText(text, okMessage) {
     toast(okMessage);
     return true;
   } catch {
-    const tmp = el("textarea", { readonly: "", style: "position:fixed;left:-9999px;top:0;opacity:0" });
+    const tmp = el("textarea", { name: "copy-buffer", readonly: "", style: "position:fixed;left:-9999px;top:0;opacity:0" });
     tmp.value = text;
     document.body.append(tmp);
     tmp.select();
@@ -1312,7 +1313,7 @@ const SILHOUETTE = '<svg viewBox="0 0 100 125" preserveAspectRatio="xMidYMid sli
 
 function portraitCard(character) {
   const box = el("span", { class: "pcard", style: factionStyle(primaryFaction(character)), "aria-hidden": "true" });
-  if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy" }));
+  if (character.image) box.append(el("img", { src: character.image, alt: "", loading: "lazy", width: "256", height: "256" }));
   else box.innerHTML = SILHOUETTE;
   return box;
 }
@@ -2208,7 +2209,7 @@ function renderGame() {
       ...game.opps.map((o, n) => {
         const chosen = o.ids.map((id) => characterById.get(id)).map((c) => tileFor(c, true, () => toggleGamePick(o.key, c.id)));
         const slots = Number.isFinite(size) ? Math.max(0, size - chosen.length) : 1;   // voll: kein leerer Platz mehr
-        const name = el("input", { class: "foe-name", type: "text", maxlength: "30", autocomplete: "off", placeholder: multi ? `Opponent ${n + 1}` : "Opponent", "aria-label": "Opponent name", value: o.name });
+        const name = el("input", { class: "foe-name", type: "text", name: "opponent-name", maxlength: "30", autocomplete: "off", placeholder: multi ? `Opponent ${n + 1}` : "Opponent", "aria-label": "Opponent name", value: o.name });
         name.addEventListener("input", () => { o.name = name.value; saveGame(); });
         return el("div", { class: "foe-block" },
           el("div", { class: "foe-head" },
@@ -2442,7 +2443,7 @@ function blockTexts(block) {
 }
 
 function createGuide(container, config) {
-  const search = el("input", { type: "search", placeholder: config.placeholder, "aria-label": config.placeholder, autocomplete: "off", enterkeyhint: "search" });
+  const search = el("input", { type: "search", name: "guide-search", placeholder: config.placeholder, "aria-label": config.placeholder, autocomplete: "off", enterkeyhint: "search" });
   const status = el("span", { class: "hint guide-status" });
   const next = el("button", { class: "ghost guide-next", type: "button", hidden: "", text: "Next hit ↓" });
   const list = el("div", { class: "guide-list" });
