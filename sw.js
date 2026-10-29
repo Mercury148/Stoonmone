@@ -8,7 +8,7 @@
 // CACHE_NAME erhöhen, wenn sich die Liste DATEIEN ändert oder vorhandene Bilder ersetzt wurden:
 // dann wird der alte Speicher gelöscht, sonst zeigen Geräte beim ersten Öffnen noch das alte Bild.
 
-const CACHE_NAME = "TTG-v0.9.4";   // 0.9.4: Kartenbilder ohne weiße obere Zeile, neues Shades-Wappen
+const CACHE_NAME = "TTG-v0.9.5";   // 0.9.5: richtige Rückseite für Zorya
 const DATEIEN = [
   "./",
   "index.html",
