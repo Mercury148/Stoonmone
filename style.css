@@ -232,8 +232,8 @@ main, .topbar { max-width: 62rem; margin-inline: auto; }
 .filter-box .keyword-box { box-shadow: none; }   /* liegt schon in der Filterbox */
 /* Freistehende Knöpfe, Eingabefelder und Hinweise bekommen denselben Schatten.
    :where() hat keine Spezifität: eigene Schatten (runde Handy-Knöpfe, pulsierender Play-Knopf) gewinnen weiterhin. */
-:where(#replay-tutorials, .backup-row button, .action-row button, .editor-bar .back, #editor-name, #editor-format,
-  .editor-bar .badge.big, #game-add-foe, .foe-actions button, .foe-name, .game-startbar button, .game-tools button,
+:where(#settings-open, .backup-row button, .action-row button, .editor-bar .back, #editor-name, #editor-format,
+  .editor-bar .badge.big, #game-add-foe, .foe-actions button, .foe-name, .game-startbar button, .round-arrow,
   .card-close, .guide-bar input[type="search"], .guide-next, .guide-collapse, .note) {
   box-shadow:
     0 1px 2px rgb(var(--shadow-rgb) / var(--shadow-near)),
@@ -262,18 +262,19 @@ button { cursor: pointer; }
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding-block: 0.5rem 1rem; }
 .topbar h1 { min-width: 0; margin: 0; display: flex; align-items: center; gap: 0.5rem; font: 690 1.6rem/1.1 var(--font-display); letter-spacing: 0.01em; }
 .logo { width: 1.5rem; height: 1.5rem; color: var(--accent); }
-/* "Replay tutorials" oben rechts: sieht aus wie "Back up all troupes" / "Restore from file" (ghost-Knopf) */
-.replay-btn { flex: none; }
-.replay-btn .ico { width: 1rem; height: 1rem; }
-.replay-btn:hover { border-color: var(--muted); }
-.replay-btn.is-off { visibility: hidden; }   /* Seiten ohne Tutorial: Platz bleibt reserviert, der Titel steht überall gleich hoch */
+/* "Settings" oben rechts: sieht aus wie "Back up all troupes" / "Restore from file" (ghost-Knopf).
+   "Replay tutorials" steht im Settings-Menü (#settings-replay). */
+.settings-btn { flex: none; }
+.settings-btn .ico { width: 1rem; height: 1rem; }
+.settings-btn:hover { border-color: var(--muted); }
+#settings-dialog .settings-replay { margin-top: 0.75rem; }
 /* Handy: nur das Symbol, damit er neben dem Titel Platz hat */
 @media (max-width: 719.98px) {
   .topbar { gap: 0.5rem; }
   .topbar h1 { font-size: 1.4rem; }   /* Titel und Knopf passen so auch auf schmalen Handys in eine Zeile */
-  .replay-btn { width: 44px; padding: 0; }
-  .replay-btn span { display: none; }
-  .replay-btn .ico { width: 1.25rem; height: 1.25rem; }
+  .settings-btn { width: 44px; padding: 0; }
+  .settings-btn span { display: none; }
+  .settings-btn .ico { width: 1.25rem; height: 1.25rem; }
 }
 body.editing .topbar { display: none; }
 
@@ -736,12 +737,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
 .icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .export-btn { margin-top: 0.75rem; }
-#import-dialog, #export-dialog { width: min(92vw, 28rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#import-dialog, #export-dialog, #settings-dialog { width: min(92vw, 28rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#settings-dialog .section-label { margin-top: 0; }
+#settings-dialog { cursor: default; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }   /* nur Beschriftungen: nicht markierbar */
 #import-dialog textarea { width: 100%; box-sizing: border-box; font-size: 16px; margin-top: 0.6rem; }   /* mindestens 16px, sonst zoomt iOS beim Antippen hinein */
 #import-dialog .section-label, #export-dialog .section-label { margin-top: 0; }
 .dialog-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
 .dialog-stack { display: grid; gap: 0.5rem; margin-top: 0.75rem; }
 .dialog-stack button[hidden] { display: none; }
+
+/* Einstellungen: Text links, Schalter rechts; die ganze Zeile ist anklickbar (label) */
+.setting { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0; padding-block: 0.75rem; border-bottom: 1px solid var(--line); font-size: 1rem; color: var(--fg); cursor: pointer; }
+.setting:has(.switch:disabled) { cursor: default; }
+.setting-text { display: grid; gap: 0.1rem; }
+.setting-name { font-weight: 690; font-size: 1.05rem; }
+.setting .hint { margin: 0; font-size: 0.85rem; }
+
+/* Schalter (Slider): Checkbox in Pillenform, der Knopf gleitet nach rechts, wenn eingeschaltet */
+.switch { appearance: none; -webkit-appearance: none; flex: none; position: relative; width: 48px; height: 28px; margin: 0; border: 1px solid var(--line); border-radius: 99px; background: var(--surface-2); cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
+.switch::before { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--muted); transition: transform 0.2s ease, background-color 0.2s; }
+.switch:checked { background: var(--accent); border-color: var(--accent); }
+.switch:checked::before { transform: translateX(20px); background: var(--accent-fg); }
+.switch:disabled { opacity: 0.45; cursor: default; }
+@media (prefers-reduced-motion: reduce) { .switch, .switch::before { transition: none; } }
 
 /* Vorschau beim Import */
 .preview-title { margin: 0.5rem 0 0; font: 690 1.2rem/1.25 var(--font-display); overflow-wrap: anywhere; }
@@ -1042,7 +1060,11 @@ body.editing .toast { bottom: calc(1.5rem + var(--safe-b)); }
 
 /* ---------- Kartenansicht (Karte groß, Tipp = umdrehen) ---------- */
 dialog.card-view {
-  width: min(calc((100dvh - 9rem) / 1.4), calc(100vw - 2rem));   /* so groß, wie die Fensterhöhe es zulässt (früher die Zoom-Größe) */
+  /* so groß, wie die Fensterhöhe es zulässt (früher die Zoom-Größe). Zusätzliche Zeilen über oder unter der Karte
+     (Moonstone-Knöpfe, "Summoned by") brauchen Platz: --rows-stones und --rows-summoned machen die Karte entsprechend kleiner. */
+  --rows-stones: 0rem;
+  --rows-summoned: 0rem;
+  width: min(calc((100dvh - 9rem - var(--rows-stones) - var(--rows-summoned)) / 1.4), calc(100vw - 2rem));
   max-height: none;
   overflow: visible;
   background: transparent;
@@ -1060,9 +1082,16 @@ dialog.card-view .card-flip:focus, dialog.card-view .card-flip:focus-visible { o
 html:has(dialog.card-view[open]), html:has(dialog.card-view[open]) body { overflow: hidden; overscroll-behavior: none; touch-action: pinch-zoom; }
 dialog.card-view { touch-action: pinch-zoom; overscroll-behavior: contain; }
 dialog.card-view * { touch-action: pinch-zoom; }
-.card-view .detail { padding: 0; gap: 0.75rem; justify-items: center; }
+.card-view .detail { padding: 0; gap: 0.75rem; justify-items: center; grid-template-columns: minmax(0, 1fr); }   /* so breit wie das Fenster, nie breiter */
 
-.card-side { min-height: 1.2rem; color: #c9cbe0; font-size: 0.9rem; cursor: default; user-select: none; -webkit-user-select: none; }   /* nur Beschriftung: kein Textcursor, nicht markierbar */
+/* Moonstones im Spiel: Knöpfe über der Karte, links abgeben, rechts aufnehmen, dazwischen die Anzahl.
+   Feste helle Farben: die Kartenansicht liegt immer auf dunklem Grund, auch im hellen Modus. */
+.card-stones { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; width: 100%; user-select: none; -webkit-user-select: none; }
+/* Beschriftung darf umbrechen: bei sehr schmaler Karte "Drop / moonstone" in zwei Zeilen statt die Zeile zu verbreitern */
+.card-stone-btn { flex: 1 1 0; min-width: 0; padding-inline: 0.5rem; background: #1c1f2e; color: #f5f4fb; border: 1px solid #33384f; font-size: 0.95rem; line-height: 1.1; -webkit-tap-highlight-color: transparent; }
+.card-stone-btn:disabled { opacity: 0.4; }
+.card-stone-count { flex: none; display: inline-flex; align-items: center; gap: 0.3rem; min-width: 2.75rem; justify-content: center; color: #f5f4fb; font: 690 1.15rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.card-stone-count .moonstone-icon { width: 1.4rem; }
 .card-stage { position: relative; width: 100%; }
 /* Deckende dunkle Fläche in Kartengröße hinter der Karte: sie bleibt beim Blättern stehen, die neue Karte gleitet
    darüber herein. So scheint die Seite dahinter (z. B. das Kompendium) nicht durch die halb eingeblendete Karte. */
@@ -1144,6 +1173,30 @@ dialog.card-view * { touch-action: pinch-zoom; }
   border: 1px solid var(--line);
   font-size: 1.1rem;
 }
+
+/* Beschworene Charaktere: "Summoned by" mit Verweis auf die beschwörenden Modelle (siehe openCardView).
+   Feste helle Farben: die Kartenansicht liegt immer auf dunklem Grund, auch im hellen Modus.
+   Schmale oder hohe Fenster (Handy, Tablet hochkant): Namen als Links unter Close. Die Karte wird dafür etwas
+   kleiner, damit die zusätzliche Zeile noch auf den Bildschirm passt. */
+dialog.card-view.has-summoner { --rows-summoned: 2rem; }
+dialog.card-view.has-stones { --rows-stones: 1.5rem; }   /* Knopfzeile über der Karte */
+.summoned-side { display: none; }
+.summoned-line { margin: -0.25rem 0 0; color: #c9cbe0; font-size: 1rem; text-align: center; user-select: none; -webkit-user-select: none; }
+.summoned-line { line-height: 1.6; }
+/* ohne seitlichen Abstand, sonst steht vor dem Komma eine Lücke; oben/unten etwas mehr Fläche zum Antippen */
+.summoned-line .link { min-height: 0; padding: 0.2rem 0; color: #e0bf6a; text-underline-offset: 0.15em; }
+/* Breite Fenster (Computer, Tablet quer): rechts neben der Karte ist genug Platz, dort stehen die Porträts.
+   Ab Seitenverhältnis 1:1 bleiben neben der Karte immer mindestens 9rem frei (Kartenbreite siehe dialog.card-view). */
+@media (min-width: 720px) and (min-aspect-ratio: 1/1) {
+  dialog.card-view.has-summoner { --rows-summoned: 0rem; }   /* steht neben der Karte, nicht darunter */
+  .summoned-line { display: none; }
+  .summoned-side { position: absolute; top: 0; left: calc(100% + 1.5rem); display: grid; justify-items: center; gap: 0.75rem; user-select: none; -webkit-user-select: none; }
+}
+.summoned-label { margin: 0; color: #c9cbe0; font-size: 1rem; white-space: nowrap; }
+.summoned-portrait { min-height: 0; padding: 4px; background: none; border-radius: 50%; transition: transform 0.15s ease-out; }
+.summoned-portrait .portrait { margin: 0; }
+.summoned-portrait:hover { transform: scale(1.06); }
+@media (prefers-reduced-motion: reduce) { .summoned-portrait { transition: none; } }
 
 /* Kleiner Tipp auf der Karte, mit "Nicht mehr anzeigen" */
 .card-hint {
@@ -1228,8 +1281,13 @@ dialog.card-view * { touch-action: pinch-zoom; }
   #view-editor { padding-bottom: 9rem; }   /* damit die Knöpfe keine Kacheln verdecken */
 }
 .game-title { flex: 1; margin: 0; font: 690 1.15rem/1.2 var(--font-display); }
-.game-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin-top: 1rem; }   /* Abstand, damit das Ausblenden der Kopfzeile die Knöpfe nicht überdeckt */
-.game-tools button { padding-inline: 0.4rem; font-size: 0.85rem; }
+/* Rundenzähler mit Pfeilen: füllt den Platz rechts vom Back-Knopf und steht darin mittig */
+/* margin-left gleicht den Rand rechts aus (Innenabstand der Leiste minus Abstand nach Back): so steht die Anzeige
+   genau in der Mitte zwischen Back-Knopf und Bildschirmrand */
+.round-nav { flex: 1; min-width: 0; margin-left: calc(var(--gutter-r) - 0.5rem); display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.round-nav .badge.big { min-width: 8.5rem; margin: 0; text-align: center; white-space: nowrap; }   /* feste Breite: die Pfeile springen nicht, wenn sich der Text ändert */
+.round-arrow { flex: none; width: 44px; padding: 0; outline: none; transition: none; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+.round-arrow .ico { width: 1.3rem; height: 1.3rem; stroke-width: 2.5; }
 .game-startbar {
   position: sticky;
   bottom: 0;
@@ -1292,6 +1350,16 @@ button.gcell-open { display: block; width: 100%; padding: 0; background: none; c
 .hp-btn:active::before, .hp-btn.pressed::before { opacity: 1; }
 .hp-btn.flash-out::before { animation: hp-flash-out 0.45s ease-out both; }
 @keyframes hp-flash-out { from { opacity: 1; } to { opacity: 0; } }
+/* Moonstones auf dem Portrait (oben links): nur Anzeige. pointer-events: none, damit Tippen weiterhin auf den
+   Heilen/Verwunden-Knöpfen darunter landet; auch Halten öffnet weiterhin die Karte. */
+/* Jeder Stein einzeln; passen nicht alle in eine Zeile, geht es darunter weiter (Handy: drei pro Zeile). */
+.gcell-stones { position: absolute; top: 3px; left: 3px; right: 3px; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 1px; pointer-events: none; }
+/* Brocken im Seitenverhältnis 24:21 (siehe moonstoneSvg); kühles, schwaches Leuchten wie die eisblauen Steine der Miniaturen.
+   Höchstens ein Drittel der Fläche breit, damit auf schmalen Portraits immer drei nebeneinander passen. */
+.moonstone-icon { display: block; width: min(1.6rem, calc((100% - 2px) / 3)); aspect-ratio: 24 / 21; height: auto; filter: drop-shadow(0 0 2px rgb(160 230 255 / 0.6)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.7)); }
+.moonstone-icon svg { display: block; width: 100%; height: 100%; }
+@media (min-width: 720px) { .moonstone-icon { width: 2.1rem; } }
+
 /* Transform-Knopf zwischen Name und Lebenspunkten statt auf dem Portrait */
 .transform-btn.transform-inline { position: static; width: 100%; min-height: 26px; }
 .transform-spacer { display: block; visibility: hidden; }   /* gleich groß wie der Transform-Knopf, aber unsichtbar */
@@ -1418,7 +1486,7 @@ html, body, * { -webkit-tap-highlight-color: transparent; }
 .faction-btn, .faction-btn img { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 /* iPhone/iPad: Safari zoomt beim Antippen eines Eingabefelds mit Schrift unter 16 px automatisch hinein */
 @supports (-webkit-touch-callout: none) { input, select, textarea { font-size: max(16px, 1em); } }
-.summon-btn, .game-tools button { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.summon-btn { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
 /* Format-Auswahl: auf dem Handy eine eigene Zeile unter der Kopfzeile, am Computer rechts neben dem Namen */
 #editor-format { order: 10; flex: 1 1 100%; min-width: 0; min-height: 44px; font-weight: 690; }
@@ -1549,7 +1617,9 @@ body.in-game[data-round]::before {
 /* Kopfzeile in der Farbe des Himmels oben, Schrift weiß */
 #view-game .editor-bar[data-round] { color: #fff; }
 #view-game .editor-bar[data-round] .game-title { color: #fff; }
-#view-game .editor-bar[data-round] .back { color: #fff; border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.08); }
+#view-game .editor-bar[data-round] :is(.back, .round-arrow) { color: #fff; border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.08); }
+/* Pfeil nach links in Runde 1 nach dem ersten Tippen ("Back to setup?"): rot wie früher "Reset game" */
+#view-game .editor-bar[data-round] .round-arrow.danger { color: #ff8a8d; border-color: #ff8a8d; }
 #view-game .editor-bar[data-round] .badge { background: rgba(255, 255, 255, 0.2); color: #fff; }
 
 /* Weicher Rand unter der Kopfzeile der Spielansicht: Inhalt blendet beim Scrollen sanft unter ihr aus */
@@ -1593,9 +1663,6 @@ body.in-game[data-round]::before {
   mask-image: var(--fade-x);
   pointer-events: none;
 }
-
-/* Next round / Reset: kein Aufblitzen von Rahmen oder Übergang beim Antippen */
-.game-tools button { outline: none; transition: none; -webkit-tap-highlight-color: transparent; }
 
 /* Zwei Knöpfe teilen sich die Zeile, ein einzelner füllt sie ganz */
 .foe-actions { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }

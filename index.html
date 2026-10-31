@@ -17,6 +17,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <link rel="stylesheet" href="style.css">
+  <!-- Gewähltes Hell/Dunkel sofort setzen, bevor die Seite erscheint (sonst blitzt kurz das Gerätedesign auf).
+       Schlüssel und Werte wie SETTINGS_KEY in app.js. -->
+  <script>try { const t = JSON.parse(localStorage.getItem("ttg-settings") || "{}").theme; if (t) document.documentElement.dataset.theme = t; } catch { /* ignorieren */ }</script>
 </head>
 <body>
 
@@ -61,7 +64,7 @@
       <span class="logo-wrap" aria-hidden="true"><img class="logo logo-moon" src="images/moon.webp" alt="" draggable="false"></span>
       Tauber Tourist Guide
     </h1>
-    <button id="replay-tutorials" class="ghost icon-btn replay-btn" type="button" aria-label="Replay tutorials"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 4v6h6M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg><span>Replay tutorials</span></button>
+    <button id="settings-open" class="ghost icon-btn settings-btn" type="button" aria-label="Settings"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></button>
   </header>
 
   <main>
@@ -150,8 +153,13 @@
     <section id="view-game" aria-label="Game" hidden>
       <div class="editor-bar">
         <button id="game-back" class="ghost back" type="button">Back</button>
-        <h2 id="game-title" class="game-title">Game</h2>
-        <span id="game-round" class="badge big"></span>
+        <h2 id="game-title" class="game-title">Choose models</h2>
+        <!-- Im Spiel: Rundenzähler mit Pfeilen, mittig im Platz rechts vom Back-Knopf (nur Erinnerung, ändert sonst nichts) -->
+        <div id="game-rounds" class="round-nav" hidden>
+          <button id="game-round-prev" class="ghost icon-btn round-arrow" type="button" aria-label="Previous round"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <span id="game-round" class="badge big" aria-live="polite"></span>
+          <button id="game-round-next" class="ghost icon-btn round-arrow" type="button" aria-label="Next round"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
         <button id="game-add-foe" class="ghost add-foe" type="button" hidden>Add opponent</button>
       </div>
 
@@ -184,11 +192,6 @@
 
       <!-- Spiel: oben der Gegner, unten du -->
       <div id="game-play" hidden>
-        <div class="game-tools">
-          <button id="game-next-round" type="button">Next round</button>
-          <button id="game-reset" class="ghost" type="button">Reset game</button>
-        </div>
-
         <div id="game-foes-play"></div>
 
         <h3 class="section-label">You</h3>
@@ -278,6 +281,24 @@
     <div id="opp-pick-list" class="dialog-stack"></div>
     <div class="dialog-actions">
       <button id="opp-pick-cancel" class="ghost" type="button">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- Einstellungen: Hell/Dunkel und Bildschirm anlassen (gespeichert im Gerät, siehe app.js) -->
+  <dialog id="settings-dialog" aria-label="Settings">
+    <h3 class="section-label">Settings</h3>
+    <label class="setting">
+      <span class="setting-text"><span class="setting-name">Dark mode</span><span class="hint">The game view always stays dark.</span></span>
+      <input id="set-dark" class="switch" type="checkbox" role="switch">
+    </label>
+    <label class="setting">
+      <span class="setting-text"><span class="setting-name">Keep screen on</span><span class="hint" id="set-awake-hint">The screen does not turn off while the app is open.</span></span>
+      <input id="set-awake" class="switch" type="checkbox" role="switch">
+    </label>
+    <!-- Nur auf Seiten mit Rundgang sichtbar (siehe openSettings in app.js) -->
+    <button id="settings-replay" class="ghost icon-btn settings-replay" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 4v6h6M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg><span>Replay tutorials</span></button>
+    <div class="dialog-actions">
+      <button id="settings-close" class="ghost" type="button">Close</button>
     </div>
   </dialog>
 

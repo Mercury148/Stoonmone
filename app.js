@@ -134,30 +134,6 @@ function toast(message) {
   toastTimer = setTimeout(() => (box.hidden = true), Math.max(2600, message.length * 55));
 }
 
-// Ein Knopf, der zwei Tipper braucht (erst "Wirklich?", dann die Aktion).
-function twoTap(button, armedText, action) {
-  const idleText = button.textContent;
-  let armed = false;
-  let timer;
-  const reset = () => {
-    armed = false;
-    button.textContent = idleText;
-    button.classList.remove("danger");
-  };
-  button.addEventListener("click", () => {
-    if (!armed) {
-      armed = true;
-      button.textContent = armedText;
-      button.classList.add("danger");
-      timer = setTimeout(reset, 3000);
-      return;
-    }
-    clearTimeout(timer);
-    reset();
-    action();
-  });
-}
-
 // Farbe einer Fraktion: Farbton (hue) und optional Sättigung (sat). sat = 0 ergibt Grau.
 function factionStyle(faction) {
   const sat = faction.sat ?? 55;
@@ -1462,8 +1438,6 @@ function buildFlipHint() {
 function openCardView(c) {
   const hasBack = Boolean(c.cardBack);
   let hint = hasBack && !hintDisabled() && !hintShownThisSession ? buildFlipHint() : null;
-
-  const side = el("div", { class: "card-side", text: hasBack ? "Front" : "" });
   // Jede Seite zeigt einen Lade-Platzhalter in Kartengröße (siehe style.css), bis ihr Bild da ist; dann blendet das Bild ein
   const face = (cls, src, alt) => {
     const box = el("div", { class: cls });
@@ -1483,7 +1457,6 @@ function openCardView(c) {
     card.addEventListener("click", () => {
       const flipped = card.classList.toggle("flipped");
       card.setAttribute("aria-pressed", String(flipped));
-      side.textContent = flipped ? "Back" : "Front";
       // Wer umdreht, hat es verstanden: der Tipp erscheint nicht mehr
       if (hint) { hint.remove(); hint = null; }
       disableHint();
@@ -1492,18 +1465,92 @@ function openCardView(c) {
     card = el("div", { class: "card-flip" }, inner);
   }
 
+  // Verweis auf verwandte Modelle (doppelte IDs in der JSON nur einmal):
+  // - beschworene Charaktere: "Summoned by" mit den Modellen, die sie beschwören ("summonedBy")
+  // - sonst Verwandlung (Anya Bartol <-> Striga Anya): "Transforms into" mit den Zielen aus "transformsInto".
+  //   Striga Anya hat Anya Bartol in beiden Feldern; das zählt als Verwandlung. "summonedBy" bleibt
+  //   für Editor und Spiel trotzdem wirksam, hier geht es nur um die Anzeige.
+  // Breites Fenster: Porträts rechts neben der Karte; sonst die Namen als Links unter Close (siehe style.css).
+  const charsOf = (ids) => [...new Set(ids)].map((id) => characterById.get(id)).filter(Boolean);
+  const transformsInto = [].concat(c.transformsInto || []);
+  const summoners = charsOf((c.summonedBy || []).filter((id) => !transformsInto.includes(id)));
+  const links = summoners.length ? summoners : charsOf(transformsInto);
+  const label = summoners.length ? "Summoned by:" : "Transforms into:";
+  const summonedSide = links.length ? el("div", { class: "summoned-side" },
+    el("p", { class: "summoned-label", text: label }),
+    ...links.map((s) => el("button", { class: "summoned-portrait", type: "button", title: s.name, "aria-label": `${s.name}: open card`, onclick: () => openSummoner(s.id) }, portrait(s, "big")))
+  ) : null;
+  const summonedLine = links.length ? el("p", { class: "summoned-line" }, `${label} `,
+    ...links.flatMap((s, i) => [i ? ", " : null, el("button", { class: "link", type: "button", text: s.name, onclick: () => openSummoner(s.id) })])
+  ) : null;
+
+  // Im laufenden Spiel: über der Karte Moonstones abgeben (links) und aufnehmen (rechts), dazwischen die Anzahl.
+  // Nur für Modelle, die gerade im Spiel sind; die Grafik auf dem Portrait dahinter wird sofort mit aktualisiert.
+  const gameSide = detailNav.side;
+  const stones = gameSide && game && game.stage === "play" && currentView() === "game" && modelInPlay(gameSide, c) ? gameModel(gameSide, c.id) : null;
+  let stoneRow = null;
+  if (stones) {
+    const count = el("span", { class: "card-stone-count" });
+    const drop = el("button", { class: "card-stone-btn", type: "button", text: "Drop moonstone" });
+    const gain = el("button", { class: "card-stone-btn", type: "button", text: "Gain moonstone" });
+    const key = `${gameSide}:${c.id}`;
+    const show = () => {
+      const seeds = stoneSeeds(stones, key);
+      const n = seeds.length;
+      // Neben der Zahl der zuletzt aufgenommene Stein (ohne Steine ein fester Beispielstein)
+      count.replaceChildren(moonstoneIcon(n ? seeds[n - 1] : 7), String(n));
+      count.setAttribute("aria-label", n === 1 ? "1 moonstone" : `${n} moonstones`);
+      drop.disabled = n === 0;
+    };
+    // Aufnehmen: neuer Stein mit eigener Zufallsform. Abgeben: der zuletzt aufgenommene geht.
+    const changeStones = (d) => {
+      const seeds = stoneSeeds(stones, key);
+      if (d > 0) seeds.push(Math.floor(Math.random() * 4294967296));
+      else seeds.pop();
+      stones.stoneSeeds = seeds;
+      stones.moonstones = seeds.length;
+      saveGame();
+      renderGamePlay();
+      show();
+    };
+    drop.addEventListener("click", () => changeStones(-1));
+    gain.addEventListener("click", () => changeStones(1));
+    show();
+    stoneRow = el("div", { class: "card-stones" }, drop, count, gain);
+  }
+
   $("#detail-body").replaceChildren(
     el("div", { class: "detail card-wrap" },
-      side,
-      el("div", { class: "card-stage" }, card, hint),
+      stoneRow,
+      el("div", { class: "card-stage" }, card, hint, summonedSide),
       el("div", { class: "card-buttons" },
         el("button", { class: "card-close", type: "button", text: "Close", onclick: () => $("#detail").close() })
-      )
+      ),
+      summonedLine
     )
   );
   $("#detail").classList.add("card-view");
+  $("#detail").classList.toggle("has-summoner", links.length > 0);
+  $("#detail").classList.toggle("has-stones", Boolean(stoneRow));
   if (!$("#detail").open) $("#detail").showModal();
+  fitCardView();
 }
+
+// Die Kartengröße steht in style.css (Fensterhöhe minus Platz für die Zeilen darüber und darunter). Bricht eine Zeile
+// um (z. B. "Summoned by" mit mehreren Namen auf kleinen Handys), reicht das nicht: dann die Karte so weit verkleinern,
+// dass alles auf den Bildschirm passt. Die Karte ist 1,4-mal so hoch wie breit. Wird sie schmaler, kann eine Zeile
+// erneut umbrechen; deshalb bis zu dreimal nachmessen.
+function fitCardView() {
+  const dlg = $("#detail");
+  dlg.style.width = "";
+  if (!dlg.open || !dlg.classList.contains("card-view")) return;
+  for (let i = 0; i < 3; i++) {
+    const over = dlg.getBoundingClientRect().height - (innerHeight - 16);
+    if (over <= 0) return;
+    dlg.style.width = `${dlg.getBoundingClientRect().width - over / 1.4}px`;
+  }
+}
+window.addEventListener("resize", fitCardView);
 
 // Blättern in der geöffneten Karte: Pfeiltasten links/rechts (Computer), Wischen links/rechts (Handy).
 // Die Reihenfolge ist die der Liste, aus der die Karte geöffnet wurde (Kompendium, Troupe, Auswahl, Spielreihe).
@@ -1529,6 +1576,16 @@ function stepDetail(dir) {
   if (!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
     ($("#detail .card-flip") || $("#detail-body")).animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 220, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
   }
+}
+
+// "Summoned by": Karte des beschwörenden Modells öffnen. Steht es in der Liste, aus der die Karte geöffnet wurde,
+// geht das Blättern von dort aus weiter; sonst wird nur diese eine Karte gezeigt.
+function openSummoner(id) {
+  const i = detailNav.ids.indexOf(id);
+  if (i >= 0) { detailNav.index = i; showDetail(id); }
+  else openDetail(id);
+  // Der angeklickte Knopf ist ersetzt: Fokus auf die neue Karte, sonst landet er auf der Seite dahinter
+  ($("#detail .card-flip") || $("#detail")).focus({ preventScroll: true });
 }
 
 // Auf dem ganzen Dokument lauschen, nicht nur im Fenster: so kommt jeder Tastendruck an, egal wo der Fokus gerade liegt
@@ -1567,7 +1624,9 @@ document.addEventListener("keydown", (e) => {
 // Detailansicht in einem <dialog>-Fenster (nur Nachschlagen, ohne Hinzufügen).
 // source: das angetippte Element; aus seiner Liste ergibt sich die Reihenfolge zum Blättern.
 function openDetail(id, source = null) {
-  detailNav = { ids: idsAround(source, id), index: 0 };
+  // side: aus der Spielansicht geöffnet ("own", "foe", …), dann gibt es über der Karte die Moonstone-Knöpfe
+  const cell = source && source.closest(".gcell[data-side]");
+  detailNav = { ids: idsAround(source, id), index: 0, side: cell ? cell.dataset.side : null };
   detailNav.index = detailNav.ids.indexOf(id);
   showDetail(id);
 }
@@ -1581,6 +1640,7 @@ function showDetail(id) {
   // Variante 1: Der Charakter hat ein Kartenbild, dann zeigen wir die Karte (mit Rückseite zum Umdrehen)
   if (c.card) return openCardView(c);
   $("#detail").classList.remove("card-view");
+  $("#detail").style.width = "";   // eventuell von fitCardView verkleinert
 
   // Variante 2: keine Karte, dann Name, Fraktion und Keywords
   $("#detail-body").replaceChildren(
@@ -1705,7 +1765,9 @@ function transformModel(side, c) {
   if (!twin || i < 0) return;
   const old = gameModel(side, c.id);
   const total = healthOf(twin) ? healthOf(twin).length : 30;
-  game.models[`${side}:${twin.id}`] = { wounds: Math.min(old.wounds, total), energy: old.energy, summoned: true };
+  // Moonstones nimmt der Zwilling mit (die Karte sagt: "along with all Moonstones")
+  game.models[`${side}:${twin.id}`] = { wounds: Math.min(old.wounds, total), energy: old.energy, moonstones: old.moonstones || 0,
+    stoneSeeds: stoneSeeds(old, `${side}:${c.id}`), summoned: true };
   game.models[`${side}:${c.id}`] = { wounds: 0, energy: 0 };
   list[i] = twin.id;
   saveGame();
@@ -1903,6 +1965,114 @@ function gamePortrait(side, c) {
   return node;
 }
 
+// Moonstones als kleine Grafik: unregelmäßige, kantige Kristallbrocken in eisigem Hellblau, wie die Steine auf den
+// Sockeln der Miniaturen. Jeder Stein hat einen eigenen Zufallswert (seed), aus dem seine Form berechnet wird: jeder
+// sieht anders aus, bleibt aber beim Neuzeichnen (jeder Tipp auf ein Portrait zeichnet neu) derselbe.
+function seededRandom(seed) {
+  let s = (seed >>> 0) || 0x9e3779b9;
+  const next = () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; };
+  for (let i = 0; i < 4; i++) next();   // kleine Startwerte erst durchmischen
+  return next;
+}
+const STONE_COLORS = [[34, 104, 136], [104, 192, 220], [218, 247, 252]];   // Schatten, Mitte, Licht (eisiges Hellblau)
+function stoneColor(t) {
+  const x = Math.min(1, Math.max(0, t)) * 2;
+  const [a, b, f] = x < 1 ? [STONE_COLORS[0], STONE_COLORS[1], x] : [STONE_COLORS[1], STONE_COLORS[2], x - 1];
+  return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * f)).join(" ")})`;
+}
+const STONE_LIGHT = [-0.6, -0.8];   // Licht von oben links
+const svgPt = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+
+// Ein Brocken: unregelmäßiges Vieleck (5 bis 7 Ecken) mit einem Grat zwischen zwei inneren Punkten A und B.
+// Jede Kante bildet mit dem näheren der beiden eine Facette; wo die Zuordnung wechselt, schließt ein Dreieck
+// (A, Ecke, B) die Lücke. So entstehen wenige, große, verschieden geformte Flächen wie bei einem gebrochenen Kristall.
+// Facetten, die zum Licht zeigen, sind hell, abgewandte dunkel.
+function stoneChunk(rnd, cx, cy, rx, ry) {
+  const n = 5 + Math.floor(rnd() * 3);
+  const turn = rnd() * Math.PI * 2;
+  const pts = Array.from({ length: n }, (_, i) => {
+    const a = turn + (i + (rnd() - 0.5) * 0.7) * (2 * Math.PI / n);
+    const r = 0.78 + rnd() * 0.22;
+    return [cx + Math.cos(a) * rx * r, cy + Math.sin(a) * ry * r];
+  });
+  const ridge = rnd() * Math.PI;
+  const d = [Math.cos(ridge) * rx * (0.15 + rnd() * 0.2), Math.sin(ridge) * ry * (0.15 + rnd() * 0.2)];
+  const lift = [-rx * 0.12, -ry * 0.15];   // Grat etwas zum Licht hin: die helle Seite ist schmaler, wie von oben gesehen
+  const A = [cx + lift[0] - d[0], cy + lift[1] - d[1]], B = [cx + lift[0] + d[0], cy + lift[1] + d[1]];
+  const shadeOf = (from, to) => {
+    const dx = to[0] - from[0], dy = to[1] - from[1];
+    return ((dx * STONE_LIGHT[0] + dy * STONE_LIGHT[1]) / (Math.hypot(dx, dy) || 1) + 1) / 2 * 0.8 + rnd() * 0.2;
+  };
+  const facets = [];
+  const near = (m) => (Math.hypot(m[0] - A[0], m[1] - A[1]) <= Math.hypot(m[0] - B[0], m[1] - B[1]) ? A : B);
+  const owner = pts.map((p, i) => { const q = pts[(i + 1) % n]; return near([(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]); });
+  pts.forEach((p, i) => {
+    const q = pts[(i + 1) % n], X = owner[i];
+    facets.push({ poly: [X, p, q], shade: shadeOf(X, [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]) });
+    if (owner[(i + 1) % n] !== X) facets.push({ poly: [A, q, B], shade: shadeOf([(A[0] + B[0]) / 2, (A[1] + B[1]) / 2], q) });
+  });
+  const brightest = facets.reduce((a, b) => (b.shade > a.shade ? b : a));
+  // Glanzlicht: schmaler, fast weißer Keil in der hellsten Facette
+  const [g0, g1, g2] = brightest.poly;
+  const along = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+  const glint = [along(g0, g1, 0.15), along(g0, g1, 0.55), along(g0, g2, 0.35)];
+  const outline = `M${pts.map(svgPt).join("L")}Z`;
+  return `<path d="${outline}" fill="none" stroke="#0b3140" stroke-width="1.3" stroke-linejoin="round"/>`   // dunkler Rand: gut sichtbar auf hellen Portraits
+    + facets.map((f) => `<path d="M${f.poly.map(svgPt).join("L")}Z" fill="${stoneColor(f.shade)}" stroke="rgb(230 250 255 / 0.4)" stroke-width="0.3" stroke-linejoin="round"/>`).join("")
+    + `<path d="M${glint.map(svgPt).join("L")}Z" fill="#f6feff" opacity="0.7"/>`
+    + `<path d="${outline}" fill="none" stroke="#e6faff" stroke-width="0.45" stroke-linejoin="round" opacity="0.75"/>`;
+}
+// Ein Moonstone: ein Brocken, bei etwa der Hälfte mit einem kleineren zweiten dahinter (wie die Kristallgruppen auf den Sockeln)
+function moonstoneSvg(seed) {
+  const rnd = seededRandom(seed);
+  let back = "";
+  let cx = 12, cy = 10.5;
+  if (rnd() < 0.5) {
+    const left = rnd() < 0.5;
+    back = stoneChunk(rnd, left ? 7 : 17, 7.5 + rnd() * 2, 5 + rnd(), 4.5 + rnd());
+    cx = left ? 13.5 : 10.5;
+    cy = 12;
+  }
+  const scale = back ? 0.82 : 1;
+  return '<svg viewBox="0 0 24 21" aria-hidden="true">'
+    + back + stoneChunk(rnd, cx, cy, (9 + rnd() * 2) * scale, (7 + rnd() * 2) * scale)
+    + "</svg>";
+}
+// Der SVG-Text besteht nur aus berechneten Zahlen, deshalb ist innerHTML hier unbedenklich
+function moonstoneIcon(seed) {
+  const span = el("span", { class: "moonstone-icon" });
+  span.innerHTML = moonstoneSvg(seed);
+  return span;
+}
+// Die Zufallswerte der Steine eines Modells (so viele wie es Steine trägt). Fehlt einer (ältere Spielstände),
+// gibt es einen festen Ersatz aus Modell und Nummer des Steins.
+function stoneSeeds(m, key) {
+  const n = m.moonstones || 0;
+  const seeds = Array.isArray(m.stoneSeeds) ? m.stoneSeeds.slice(0, n) : [];
+  while (seeds.length < n) seeds.push(parseInt(idCode(`${key}#${seeds.length}`), 36));
+  return seeds;
+}
+// Moonstones auf dem Portrait: jeder Stein einzeln, bei vielen in mehreren Zeilen (selten; darf dann ruhig etwas
+// übertrieben aussehen). Nicht anklickbar (pointer-events: none in style.css), damit Tippen weiterhin heilt oder verwundet.
+function moonstoneBadge(seeds) {
+  const n = seeds.length;
+  if (!n) return null;
+  return el("div", { class: "gcell-stones", role: "img", "aria-label": n === 1 ? "1 moonstone" : `${n} moonstones` },
+    ...seeds.map(moonstoneIcon)
+  );
+}
+
+// Ist das Modell gerade im Spiel? (nicht unbeschworen, nicht der inaktive Zwilling, nicht auf 0 Lebenspunkten beschworen)
+function modelInPlay(side, c) {
+  if (twinOf(c)) return sideIds(side).includes(c.id);
+  if (isSummoned(c)) {
+    const m = gameModel(side, c.id);
+    const health = healthOf(c);
+    return Boolean(m.summoned) && !(health && m.wounds >= health.length);
+  }
+  return sideIds(side).includes(c.id);
+}
+
 function gameCell(side, c) {
   const m = gameModel(side, c.id);
   const health = healthOf(c);
@@ -1914,7 +2084,7 @@ function gameCell(side, c) {
   // Beschworene Charaktere starten ausgegraut. Erst "Summon" bringt sie mit vollen Lebenspunkten und ohne Energy ins Spiel.
   // Der gerade nicht aktive Zwilling steht ausgegraut in der Beschworenen-Zeile (kein Summon-Knopf)
   if (twinOf(c) && !sideIds(side).includes(c.id)) {
-    return el("div", { class: "gcell unsummoned", "data-char": c.id },
+    return el("div", { class: "gcell unsummoned", "data-char": c.id, "data-side": side },
       el("div", { class: "gcell-media" },
         el("div", { class: "gcell-portrait", ...cardPress(c, () => {}) }, gamePortrait(side, c)),   // Karte nur per Rechtsklick oder Halten
         el("div", { class: "summon-note", text: "Transformed" })
@@ -1925,7 +2095,7 @@ function gameCell(side, c) {
 
   // Auch ein beschworenes Modell, das auf 0 Lebenspunkte fällt, geht zurück in den Zustand "nicht im Spiel" und kann neu beschworen werden
   if (isSummoned(c) && !twinOf(c) && (!m.summoned || (health && remaining <= 0))) {
-    return el("div", { class: "gcell unsummoned", "data-char": c.id },
+    return el("div", { class: "gcell unsummoned", "data-char": c.id, "data-side": side },
       // Der Summon-Knopf liegt auf dem Portrait, die Kachel wird dadurch nicht größer
       el("div", { class: "gcell-media" },
         el("div", { class: "gcell-portrait", ...cardPress(c, () => {}) }, gamePortrait(side, c)),   // Karte nur per Rechtsklick oder Halten
@@ -1971,12 +2141,13 @@ function gameCell(side, c) {
   const flash = f2
     ? `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:${f2.hue}; --flash-s2:${f2.sat ?? 55}%; --flash-l2:var(--fac-l)`
     : `--flash-h:${f1.hue}; --flash-s:${f1.sat ?? 55}%; --flash-h2:230; --flash-s2:8%; --flash-l2:22%`;
-  return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}`, "data-char": c.id },
+  return el("div", { class: `gcell${health && remaining <= 0 ? " dead" : ""}`, "data-char": c.id, "data-side": side },
     el("div", { class: "gcell-media", style: flash, "data-mono": f2 ? null : "1" },
       el("div", { class: "gcell-portrait" }, gamePortrait(side, c)),
       // Rechtsklick oder Halten auf dem Portrait öffnet die Karte (wie im Troupe Builder), ohne zu heilen oder zu verwunden
       hpButton("up", `${c.name}: heal 1`, heal),
-      hpButton("down", `${c.name}: 1 wound`, wound)
+      hpButton("down", `${c.name}: 1 wound`, wound),
+      moonstoneBadge(stoneSeeds(m, `${side}:${c.id}`))   // liegt über den Knöpfen, lässt Tipps aber durch
     ),
     // Der Name öffnet keine Karte mehr (sonst öffnet sie sich beim schnellen Tippen auf die Lebenspunkte aus Versehen);
     // die Karte gibt es per Rechtsklick oder Halten auf dem Portrait
@@ -2049,14 +2220,56 @@ function renderGamePlay() {
   );
   $("#game-own-row").replaceChildren(...game.own.map((id) => gameCell("own", characterById.get(id))));
   $("#game-own-summon-area").replaceChildren(...[summonArea("own", "You")].filter(Boolean));
-  const last = game.round >= MAX_ROUNDS;
-  $("#game-round").textContent = last ? "Sudden Death" : `Round ${game.round}`;
-  // Die Kopfzeile wird von Runde zu Runde röter: die Nacht geht zu Ende, in Runde 5 geht die Sonne auf
+  updateRoundNav();
+}
+
+// Rundenzähler oben: nur eine Erinnerung, in welcher Runde man ist. Blättern ändert sonst nichts (keine Energy,
+// keine Wunden). Die Kopfzeile wird von Runde zu Runde röter: die Nacht geht zu Ende, in Runde 5 geht die Sonne auf.
+function updateRoundNav() {
+  disarmSetupReturn();
+  $("#game-round").textContent = game.round >= MAX_ROUNDS ? "Sudden Death" : `Round ${game.round}`;
+  $("#game-round-next").disabled = game.round >= MAX_ROUNDS;
+  $("#game-round-prev").setAttribute("aria-label", game.round > 1 ? "Previous round" : "Back to choosing models");
   $("#view-game .editor-bar").dataset.round = String(game.round);
   document.body.dataset.round = String(game.round);
-  const next = $("#game-next-round");
-  next.disabled = last;
-  next.textContent = last ? "Last round" : "Next round";
+}
+
+function stepRound(dir) {
+  if (dir < 0 && game.round <= 1) return confirmSetupReturn();
+  const round = Math.min(MAX_ROUNDS, Math.max(1, game.round + dir));
+  if (round === game.round) return;
+  game.round = round;
+  saveGame();
+  updateRoundNav();
+}
+
+// In Runde 1 führt der Pfeil nach links zurück zur Auswahl der Modelle (ersetzt "Reset game"). Dabei werden die
+// Wunden zurückgesetzt, deshalb zweimal tippen: beim ersten Mal fragt die Rundenanzeige nach, 3 Sekunden lang.
+let setupReturnTimer = null;
+function confirmSetupReturn() {
+  if (!setupReturnTimer) {
+    $("#game-round").textContent = "Back to setup?";
+    $("#game-round-prev").classList.add("danger");
+    setupReturnTimer = setTimeout(updateRoundNav, 3000);
+    return;
+  }
+  disarmSetupReturn();
+  backToSetup();
+}
+function disarmSetupReturn() {
+  clearTimeout(setupReturnTimer);
+  setupReturnTimer = null;
+  $("#game-round-prev").classList.remove("danger");
+}
+
+// Zurück zur Auswahl: gewählte Modelle und Gegnernamen bleiben, Wunden und Beschwörungen gehören zum alten Spiel
+function backToSetup() {
+  game.stage = "setup";
+  game.round = 1;
+  game.models = {};
+  saveGame();
+  renderGame();
+  window.scrollTo(0, 0);
 }
 
 // Jedes Modell bekommt die Energy, die es laut Lebensleiste erzeugt. Übrige Energy verfällt dabei.
@@ -2080,24 +2293,6 @@ function startGame() {
   renderGame();
   window.scrollTo(0, 0);
   startGameTour();
-}
-
-// Neue Runde: übrige Energy verfällt, danach erzeugt jedes Modell Energy gemäß seiner verbleibenden Lebenspunkte
-function nextRound() {
-  if (game.round >= MAX_ROUNDS) return;
-  generateEnergy();
-  game.round += 1;
-  saveGame();
-  renderGamePlay();
-  toast(game.round >= MAX_ROUNDS
-    ? "Sudden Death: the sun rises. Old energy expired, new energy generated."
-    : `Round ${game.round}: old energy expired, new energy generated.`);
-}
-
-function resetGame() {
-  game = newGame(current.id);
-  saveGame();
-  renderGame();
 }
 
 // Spalten der Spielansicht: 4 Modelle in 4 Spalten, 5 in 5, 6 als 3x2, sonst 5 nebeneinander
@@ -2189,8 +2384,8 @@ function renderGame() {
   const setup = game.stage === "setup";
   $("#game-setup").hidden = !setup;
   $("#game-play").hidden = setup;
-  $("#game-title").textContent = setup ? "Choose models" : "Game";
-  $("#game-round").hidden = setup;
+  $("#game-title").hidden = !setup;
+  $("#game-rounds").hidden = setup;
   $("#game-add-foe").hidden = !setup;
   if (setup) { delete $("#view-game .editor-bar").dataset.round; delete document.body.dataset.round; }
 
@@ -2781,14 +2976,12 @@ function showView(name) {
   document.body.classList.toggle("editing", name === "editor" || name === "game");
   // Spielansicht: immer dunkel (Nacht), mit eigenem Hintergrund
   document.body.classList.toggle("in-game", name === "game");
-  if (name === "game") document.documentElement.dataset.theme = "dark";
-  else delete document.documentElement.dataset.theme;
+  applyTheme(name);
   if (name !== "game") delete document.body.dataset.round;
   if (name !== "editor" && name !== "game") {
     lastTab = name;
     markTab(name);
   }
-  updateReplayButton(name);
   window.scrollTo(0, 0);
   animateViewChange(before, name);
 }
@@ -2830,6 +3023,111 @@ function closeEditor() {
 }
 
 
+/* ---------- Einstellungen: Hell/Dunkel und Bildschirm anlassen ---------- */
+
+// Gespeichert im Gerät. theme: "light" oder "dark" (fehlt = wie das Gerät eingestellt ist).
+// awake: true = der Bildschirm geht nicht aus, solange die App offen ist.
+// Den Schlüssel liest auch das kleine Skript im <head> von index.html.
+const SETTINGS_KEY = "ttg-settings";
+let settings = {};
+
+function loadSettings() {
+  try { settings = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { settings = {}; }
+}
+function saveSettings() {
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch { /* ignorieren */ }
+}
+
+const systemDark = () => Boolean(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+// Spielansicht immer dunkel, sonst die gewählte Einstellung (ohne Wahl entscheidet das Gerät über style.css)
+function applyTheme(view = currentView()) {
+  const theme = view === "game" ? "dark" : settings.theme;
+  if (theme) document.documentElement.dataset.theme = theme;
+  else delete document.documentElement.dataset.theme;
+}
+
+// Das Leuchten der Wappen wird für Hell und Dunkel verschieden berechnet (--fac-l), deshalb neu zeichnen
+function redrawForTheme() {
+  if (!compendiumPanel) return;   // Daten noch nicht geladen
+  renderCardsNow();
+  renderTroupes();
+}
+
+// Bildschirm anlassen (Wake Lock). Der Browser gibt die Sperre von selbst frei, sobald die App
+// im Hintergrund ist; beim Zurückkommen wird sie deshalb neu angefordert (siehe visibilitychange).
+const wakeLockSupported = "wakeLock" in navigator;
+let wakeLock = null;
+let wakeLockPending = false;
+async function updateWakeLock() {
+  if (!wakeLockSupported) return false;
+  const want = Boolean(settings.awake) && document.visibilityState === "visible";
+  if (!want) {
+    if (wakeLock) { const lock = wakeLock; wakeLock = null; await lock.release().catch(() => {}); }
+    return true;
+  }
+  if (wakeLock || wakeLockPending) return true;
+  wakeLockPending = true;
+  try {
+    const lock = await navigator.wakeLock.request("screen");
+    lock.addEventListener("release", () => { if (wakeLock === lock) wakeLock = null; });
+    wakeLock = lock;
+    if (!settings.awake) updateWakeLock();   // inzwischen wieder ausgeschaltet
+    return true;
+  } catch {
+    return false;   // zum Beispiel im Energiesparmodus
+  } finally {
+    wakeLockPending = false;
+  }
+}
+
+function openSettings() {
+  $("#set-dark").checked = settings.theme ? settings.theme === "dark" : systemDark();
+  $("#set-awake").checked = wakeLockSupported && Boolean(settings.awake);
+  $("#settings-replay").hidden = !pageTutorials(currentView());   // nur auf Seiten mit Rundgang
+  $("#settings-dialog").showModal();
+}
+
+function wireSettings() {
+  $("#settings-open").addEventListener("click", openSettings);
+  $("#settings-close").addEventListener("click", () => $("#settings-dialog").close());
+  // Klick neben das Fenster schließt es. Der Hintergrund gehört zum <dialog> selbst, deshalb über die Position
+  // prüfen: ein Klick auf den Innenrand des Fensters hat ebenfalls den Dialog als Ziel.
+  $("#settings-dialog").addEventListener("click", (e) => {
+    if (e.target !== e.currentTarget) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.currentTarget.close();
+  });
+  // Erst schließen, sonst liegt der Rundgang hinter dem Dialog
+  $("#settings-replay").addEventListener("click", () => {
+    $("#settings-dialog").close();
+    replayTutorials();
+  });
+
+  $("#set-dark").addEventListener("change", (e) => {
+    settings.theme = e.target.checked ? "dark" : "light";
+    saveSettings();
+    applyTheme();
+    redrawForTheme();
+  });
+
+  if (!wakeLockSupported) {
+    $("#set-awake").disabled = true;
+    $("#set-awake-hint").textContent = "This browser cannot keep the screen on.";
+  }
+  $("#set-awake").addEventListener("change", async (e) => {
+    settings.awake = e.target.checked;
+    if (!(await updateWakeLock())) {
+      settings.awake = false;
+      e.target.checked = false;
+      toast("The screen could not be kept on. Is battery saver on?");
+    }
+    saveSettings();
+  });
+  document.addEventListener("visibilitychange", updateWakeLock);
+}
+
+
 /* ---------- 8. Start ---------- */
 
 function wireEvents() {
@@ -2843,7 +3141,6 @@ function wireEvents() {
     });
   }
 
-  $("#replay-tutorials").addEventListener("click", replayTutorials);
   $("#new-troupe").addEventListener("click", createTroupe);
   $("#editor-back").addEventListener("click", closeEditor);
 
@@ -2880,8 +3177,8 @@ function wireEvents() {
     d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
   }
   $("#game-start").addEventListener("click", startGame);
-  $("#game-next-round").addEventListener("click", nextRound);
-  twoTap($("#game-reset"), "Really reset?", resetGame);
+  $("#game-round-prev").addEventListener("click", () => stepRound(-1));
+  $("#game-round-next").addEventListener("click", () => stepRound(1));
 
   $("#editor-name").addEventListener("input", (e) => {
     current.name = e.target.value.slice(0, 40);
@@ -2989,7 +3286,11 @@ function checkData() {
 }
 
 async function boot() {
+  loadSettings();
+  applyTheme();
+  updateWakeLock();
   wireEvents();
+  wireSettings();
 
   try {
     const response = await fetch("data/characters.json");
@@ -3152,17 +3453,13 @@ function showPlayHint() {
   button.addEventListener("click", close, { once: true });   // wer gleich auf Play tippt, braucht den Tipp nicht mehr
 }
 
-// "Replay tutorials" (oben rechts): nur die Rundgänge und Tipps der gerade offenen Seite wieder einschalten
+// "Replay tutorials" (im Settings-Menü): nur die Rundgänge und Tipps der gerade offenen Seite wieder einschalten
 // (auch nach "Skip all" oder "Don't show this again") und den Rundgang der Seite gleich neu starten.
-// Seiten ohne eigenes Tutorial (Rules, FAQs) zeigen den Knopf nicht (siehe updateReplayButton).
+// Seiten ohne eigenes Tutorial (Rules, FAQs) zeigen den Knopf nicht (siehe openSettings).
 function pageTutorials(view) {
   if (view === "compendium") return { keys: [WELCOME_KEY, HINT_KEY], start: startWelcomeTour };   // Rundgang und Umdreh-Tipp der Karten
   if (view === "troupes") return { keys: [TROUPES_TOUR_KEY], start: startTroupesTour };
   return null;
-}
-// unsichtbar statt ausgeblendet: der Platz bleibt, sonst wird die Kopfzeile niedriger und der Titel springt
-function updateReplayButton(view) {
-  $("#replay-tutorials").classList.toggle("is-off", !pageTutorials(view));
 }
 function replayTutorials() {
   if (activeTour) return;   // läuft gerade ein Rundgang, nichts durcheinanderbringen
@@ -3227,10 +3524,8 @@ function startGameTour() {
   runTour(TOUR_KEY, [
     { target: () => $("#game-own-row .gcell-media"),
       text: () => ["Tap the ", el("strong", { text: "upper half" }), " of a portrait to heal 1 wound, the ", el("strong", { text: "lower half" }), " to deal 1 wound. Press and hold (or right-click) a portrait to see the character card."] },
-    { target: () => $("#game-next-round"),
-      text: () => ["Tap ", el("strong", { text: "Next round" }), " when everyone has activated. Leftover energy is discarded and each model gets new energy. The current round is shown at the top."] },
-    { target: () => $("#game-reset"),
-      text: () => ["Tap ", el("strong", { text: "Reset game" }), " twice to end this game and choose models for a new one."] },
+    { target: () => $("#game-rounds"),
+      text: () => ["Use the ", el("strong", { text: "arrows" }), " to keep track of the round. In round 1, tap the left arrow twice to go back to choosing models."] },
   ]);
 }
 
