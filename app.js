@@ -2260,9 +2260,9 @@ function sunArc(back, prev) {
   const s = wide ? 11 * rem : Math.min(innerWidth * 0.8, 30 * rem);
   const c = wide ? (back.right + prev.left) / 2 : innerWidth / 2;
   const d = wide ? (prev.left - back.right) / 4 : innerWidth * 0.18;
-  // Höhen ab der Bezugskante (style.css --orb-top: Handy unter der Knopfreihe, sonst 0); das Versteck liegt aber immer
-  // ganz über dem oberen Bildrand, auch am Handy
-  const top = parseFloat(getComputedStyle($(".orb-moon")).top) || 0;
+  // Höhen ab dem oberen Bildrand, auf allen Bildschirmen: die Sonne schaut am Handy so weit heraus wie am Desktop
+  // (Zackenspitzen, halbe Scheibe, ganzes Gesicht); der Mond rechnet ebenfalls ab dem oberen Bildrand
+  const top = 0;
   const from = [c - 0.25 * d, -0.56 * s], ctrl = [c + 0.8 * d, -0.56 * s], to = [c + d, top + 0.23 * s];
   const at = (t) => [0, 1].map((k) => (1 - t) ** 2 * from[k] + 2 * t * (1 - t) * ctrl[k] + t * t * to[k]);
   // Strecke entlang des Bogens bis zu der Stelle, an der die Sonne eine bestimmte Höhe erreicht (als Anteil der Gesamtstrecke)
@@ -2313,6 +2313,14 @@ function scatterStars() {
   );
 }
 
+// Oberkante des Sternenstreifens (style.css --orb-top: Handy unter der Knopfreihe, sonst 0), abgelesen an einem der
+// beiden Sterne links des Mondes: seine Höhe ist --orb-top + Streifenhöhe × --sy
+function starsTop(bandH) {
+  const star = document.querySelector(".moon-star:not(.sky-star):not(.behind-moon)");
+  if (!star) return 0;
+  return parseFloat(getComputedStyle(star).top) - bandH * (parseFloat(star.style.getPropertyValue("--sy")) || 0);
+}
+
 // Den Großen Wagen in den Streifen rechts des Mondes einpassen (bis kurz vor den Pfeil zur vorigen Runde), so groß
 // wie möglich: dafür wird er bis zu 50° gegen seine natürliche Lage gedreht, je nachdem, wie breit der Streifen ist
 // (Handy flach, mittlere Fenster fast quadratisch). Größe: höchstens so groß wie der kleinste Abstand zweier Sterne
@@ -2330,7 +2338,7 @@ function layoutSky(back, prev) {
   // Großer Bildschirm: senkrecht auf die Mitte des Mondes in Runde 1 ausgerichtet (Mondsichel 11rem × 0.55 hoch,
   // oberer Rand 4 % darunter, siehe style.css .orb-moon)
   const box = wide ? { x: center + 0.675 * d, y: 11 * rem * 0.55 * 0.54, w: 2.25 * d - 16, h: bandH * 0.8 - 10 }
-    : { x: center + 0.675 * d, y: (parseFloat(getComputedStyle($(".orb-moon")).top) || 0) + bandH / 2 + 6, w: 2.25 * d - 16, h: bandH - 10 };
+    : { x: center + 0.675 * d, y: starsTop(bandH) + bandH / 2 + 6, w: 2.25 * d - 16, h: bandH - 10 };
   const turn = (deg) => {
     const a = deg * Math.PI / 180;
     return BIG_DIPPER.map(([x, y]) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]);

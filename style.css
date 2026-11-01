@@ -14,15 +14,10 @@
 
 :root {
   /* Hell (Standard) */
-  /* Hintergrund in den Blau-/Türkistönen der Goblin-Airship-Verpackung: Grundfarbe und drei große, weiche Flecken
-     (dunkles Petrol, Blaugrün, helles Türkis), unregelmäßig verteilt, damit es nicht wie eine glatte Fläche wirkt */
-  --bg: #e2eef0;
-  --bg-a: rgb(150 200 208 / 0.5);
-  --bg-b: rgb(196 228 230 / 0.7);
-  --bg-c: rgb(110 170 184 / 0.22);
-  --surface: #f8fcfc;
-  --surface-2: #e2eef0;
-  --line: #c8dcdf;
+  --bg: #f2f1f6;
+  --surface: #ffffff;
+  --surface-2: #e9e7f1;
+  --line: #d4d1e0;
   --fg: #11121b;
   --muted: #4b4d62;
   --accent: #7a5a12;
@@ -56,13 +51,10 @@
 /* Dunkel, wenn das Gerät auf "dunkel" steht (und nicht ausdrücklich "hell" gewählt ist) */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0a1c22;
-    --bg-a: rgb(22 80 92 / 0.32);
-    --bg-b: rgb(8 44 58 / 0.5);
-    --bg-c: rgb(46 118 124 / 0.12);
-    --surface: #13282f;
-    --surface-2: #1b343c;
-    --line: #28434b;
+    --bg: #13151f;
+    --surface: #1c1f2e;
+    --surface-2: #252a3d;
+    --line: #33384f;
     --fg: #f5f4fb;
     --muted: #b8bbd0;
     --accent: #e0bf6a;
@@ -78,13 +70,10 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0a1c22;
-  --bg-a: rgb(22 80 92 / 0.32);
-  --bg-b: rgb(8 44 58 / 0.5);
-  --bg-c: rgb(46 118 124 / 0.12);
-  --surface: #13282f;
-  --surface-2: #1b343c;
-  --line: #28434b;
+  --bg: #13151f;
+  --surface: #1c1f2e;
+  --surface-2: #252a3d;
+  --line: #33384f;
   --fg: #f5f4fb;
   --muted: #b8bbd0;
   --accent: #e0bf6a;
@@ -112,12 +101,7 @@ body {
   min-height: calc(100vh + 1px);
   min-height: calc(100dvh + 1px);
   margin: 0;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(55% 45% at 12% 18%, var(--bg-a), transparent 70%),
-    radial-gradient(60% 55% at 88% 72%, var(--bg-b), transparent 70%),
-    radial-gradient(70% 40% at 55% 105%, var(--bg-c), transparent 70%);
-  background-attachment: fixed;   /* Flecken bleiben beim Scrollen stehen */
+  background: var(--bg);
   color: var(--fg);
   font: 460 16px/1.5 var(--font-body);   /* 460 statt 400: ca. 15 % kräftiger (siehe @font-face oben) */
   text-rendering: optimizeLegibility;      /* sauberere Abstände zwischen den Buchstaben (Kerning) */
@@ -1578,9 +1562,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 
 /* Spielansicht: Der Hintergrund ist die Farbe von Runde 1 (Nacht). Von Runde zu Runde kriecht eine rötere Farbe
    vom oberen Rand herunter und blendet nach unten aus. In Runde 5 geht die Sonne auf. */
-/* Die Spielansicht behält ihren Nachthimmel: ohne die türkisen Flecken, --bg wieder das dunkle Nachtblau
-   (auch für die Kopfzeile bei "Choose models") */
-body.in-game { --bg: #13151f; --surface: #1c1f2e; --surface-2: #252a3d; --line: #33384f; background-color: #13151f; background-image: none; }
+body.in-game { background-color: #13151f; }   /* dieselbe Farbe wie die Kopfzeile bei "Choose models" */
 /* --sky-prev / --sky-next: Farbe der Runde davor (dunkler) und danach (heller) für das Pulsieren;
    Runde 1 hat keine davor (noch tiefere Nacht), Runde 5 keine danach (goldener Sonnenaufgang) */
 body.in-game[data-round="1"] { --sky: #13151f; --sky-prev: #0a0b12; --sky-next: hsl(262 36% 24%); --sky-h: 20vh; }
@@ -1715,7 +1697,7 @@ body.in-game[data-round="3"] .moon-stars { opacity: 0.18; }
    ausgeblendet; danach erscheint er dort, wo der Mond aufgestiegen ist. */
 .moon-star.behind-moon {
   left: calc(var(--orb-c) - var(--orb-d) - var(--sun-s) * 0.55 * 0.12);
-  top: calc(var(--orb-top) + var(--sun-s) * 0.55 * 0.72);
+  top: calc(var(--sun-s) * 0.55 * 0.72);   /* wie der Mond ab dem oberen Bildrand */
   transition: opacity 2.4s ease;
 }
 body.in-game[data-round="1"] .moon-star.behind-moon { opacity: 0; }
@@ -1723,13 +1705,14 @@ body.in-game[data-round="1"] .moon-star.behind-moon { opacity: 0; }
    verschwunden (-110 %: auch der Schein ist weg).
    Sonne: Sudden Death ganzes Gesicht, Runde 3 und 4 bei 38 % und 64 % des Weges von "verborgen" bis Sudden Death;
    sie wandert dabei von nahe der Mitte nach außen. */
-.game-sun .orb-moon { translate: 0 calc(-110% - var(--orb-top)); }
+/* Mond (wie die Sonne) ab dem oberen Bildrand, auch am Handy: er steht dort genauso weit im Bild wie am Desktop */
+.game-sun .orb-moon { top: 0; translate: 0 -110%; }
 body.in-game[data-round="1"] .game-sun .orb-moon { --off: -1; translate: 0 4%; }
 body.in-game[data-round="2"] .game-sun .orb-moon { --off: -0.5; translate: 0 -78%; }
 /* Verborgen wartet die Sonne links der Mitte, wo der Mond verschwindet, und gleitet in Runde 3 im Bogen nach rechts
    unten herein: waagerecht mit schnellem Start, senkrecht mit langsamem Start, dadurch eine Kurve statt einer Geraden.
    Beim Zurückblättern denselben Bogen rückwärts. */
-.game-sun .orb-sun { --off: -0.25; transition: translate 2.4s cubic-bezier(0.55, 0, 0.35, 1), left 2.4s cubic-bezier(0.15, 0.6, 0.3, 1); }
+.game-sun .orb-sun { top: 0; --off: -0.25; transition: translate 2.4s cubic-bezier(0.55, 0, 0.35, 1), left 2.4s cubic-bezier(0.15, 0.6, 0.3, 1); }
 body.in-game[data-round="3"] .game-sun .orb-sun { --off: 0.33; }
 /* Sobald app.js (placeSun) die Bahn berechnet hat: die Sonne wandert auf EINEM großen Bogen (--sun-path) vom Versteck
    bis zum Sudden Death; die Runden sind Stationen darauf (--sun-d3, --sun-d4 als Anteil der Strecke). Die Lage oben
