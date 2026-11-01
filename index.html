@@ -58,6 +58,12 @@
   <div class="backdrop-eyes" aria-hidden="true" hidden><span></span><span></span></div>
   <!-- Easter Egg: der Mondstein im Beutel der Duchess leuchtet türkis, wenn die Maus in die Nähe kommt (wie die Augen oben) -->
   <div class="backdrop-moonstone" aria-hidden="true" hidden></div>
+  <!-- Spielansicht: am Anfang steht der Dominion-Mond am Himmel, er geht unter und die Commonwealth-Sonne geht auf (style.css) -->
+  <div class="game-sun" aria-hidden="true">
+    <div class="moon-stars"></div>   <!-- Sterne rechts vom Mond, zufällig verteilt von app.js (scatterStars) -->
+    <img class="orb-moon" src="images/moon.webp" alt="" width="74" height="120" decoding="async" draggable="false">
+    <img class="orb-sun" src="images/factions/commonwealth.webp" alt="" width="168" height="168" decoding="async" draggable="false">
+  </div>
 
   <header class="topbar">
     <h1>

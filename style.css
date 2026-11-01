@@ -1352,13 +1352,15 @@ button.gcell-open { display: block; width: 100%; padding: 0; background: none; c
 @keyframes hp-flash-out { from { opacity: 1; } to { opacity: 0; } }
 /* Moonstones auf dem Portrait (oben links): nur Anzeige. pointer-events: none, damit Tippen weiterhin auf den
    Heilen/Verwunden-Knöpfen darunter landet; auch Halten öffnet weiterhin die Karte. */
-/* Jeder Stein einzeln; passen nicht alle in eine Zeile, geht es darunter weiter (Handy: drei pro Zeile). */
+/* Jeder Stein einzeln; passen nicht alle in eine Zeile, geht es darunter weiter (Handy: zwei, großer Bildschirm: vier pro Zeile). */
 .gcell-stones { position: absolute; top: 3px; left: 3px; right: 3px; z-index: 1; display: flex; flex-wrap: wrap; align-items: center; gap: 1px; pointer-events: none; }
 /* Brocken im Seitenverhältnis 24:21 (siehe moonstoneSvg); kühles, schwaches Leuchten wie die eisblauen Steine der Miniaturen.
-   Höchstens ein Drittel der Fläche breit, damit auf schmalen Portraits immer drei nebeneinander passen. */
-.moonstone-icon { display: block; width: min(1.6rem, calc((100% - 2px) / 3)); aspect-ratio: 24 / 21; height: auto; filter: drop-shadow(0 0 2px rgb(160 230 255 / 0.6)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.7)); }
+   Die Breite richtet sich nach dem Portrait: auf dem Handy die Hälfte, auf großen Bildschirmen ein Viertel der Fläche. */
+.moonstone-icon { display: block; width: calc((100% - 1px) / 2); aspect-ratio: 24 / 21; height: auto; filter: drop-shadow(0 0 2px rgb(160 230 255 / 0.6)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.7)); }
 .moonstone-icon svg { display: block; width: 100%; height: 100%; }
-@media (min-width: 720px) { .moonstone-icon { width: 2.1rem; } }
+/* Auf den Portraits zusätzlich ein weicher dunkler Schatten: hebt die Steine von hellen Bildstellen ab */
+.gcell-stones .moonstone-icon { filter: drop-shadow(0 0 2px rgb(160 230 255 / 0.6)) drop-shadow(0 1px 3px rgb(0 0 0 / 0.95)) drop-shadow(0 0 8px rgb(0 0 0 / 0.8)) drop-shadow(0 0 3px rgb(0 0 0 / 0.6)); }
+@media (min-width: 720px) { .moonstone-icon { width: calc((100% - 3px) / 4); } }
 
 /* Transform-Knopf zwischen Name und Lebenspunkten statt auf dem Portrait */
 .transform-btn.transform-inline { position: static; width: 100%; min-height: 26px; }
@@ -1568,10 +1570,16 @@ body.in-game[data-round="2"] { --sky: hsl(262 36% 24%); --sky-prev: #13151f; --s
 body.in-game[data-round="3"] { --sky: hsl(312 31% 24%); --sky-prev: hsl(262 36% 24%); --sky-next: hsl(340 41% 27%); --sky-h: 55vh; }
 body.in-game[data-round="4"] { --sky: hsl(340 41% 27%); --sky-prev: hsl(312 31% 24%); --sky-next: hsl(5 50% 29%); --sky-h: 75vh; }
 body.in-game[data-round="5"] { --sky: hsl(5 50% 29%); --sky-prev: hsl(340 41% 27%); --sky-next: hsl(24 58% 40%); --sky-h: 100vh; }
-/* Farben als animierbare Werte: beim Rundenwechsel gleiten auch die pulsierenden Flecken in die neuen Farben */
-@property --sky-prev { syntax: "<color>"; inherits: true; initial-value: transparent; }
-@property --sky-next { syntax: "<color>"; inherits: true; initial-value: transparent; }
-body.in-game { transition: --sky-prev 0.8s ease, --sky-next 0.8s ease; }
+/* Rundenwechsel als flüssiger Übergang. Überblendet werden die Variablen selbst (--sky, --sky-prev, --sky-next,
+   --sky-h), nicht die einzelnen Flächen: Kopfzeile, ihr weicher Rand und der Himmel lesen in jedem Moment denselben
+   Zwischenwert. Würde jede Fläche für sich überblenden, entstünde kurz eine harte Kante (Farbverläufe wie der Rand
+   unter der Kopfzeile lassen sich nicht überblenden und sprängen sofort um). */
+@property --sky { syntax: "<color>"; inherits: true; initial-value: #13151f; }
+@property --sky-prev { syntax: "<color>"; inherits: true; initial-value: #0a0b12; }
+@property --sky-next { syntax: "<color>"; inherits: true; initial-value: #13151f; }
+@property --sky-h { syntax: "<length-percentage>"; inherits: true; initial-value: 20vh; }
+body.in-game { transition: --sky 0.8s ease, --sky-prev 0.8s ease, --sky-next 0.8s ease, --sky-h 0.8s ease; }
+@media (prefers-reduced-motion: reduce) { body.in-game { transition: none; } }
 
 /* Pulsieren: je ein weicher Fleck in der Farbe davor und danach (je etwa 15 % der Fläche) wandert langsam umher
    und wird heller und schwächer. Krumme, verschiedene Dauern, damit das Muster unregelmäßig wirkt. */
@@ -1610,17 +1618,109 @@ body.in-game[data-round]::before {
   mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0) 100%);
   z-index: -1;
   pointer-events: none;
-  transition: height 0.8s ease, background-color 0.8s ease;
   animation: sky-prev 9.7s ease-in-out infinite, sky-next 12.3s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) { body.in-game[data-round]::before { animation: none; } }
-/* Kopfzeile in der Farbe des Himmels oben, Schrift weiß */
+
+/* Mond und Sonne: In Runde 1 steht die Mondsichel mit ganzem Gesicht am Himmel, links der Mitte (Richtung "Back").
+   In Runde 2 steigt er weit nach oben und rückt zur Mitte, in Runde 3 verschwindet er dort. Gleichzeitig geht rechts
+   der Mitte die Commonwealth-Sonne auf und wandert nach außen: Runde 3 die Spitzen der Zacken, Runde 4 die halbe
+   Scheibe, Sudden Death das ganze Gesicht im selben Abstand zur Mitte wie der Mond in Runde 1. Beide schaukeln langsam.
+   Handy: groß, um die Bildschirmmitte, sie kommen unter der Knopfreihe hervor (der Rahmen beginnt dort und schneidet
+   alles darüber ab). Großer Bildschirm: kleiner, vom oberen Bildrand aus, um die Mitte zwischen "Back" und dem Pfeil
+   zur vorigen Runde (--sun-x und --orb-dx setzt app.js). Die Kopfzeile hat keine eigene Fläche und verdeckt sie nicht.
+   Maße im Bild: Sonne Scheibenradius 26 %, Zackenspitzen 41 % der Bildgröße; die Mondsichel ist freigestellt
+   (74 × 120, hochkant) und füllt ihr Bild fast ganz aus.
+   Die Verschiebung (translate) bezieht sich auf die Bildhöhe: -100 % = ganz verborgen, -50 % = Mitte an der Kante. */
+.game-sun { display: none; }
+body.in-game[data-round] .game-sun {
+  display: block;
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 3.75rem);   /* Unterkante der Knopfreihe (44px Knöpfe + 2 × 0.5rem) */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: -1;   /* über dem Himmel (body::before), unter allem anderen */
+  pointer-events: none;
+  --sun-s: min(80vw, 30rem);
+  --orb-c: 50%;    /* Mitte, um die sich Mond und Sonne bewegen */
+  --orb-d: 18vw;   /* Abstand zur Mitte in Runde 1 (Mond) und Sudden Death (Sonne) */
+  --star-h: 2.6rem;   /* Höhe des Streifens, in dem die Sterne verteilt sind */
+}
+.game-sun > img {
+  --s: var(--sun-s);
+  --off: 0;   /* Lage links (-1) oder rechts (+1) der Mitte, in Vielfachen von --orb-d */
+  position: absolute;
+  top: 0;
+  left: calc(var(--orb-c) + var(--orb-d) * var(--off));
+  width: var(--s);
+  height: var(--s);
+  margin-left: calc(var(--s) / -2);
+  translate: 0 -100%;
+  opacity: 0.85;
+  transition: translate 2.4s cubic-bezier(0.3, 0, 0.2, 1), left 2.4s cubic-bezier(0.3, 0, 0.2, 1);
+  rotate: -10deg;
+  animation: sun-tilt 22s ease-in-out infinite alternate;   /* schaukelt zwischen -10° und +10°, bleibt dabei etwa gerade */
+}
+/* Die Sonne ist silbrig: golden einfärben, dazu ein warmes Leuchten. Der Mond bleibt silbern, mit kühlem Schein. */
+.game-sun .orb-sun { filter: sepia(1) saturate(2.6) hue-rotate(-12deg) brightness(1.05) drop-shadow(0 0 1.5rem rgb(255 170 70 / 0.7)); }
+/* Mondsichel hochkant (74 : 120): Höhe --s, Breite und Versatz zur Mitte daraus berechnet */
+.game-sun .orb-moon { --s: calc(var(--sun-s) * 0.55); width: calc(var(--s) * 74 / 120); margin-left: calc(var(--s) * -37 / 120); filter: brightness(1.15) drop-shadow(0 0 1.2rem rgb(170 200 255 / 0.55)); }
+@media (min-width: 720px) {
+  body.in-game[data-round] .game-sun { top: 0; --sun-s: 11rem; --orb-c: var(--sun-x, 50%); --orb-d: var(--orb-dx, 5rem); --star-h: 4.25rem; }
+}
+/* Sterne rechts vom Mond (verteilt von scatterStars in app.js): kühl leuchtend, verblassen mit den Runden.
+   Runde 1 voll, Runde 2 schwächer, Runde 3 fast weg, danach verschwunden. */
+.moon-stars { position: absolute; inset: 0; opacity: 0; transition: opacity 2.4s ease; }
+body.in-game[data-round="1"] .moon-stars { opacity: 1; }
+body.in-game[data-round="2"] .moon-stars { opacity: 0.55; }
+body.in-game[data-round="3"] .moon-stars { opacity: 0.18; }
+.moon-star {
+  position: absolute;
+  left: calc(var(--orb-c) + var(--orb-d) * var(--sx));
+  top: calc(var(--star-h) * var(--sy));
+  width: auto;
+  height: calc(26px * var(--ss));
+  translate: -50% -50%;
+  rotate: var(--sr);
+  scale: var(--sf) 1;   /* manche gespiegelt */
+  opacity: var(--so);
+  filter: drop-shadow(0 0 3px rgb(190 215 255 / 0.8));
+}
+/* Stern hinter dem Mond in Runde 1, unterhalb der Nase (Mondsichel: Höhe --sun-s × 0.55, oberer Rand 4 % darunter,
+   Nase bei etwa 64 % der Höhe; der Stern sitzt etwas tiefer und weiter links, damit die untere Spitze des
+   aufsteigenden Mondes ihn in Runde 2 nicht berührt). Der Mond ist leicht durchscheinend, deshalb in Runde 1 ganz
+   ausgeblendet; danach erscheint er dort, wo der Mond aufgestiegen ist. */
+.moon-star.behind-moon {
+  left: calc(var(--orb-c) - var(--orb-d) - var(--sun-s) * 0.55 * 0.12);
+  top: calc(var(--sun-s) * 0.55 * 0.72);
+  transition: opacity 2.4s ease;
+}
+body.in-game[data-round="1"] .moon-star.behind-moon { opacity: 0; }
+/* Mond: Runde 1 ganz sichtbar mit etwas Abstand zur Kante, Runde 2 weit oben (nur die untere Spitze), ab Runde 3
+   verschwunden (-110 %: auch der Schein ist weg).
+   Sonne: Sudden Death ganzes Gesicht, Runde 3 und 4 bei 38 % und 64 % des Weges von "verborgen" bis Sudden Death;
+   sie wandert dabei von nahe der Mitte nach außen. */
+.game-sun .orb-moon { translate: 0 -110%; }
+body.in-game[data-round="1"] .game-sun .orb-moon { --off: -1; translate: 0 4%; }
+body.in-game[data-round="2"] .game-sun .orb-moon { --off: -0.5; translate: 0 -78%; }
+.game-sun .orb-sun { --off: 0.33; }
+body.in-game[data-round="3"] .game-sun .orb-sun { translate: 0 -72%; }
+body.in-game[data-round="4"] .game-sun .orb-sun { --off: 0.67; translate: 0 -53%; }
+body.in-game[data-round="5"] .game-sun .orb-sun { --off: 1; translate: 0 -27%; }
+@keyframes sun-tilt { to { rotate: 10deg; } }
+@media (prefers-reduced-motion: reduce) { .game-sun > img { transition: none; animation: none; rotate: 0deg; } .moon-stars { transition: none; } }
+/* Kopfzeile im Spiel: keine eigene Fläche, der Himmel geht bis zum oberen Rand durch. Die Knöpfe sind deckend
+   (Himmelsfarbe mit etwas Weiß gemischt), damit beim Scrollen keine Karten durchscheinen. Schrift weiß. */
 #view-game .editor-bar[data-round] { color: #fff; }
+#view-game .editor-bar[data-round]::before, #view-game .editor-bar[data-round]::after { content: none; }
 #view-game .editor-bar[data-round] .game-title { color: #fff; }
-#view-game .editor-bar[data-round] :is(.back, .round-arrow) { color: #fff; border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.08); }
+#view-game .editor-bar[data-round] :is(.back, .round-arrow) { color: #fff; border-color: color-mix(in srgb, #fff 35%, var(--sky)); background: color-mix(in srgb, #fff 8%, var(--sky)); }
+#view-game .editor-bar[data-round] .round-arrow:disabled { opacity: 1; color: color-mix(in srgb, #fff 40%, var(--sky)); border-color: color-mix(in srgb, #fff 18%, var(--sky)); }
 /* Pfeil nach links in Runde 1 nach dem ersten Tippen ("Back to setup?"): rot wie früher "Reset game" */
 #view-game .editor-bar[data-round] .round-arrow.danger { color: #ff8a8d; border-color: #ff8a8d; }
-#view-game .editor-bar[data-round] .badge { background: rgba(255, 255, 255, 0.2); color: #fff; }
+#view-game .editor-bar[data-round] .badge { background: color-mix(in srgb, #fff 20%, var(--sky)); color: #fff; }
 
 /* Weicher Rand unter der Kopfzeile der Spielansicht: Inhalt blendet beim Scrollen sanft unter ihr aus */
 #view-game .editor-bar { --bar-bg: var(--bg); }
@@ -1648,7 +1748,6 @@ body.in-game[data-round]::before {
   background: var(--bar-bg);
   -webkit-mask-image: var(--fade-x);
   mask-image: var(--fade-x);
-  transition: background-color 0.8s ease;
 }
 #view-game .editor-bar::after {
   content: "";

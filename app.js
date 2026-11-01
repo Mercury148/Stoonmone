@@ -2232,6 +2232,54 @@ function updateRoundNav() {
   $("#game-round-prev").setAttribute("aria-label", game.round > 1 ? "Previous round" : "Back to choosing models");
   $("#view-game .editor-bar").dataset.round = String(game.round);
   document.body.dataset.round = String(game.round);
+  placeSun();
+}
+
+// Mond und Sonne (style.css, .game-sun): auf großen Bildschirmen bewegen sie sich um die Mitte zwischen "Back" und dem
+// Pfeil zur vorigen Runde (--sun-x), bis zu einem Viertel dieses Abstands nach links und rechts (--orb-dx).
+// Gemessen wird erst im nächsten Bild, wenn die Spielansicht sichtbar ist.
+function placeSun() {
+  requestAnimationFrame(() => {
+    const back = $("#game-back").getBoundingClientRect(), prev = $("#game-round-prev").getBoundingClientRect();
+    if (!back.width || !prev.width) return;
+    document.body.style.setProperty("--sun-x", `${Math.round((back.right + prev.left) / 2)}px`);
+    document.body.style.setProperty("--orb-dx", `${Math.round((prev.left - back.right) / 4)}px`);
+  });
+}
+window.addEventListener("resize", () => { if (document.body.dataset.round) placeSun(); });
+
+// Sterne um den Mond (aus der Dominion-Mondscheibe ausgeschnitten): einmal beim Start zufällig verteilt.
+// Links des Mondes ein großer und ein kleiner, rechts sechs frei verstreut: jeder neue Stern hält Abstand zu den
+// bisherigen (sonst bis zu 40 neue Versuche), damit sie sich weder häufen noch in einer Reihe stehen. Der oberste
+// der rechten wandert hinter die Nase des Mondes (Lage in style.css, .behind-moon): in Runde 1 unsichtbar, danach
+// füllt er die Lücke, die der aufsteigende Mond hinterlässt. Dazu zufällige
+// Größe, Drehung, Helligkeit und Spiegelung. Lage in Vielfachen von --orb-d um die Mitte (der Mond steht in Runde 1
+// bei -1), Höhe als Anteil von --star-h. Verblassen mit den Runden: style.css (.moon-stars).
+function scatterStars(right = 6) {
+  const r = (a, b) => a + Math.random() * (b - a);
+  const stars = [
+    { x: r(-1.85, -1.7), y: r(0.2, 0.45), s: 1 },      // groß, links des Mondes
+    { x: r(-1.6, -1.5), y: r(0.6, 0.9), s: 0.5 },      // klein, links des Mondes
+  ];
+  for (let i = 0; i < right; i++) {
+    let best = null;
+    for (let t = 0; t < 40; t++) {
+      const p = { x: r(-0.5, 1.85), y: r(0.02, 0.98), s: r(0.45, 0.95) };
+      // Abstand: waagerecht in --orb-d, senkrecht in --star-h (etwa gleich groß, deshalb direkt vergleichbar)
+      const gap = Math.min(...stars.map((q) => Math.hypot(p.x - q.x, (p.y - q.y) * 0.8)));
+      if (!best || gap > best.gap) best = { ...p, gap };
+      if (gap > 0.45) break;
+    }
+    stars.push(best);
+  }
+  const top = stars.slice(2).reduce((a, b) => (b.y < a.y ? b : a));
+  top.behind = true;
+  top.s = 0.7;
+  $(".moon-stars").replaceChildren(...stars.map((p) => el("img", {
+    class: p.behind ? "moon-star behind-moon" : "moon-star", src: "images/moon-star.webp", alt: "", width: "17", height: "26", draggable: "false",
+    style: `--sx:${p.x.toFixed(2)}; --sy:${p.y.toFixed(2)}; --ss:${p.s.toFixed(2)};`
+      + ` --sr:${r(-25, 25).toFixed(0)}deg; --sf:${Math.random() < 0.5 ? -1 : 1}; --so:${r(0.6, 1).toFixed(2)}`,
+  })));
 }
 
 function stepRound(dir) {
@@ -3291,6 +3339,7 @@ async function boot() {
   updateWakeLock();
   wireEvents();
   wireSettings();
+  scatterStars();
 
   try {
     const response = await fetch("data/characters.json");
