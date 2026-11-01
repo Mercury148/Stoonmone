@@ -2244,42 +2244,114 @@ function placeSun() {
     if (!back.width || !prev.width) return;
     document.body.style.setProperty("--sun-x", `${Math.round((back.right + prev.left) / 2)}px`);
     document.body.style.setProperty("--orb-dx", `${Math.round((prev.left - back.right) / 4)}px`);
+    layoutSky(back, prev);
+    sunArc(back, prev);
   });
+}
+
+// Bahn der Sonne (style.css, .sun-path): ein großer Bogen von ihrem Versteck links der Mitte (über der Kante, wo der Mond
+// verschwindet) bis zum Sudden Death rechts der Mitte, ganzes Gesicht unter der Kante. Erst vor allem seitwärts, dann
+// nach unten. Runde 3 und 4 liegen dort auf dem Bogen, wo die Sonne so weit herunterreicht wie bisher (Zackenspitzen,
+// halbe Scheibe). Koordinaten in px im Rahmen .game-sun, gemessen am Mittelpunkt der Sonne; -0.5 × Größe = gerade verborgen.
+function sunArc(back, prev) {
+  const box = $(".game-sun");
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const wide = window.matchMedia("(min-width: 720px)").matches;
+  const s = wide ? 11 * rem : Math.min(innerWidth * 0.8, 30 * rem);
+  const c = wide ? (back.right + prev.left) / 2 : innerWidth / 2;
+  const d = wide ? (prev.left - back.right) / 4 : innerWidth * 0.18;
+  // Höhen ab der Bezugskante (style.css --orb-top: Handy unter der Knopfreihe, sonst 0); das Versteck liegt aber immer
+  // ganz über dem oberen Bildrand, auch am Handy
+  const top = parseFloat(getComputedStyle($(".orb-moon")).top) || 0;
+  const from = [c - 0.25 * d, -0.56 * s], ctrl = [c + 0.8 * d, -0.56 * s], to = [c + d, top + 0.23 * s];
+  const at = (t) => [0, 1].map((k) => (1 - t) ** 2 * from[k] + 2 * t * (1 - t) * ctrl[k] + t * t * to[k]);
+  // Strecke entlang des Bogens bis zu der Stelle, an der die Sonne eine bestimmte Höhe erreicht (als Anteil der Gesamtstrecke)
+  const steps = 400, lengths = [0];
+  for (let i = 1; i <= steps; i++) { const p = at((i - 1) / steps), q = at(i / steps); lengths.push(lengths[i - 1] + Math.hypot(q[0] - p[0], q[1] - p[1])); }
+  const share = (y) => { const i = lengths.findIndex((_, j) => at(j / steps)[1] >= y); return `${(lengths[i] / lengths[steps] * 100).toFixed(1)}%`; };
+  const pt = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+  box.style.setProperty("--sun-path", `path("M ${pt(from)} Q ${pt(ctrl)} ${pt(to)}")`);
+  box.style.setProperty("--sun-d3", share(top - 0.22 * s));
+  box.style.setProperty("--sun-d4", share(top - 0.03 * s));
+  box.classList.add("sun-path");
 }
 window.addEventListener("resize", () => { if (document.body.dataset.round) placeSun(); });
 
-// Sterne um den Mond (aus der Dominion-Mondscheibe ausgeschnitten): einmal beim Start zufällig verteilt.
-// Links des Mondes ein großer und ein kleiner, rechts sechs frei verstreut: jeder neue Stern hält Abstand zu den
-// bisherigen (sonst bis zu 40 neue Versuche), damit sie sich weder häufen noch in einer Reihe stehen. Der oberste
-// der rechten wandert hinter die Nase des Mondes (Lage in style.css, .behind-moon): in Runde 1 unsichtbar, danach
-// füllt er die Lücke, die der aufsteigende Mond hinterlässt. Dazu zufällige
-// Größe, Drehung, Helligkeit und Spiegelung. Lage in Vielfachen von --orb-d um die Mitte (der Mond steht in Runde 1
-// bei -1), Höhe als Anteil von --star-h. Verblassen mit den Runden: style.css (.moon-stars).
-function scatterStars(right = 6) {
+// Sterne um den Mond (aus der Dominion-Mondscheibe ausgeschnitten), einmal beim Start ausgewürfelt:
+// - links des Mondes ein großer und ein kleiner Stern
+// - einer hinter der Nase des Mondes (Lage in style.css, .behind-moon): in Runde 1 unsichtbar, danach füllt er die
+//   Lücke, die der aufsteigende Mond hinterlässt
+// - rechts des Mondes der Große Wagen (BIG_DIPPER, eingepasst von layoutSky)
+// Verblassen mit den Runden: style.css (.moon-stars).
+//
+// Großer Wagen: echte Positionen der sieben Sterne, auf eine Sternkarte projiziert (Norden oben, Osten links), in Grad.
+// Von rechts: Dubhe, Merak (Kasten außen), Phecda, Megrez (Kasten innen), Alioth, Mizar, Alkaid (Deichsel).
+const BIG_DIPPER = [[9.49, -6.74], [11.35, -1.58], [4.47, 2.59], [1.16, -0.54], [-4.21, 0.32], [-8.61, 0.66], [-13.76, 5.3]];
+let skyChart = null;   // { tilt, sizes, stars: [Bild-Elemente] } der aktuellen Sitzung
+
+// Jeder Stern bekommt bei jedem Öffnen der App eine eigene Helligkeit (--so) und einen eigenen Schein (--sg),
+// die Sterne des Wagens zusätzlich eine eigene Größe (sizes, Anteil der Größe aus layoutSky).
+function scatterStars() {
   const r = (a, b) => a + Math.random() * (b - a);
-  const stars = [
-    { x: r(-1.85, -1.7), y: r(0.2, 0.45), s: 1 },      // groß, links des Mondes
-    { x: r(-1.6, -1.5), y: r(0.6, 0.9), s: 0.5 },      // klein, links des Mondes
+  const extra = [
+    { x: r(-1.85, -1.7), y: r(0.2, 0.45), s: r(0.85, 1.05) },   // groß, links des Mondes
+    { x: r(-1.6, -1.5), y: r(0.6, 0.9), s: r(0.4, 0.55) },      // klein, links des Mondes
+    { behind: true, s: r(0.55, 0.85) },                         // hinter der Nase des Mondes
   ];
-  for (let i = 0; i < right; i++) {
-    let best = null;
-    for (let t = 0; t < 40; t++) {
-      const p = { x: r(-0.5, 1.85), y: r(0.02, 0.98), s: r(0.45, 0.95) };
-      // Abstand: waagerecht in --orb-d, senkrecht in --star-h (etwa gleich groß, deshalb direkt vergleichbar)
-      const gap = Math.min(...stars.map((q) => Math.hypot(p.x - q.x, (p.y - q.y) * 0.8)));
-      if (!best || gap > best.gap) best = { ...p, gap };
-      if (gap > 0.45) break;
-    }
-    stars.push(best);
+  const look = () => ` --sr:${r(-25, 25).toFixed(0)}deg; --sf:${Math.random() < 0.5 ? -1 : 1};`
+    + ` --so:${r(0.5, 1).toFixed(2)}; --sg:${r(0.1, 1).toFixed(2)}`;
+  const star = (cls, style) => el("img", { class: cls, src: "images/moon-star.webp", alt: "", width: "17", height: "26", draggable: "false", style });
+  skyChart = {
+    tilt: r(-8, 8),   // leicht gekippt, damit der Wagen nicht bei jedem Öffnen exakt gleich aussieht
+    sizes: BIG_DIPPER.map(() => r(0.6, 1)),
+    stars: BIG_DIPPER.map(() => star("moon-star sky-star", look())),
+  };
+  $(".moon-stars").replaceChildren(
+    ...extra.map((p) => star(p.behind ? "moon-star behind-moon" : "moon-star",
+      `${p.behind ? "" : `--sx:${p.x.toFixed(2)}; --sy:${p.y.toFixed(2)}; `}--ss:${p.s.toFixed(2)}; ${look()}`)),
+    ...skyChart.stars
+  );
+}
+
+// Den Großen Wagen in den Streifen rechts des Mondes einpassen (bis kurz vor den Pfeil zur vorigen Runde), so groß
+// wie möglich: dafür wird er bis zu 50° gegen seine natürliche Lage gedreht, je nachdem, wie breit der Streifen ist
+// (Handy flach, mittlere Fenster fast quadratisch). Größe: höchstens so groß wie der kleinste Abstand zweier Sterne
+// (damit sie sich nicht überdecken), davon je Stern ein zufälliger Anteil (skyChart.sizes).
+// Maße wie in style.css (.game-sun): Mitte --orb-c, Abstand --orb-d, Streifenhöhe --star-h.
+function layoutSky(back, prev) {
+  if (!skyChart) return;
+  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+  const wide = window.matchMedia("(min-width: 720px)").matches;
+  const center = wide ? (back.right + prev.left) / 2 : innerWidth / 2;
+  const d = wide ? (prev.left - back.right) / 4 : innerWidth * 0.18;
+  const bandH = (wide ? 4.25 : 2.6) * rem;
+  // Handy: der Streifen ist sehr flach, dort darf der Wagen fast seine ganze Höhe nutzen; etwas nach unten gerückt,
+  // damit die obersten Sterne nicht an der Kante unter der Knopfreihe abgeschnitten werden
+  // Großer Bildschirm: senkrecht auf die Mitte des Mondes in Runde 1 ausgerichtet (Mondsichel 11rem × 0.55 hoch,
+  // oberer Rand 4 % darunter, siehe style.css .orb-moon)
+  const box = wide ? { x: center + 0.675 * d, y: 11 * rem * 0.55 * 0.54, w: 2.25 * d - 16, h: bandH * 0.8 - 10 }
+    : { x: center + 0.675 * d, y: (parseFloat(getComputedStyle($(".orb-moon")).top) || 0) + bandH / 2 + 6, w: 2.25 * d - 16, h: bandH - 10 };
+  const turn = (deg) => {
+    const a = deg * Math.PI / 180;
+    return BIG_DIPPER.map(([x, y]) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)]);
+  };
+  const fit = (pts) => {
+    const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+    const w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+    return { scale: Math.min(box.w / (w || 1), box.h / (h || 1)), cx: (Math.max(...xs) + Math.min(...xs)) / 2, cy: (Math.max(...ys) + Math.min(...ys)) / 2 };
+  };
+  let best = 0, bestScale = 0;
+  for (let deg = -50; deg <= 50; deg += 2) {
+    const s = fit(turn(deg)).scale * (1 - Math.abs(deg) / 400);   // natürliche Lage leicht bevorzugt
+    if (s > bestScale) { bestScale = s; best = deg; }
   }
-  const top = stars.slice(2).reduce((a, b) => (b.y < a.y ? b : a));
-  top.behind = true;
-  top.s = 0.7;
-  $(".moon-stars").replaceChildren(...stars.map((p) => el("img", {
-    class: p.behind ? "moon-star behind-moon" : "moon-star", src: "images/moon-star.webp", alt: "", width: "17", height: "26", draggable: "false",
-    style: `--sx:${p.x.toFixed(2)}; --sy:${p.y.toFixed(2)}; --ss:${p.s.toFixed(2)};`
-      + ` --sr:${r(-25, 25).toFixed(0)}deg; --sf:${Math.random() < 0.5 ? -1 : 1}; --so:${r(0.6, 1).toFixed(2)}`,
-  })));
+  const pts = turn(best + skyChart.tilt);
+  const { scale, cx, cy } = fit(pts);
+  const near = Math.min(...pts.flatMap((p, i) => pts.slice(i + 1).map((q) => Math.hypot(q[0] - p[0], q[1] - p[1]))));
+  const size = Math.max(10, Math.min(24, near * scale * 0.9));
+  pts.forEach(([x, y], i) => {
+    Object.assign(skyChart.stars[i].style, { left: `${(box.x + (x - cx) * scale).toFixed(1)}px`, top: `${(box.y + (y - cy) * scale).toFixed(1)}px`, height: `${(size * skyChart.sizes[i]).toFixed(1)}px` });
+  });
 }
 
 function stepRound(dir) {

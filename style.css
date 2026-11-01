@@ -14,10 +14,15 @@
 
 :root {
   /* Hell (Standard) */
-  --bg: #f2f1f6;
-  --surface: #ffffff;
-  --surface-2: #e9e7f1;
-  --line: #d4d1e0;
+  /* Hintergrund in den Blau-/Türkistönen der Goblin-Airship-Verpackung: Grundfarbe und drei große, weiche Flecken
+     (dunkles Petrol, Blaugrün, helles Türkis), unregelmäßig verteilt, damit es nicht wie eine glatte Fläche wirkt */
+  --bg: #e2eef0;
+  --bg-a: rgb(150 200 208 / 0.5);
+  --bg-b: rgb(196 228 230 / 0.7);
+  --bg-c: rgb(110 170 184 / 0.22);
+  --surface: #f8fcfc;
+  --surface-2: #e2eef0;
+  --line: #c8dcdf;
   --fg: #11121b;
   --muted: #4b4d62;
   --accent: #7a5a12;
@@ -51,10 +56,13 @@
 /* Dunkel, wenn das Gerät auf "dunkel" steht (und nicht ausdrücklich "hell" gewählt ist) */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #13151f;
-    --surface: #1c1f2e;
-    --surface-2: #252a3d;
-    --line: #33384f;
+    --bg: #0a1c22;
+    --bg-a: rgb(22 80 92 / 0.32);
+    --bg-b: rgb(8 44 58 / 0.5);
+    --bg-c: rgb(46 118 124 / 0.12);
+    --surface: #13282f;
+    --surface-2: #1b343c;
+    --line: #28434b;
     --fg: #f5f4fb;
     --muted: #b8bbd0;
     --accent: #e0bf6a;
@@ -70,10 +78,13 @@
   }
 }
 :root[data-theme="dark"] {
-  --bg: #13151f;
-  --surface: #1c1f2e;
-  --surface-2: #252a3d;
-  --line: #33384f;
+  --bg: #0a1c22;
+  --bg-a: rgb(22 80 92 / 0.32);
+  --bg-b: rgb(8 44 58 / 0.5);
+  --bg-c: rgb(46 118 124 / 0.12);
+  --surface: #13282f;
+  --surface-2: #1b343c;
+  --line: #28434b;
   --fg: #f5f4fb;
   --muted: #b8bbd0;
   --accent: #e0bf6a;
@@ -101,7 +112,12 @@ body {
   min-height: calc(100vh + 1px);
   min-height: calc(100dvh + 1px);
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(55% 45% at 12% 18%, var(--bg-a), transparent 70%),
+    radial-gradient(60% 55% at 88% 72%, var(--bg-b), transparent 70%),
+    radial-gradient(70% 40% at 55% 105%, var(--bg-c), transparent 70%);
+  background-attachment: fixed;   /* Flecken bleiben beim Scrollen stehen */
   color: var(--fg);
   font: 460 16px/1.5 var(--font-body);   /* 460 statt 400: ca. 15 % kräftiger (siehe @font-face oben) */
   text-rendering: optimizeLegibility;      /* sauberere Abstände zwischen den Buchstaben (Kerning) */
@@ -1562,7 +1578,9 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 
 /* Spielansicht: Der Hintergrund ist die Farbe von Runde 1 (Nacht). Von Runde zu Runde kriecht eine rötere Farbe
    vom oberen Rand herunter und blendet nach unten aus. In Runde 5 geht die Sonne auf. */
-body.in-game { background-color: #13151f; }   /* dieselbe Farbe wie die Kopfzeile bei "Choose models" */
+/* Die Spielansicht behält ihren Nachthimmel: ohne die türkisen Flecken, --bg wieder das dunkle Nachtblau
+   (auch für die Kopfzeile bei "Choose models") */
+body.in-game { --bg: #13151f; --surface: #1c1f2e; --surface-2: #252a3d; --line: #33384f; background-color: #13151f; background-image: none; }
 /* --sky-prev / --sky-next: Farbe der Runde davor (dunkler) und danach (heller) für das Pulsieren;
    Runde 1 hat keine davor (noch tiefere Nacht), Runde 5 keine danach (goldener Sonnenaufgang) */
 body.in-game[data-round="1"] { --sky: #13151f; --sky-prev: #0a0b12; --sky-next: hsl(262 36% 24%); --sky-h: 20vh; }
@@ -1636,7 +1654,7 @@ body.in-game[data-round]::before {
 body.in-game[data-round] .game-sun {
   display: block;
   position: fixed;
-  top: calc(env(safe-area-inset-top, 0px) + 3.75rem);   /* Unterkante der Knopfreihe (44px Knöpfe + 2 × 0.5rem) */
+  top: 0;   /* ab dem oberen Bildrand: Mond und Sonne sind auch hinter den Knöpfen zu sehen, ohne Kante darunter */
   left: 0;
   right: 0;
   bottom: 0;
@@ -1647,17 +1665,19 @@ body.in-game[data-round] .game-sun {
   --orb-c: 50%;    /* Mitte, um die sich Mond und Sonne bewegen */
   --orb-d: 18vw;   /* Abstand zur Mitte in Runde 1 (Mond) und Sudden Death (Sonne) */
   --star-h: 2.6rem;   /* Höhe des Streifens, in dem die Sterne verteilt sind */
+  /* Bezugskante für alle Höhen: Handy unter der Knopfreihe (44px Knöpfe + 2 × 0.5rem), großer Bildschirm oberer Rand */
+  --orb-top: calc(env(safe-area-inset-top, 0px) + 3.75rem);
 }
 .game-sun > img {
   --s: var(--sun-s);
   --off: 0;   /* Lage links (-1) oder rechts (+1) der Mitte, in Vielfachen von --orb-d */
   position: absolute;
-  top: 0;
+  top: var(--orb-top);
   left: calc(var(--orb-c) + var(--orb-d) * var(--off));
   width: var(--s);
   height: var(--s);
   margin-left: calc(var(--s) / -2);
-  translate: 0 -100%;
+  translate: 0 calc(-100% - var(--orb-top));   /* verborgen: ganz über dem oberen Bildrand */
   opacity: 0.85;
   transition: translate 2.4s cubic-bezier(0.3, 0, 0.2, 1), left 2.4s cubic-bezier(0.3, 0, 0.2, 1);
   rotate: -10deg;
@@ -1668,7 +1688,7 @@ body.in-game[data-round] .game-sun {
 /* Mondsichel hochkant (74 : 120): Höhe --s, Breite und Versatz zur Mitte daraus berechnet */
 .game-sun .orb-moon { --s: calc(var(--sun-s) * 0.55); width: calc(var(--s) * 74 / 120); margin-left: calc(var(--s) * -37 / 120); filter: brightness(1.15) drop-shadow(0 0 1.2rem rgb(170 200 255 / 0.55)); }
 @media (min-width: 720px) {
-  body.in-game[data-round] .game-sun { top: 0; --sun-s: 11rem; --orb-c: var(--sun-x, 50%); --orb-d: var(--orb-dx, 5rem); --star-h: 4.25rem; }
+  body.in-game[data-round] .game-sun { top: 0; --sun-s: 11rem; --orb-c: var(--sun-x, 50%); --orb-d: var(--orb-dx, 5rem); --star-h: 4.25rem; --orb-top: 0px; }
 }
 /* Sterne rechts vom Mond (verteilt von scatterStars in app.js): kühl leuchtend, verblassen mit den Runden.
    Runde 1 voll, Runde 2 schwächer, Runde 3 fast weg, danach verschwunden. */
@@ -1679,14 +1699,15 @@ body.in-game[data-round="3"] .moon-stars { opacity: 0.18; }
 .moon-star {
   position: absolute;
   left: calc(var(--orb-c) + var(--orb-d) * var(--sx));
-  top: calc(var(--star-h) * var(--sy));
+  top: calc(var(--orb-top) + var(--star-h) * var(--sy));
   width: auto;
   height: calc(26px * var(--ss));
   translate: -50% -50%;
   rotate: var(--sr);
   scale: var(--sf) 1;   /* manche gespiegelt */
   opacity: var(--so);
-  filter: drop-shadow(0 0 3px rgb(190 215 255 / 0.8));
+  /* Schein je Stern verschieden stark (--sg, zufällig von scatterStars in app.js) */
+  filter: drop-shadow(0 0 calc(1px + 4px * var(--sg, 0.6)) rgb(190 215 255 / calc(0.35 + 0.6 * var(--sg, 0.6))));
 }
 /* Stern hinter dem Mond in Runde 1, unterhalb der Nase (Mondsichel: Höhe --sun-s × 0.55, oberer Rand 4 % darunter,
    Nase bei etwa 64 % der Höhe; der Stern sitzt etwas tiefer und weiter links, damit die untere Spitze des
@@ -1694,7 +1715,7 @@ body.in-game[data-round="3"] .moon-stars { opacity: 0.18; }
    ausgeblendet; danach erscheint er dort, wo der Mond aufgestiegen ist. */
 .moon-star.behind-moon {
   left: calc(var(--orb-c) - var(--orb-d) - var(--sun-s) * 0.55 * 0.12);
-  top: calc(var(--sun-s) * 0.55 * 0.72);
+  top: calc(var(--orb-top) + var(--sun-s) * 0.55 * 0.72);
   transition: opacity 2.4s ease;
 }
 body.in-game[data-round="1"] .moon-star.behind-moon { opacity: 0; }
@@ -1702,15 +1723,39 @@ body.in-game[data-round="1"] .moon-star.behind-moon { opacity: 0; }
    verschwunden (-110 %: auch der Schein ist weg).
    Sonne: Sudden Death ganzes Gesicht, Runde 3 und 4 bei 38 % und 64 % des Weges von "verborgen" bis Sudden Death;
    sie wandert dabei von nahe der Mitte nach außen. */
-.game-sun .orb-moon { translate: 0 -110%; }
+.game-sun .orb-moon { translate: 0 calc(-110% - var(--orb-top)); }
 body.in-game[data-round="1"] .game-sun .orb-moon { --off: -1; translate: 0 4%; }
 body.in-game[data-round="2"] .game-sun .orb-moon { --off: -0.5; translate: 0 -78%; }
-.game-sun .orb-sun { --off: 0.33; }
+/* Verborgen wartet die Sonne links der Mitte, wo der Mond verschwindet, und gleitet in Runde 3 im Bogen nach rechts
+   unten herein: waagerecht mit schnellem Start, senkrecht mit langsamem Start, dadurch eine Kurve statt einer Geraden.
+   Beim Zurückblättern denselben Bogen rückwärts. */
+.game-sun .orb-sun { --off: -0.25; transition: translate 2.4s cubic-bezier(0.55, 0, 0.35, 1), left 2.4s cubic-bezier(0.15, 0.6, 0.3, 1); }
+body.in-game[data-round="3"] .game-sun .orb-sun { --off: 0.33; }
+/* Sobald app.js (placeSun) die Bahn berechnet hat: die Sonne wandert auf EINEM großen Bogen (--sun-path) vom Versteck
+   bis zum Sudden Death; die Runden sind Stationen darauf (--sun-d3, --sun-d4 als Anteil der Strecke). Die Lage oben
+   (left, translate) gilt dann nicht mehr. Das Schaukeln läuft hier über offset-rotate statt rotate: rotate würde
+   (Reihenfolge der Transformationen) die ganze Bahn mitdrehen, offset-rotate dreht nur die Sonne um ihre Mitte. */
+body.in-game[data-round] .game-sun.sun-path .orb-sun {   /* spezifischer als die Runden-Regeln oben (translate) */
+  top: 0;   /* die Bahn rechnet in Koordinaten des ganzen Rahmens */
+  left: 0;
+  margin-left: 0;
+  translate: none;
+  rotate: none;
+  offset-path: var(--sun-path);
+  offset-rotate: -10deg;
+  offset-distance: 0%;
+  transition: offset-distance 2.4s cubic-bezier(0.3, 0, 0.2, 1);
+  animation: sun-tilt-path 22s ease-in-out infinite alternate;
+}
+@keyframes sun-tilt-path { to { offset-rotate: 10deg; } }
+body.in-game[data-round="3"] .game-sun.sun-path .orb-sun { offset-distance: var(--sun-d3); }
+body.in-game[data-round="4"] .game-sun.sun-path .orb-sun { offset-distance: var(--sun-d4); }
+body.in-game[data-round="5"] .game-sun.sun-path .orb-sun { offset-distance: 100%; }
 body.in-game[data-round="3"] .game-sun .orb-sun { translate: 0 -72%; }
 body.in-game[data-round="4"] .game-sun .orb-sun { --off: 0.67; translate: 0 -53%; }
 body.in-game[data-round="5"] .game-sun .orb-sun { --off: 1; translate: 0 -27%; }
 @keyframes sun-tilt { to { rotate: 10deg; } }
-@media (prefers-reduced-motion: reduce) { .game-sun > img { transition: none; animation: none; rotate: 0deg; } .moon-stars { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .game-sun > img, .game-sun .orb-sun, body.in-game[data-round] .game-sun.sun-path .orb-sun { transition: none; animation: none; rotate: 0deg; offset-rotate: 0deg; } .moon-stars { transition: none; } }
 /* Kopfzeile im Spiel: keine eigene Fläche, der Himmel geht bis zum oberen Rand durch. Die Knöpfe sind deckend
    (Himmelsfarbe mit etwas Weiß gemischt), damit beim Scrollen keine Karten durchscheinen. Schrift weiß. */
 #view-game .editor-bar[data-round] { color: #fff; }
