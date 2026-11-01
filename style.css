@@ -1708,7 +1708,7 @@ body.in-game[data-round="1"] .moon-star.behind-moon { opacity: 0; }
 /* Mond (wie die Sonne) ab dem oberen Bildrand, auch am Handy: er steht dort genauso weit im Bild wie am Desktop */
 .game-sun .orb-moon { top: 0; translate: 0 -110%; }
 body.in-game[data-round="1"] .game-sun .orb-moon { --off: -1; translate: 0 4%; }
-body.in-game[data-round="2"] .game-sun .orb-moon { --off: -0.5; translate: 0 -78%; }
+body.in-game[data-round="2"] .game-sun .orb-moon { --off: -0.5; translate: 0 -66%; }
 /* Verborgen wartet die Sonne links der Mitte, wo der Mond verschwindet, und gleitet in Runde 3 im Bogen nach rechts
    unten herein: waagerecht mit schnellem Start, senkrecht mit langsamem Start, dadurch eine Kurve statt einer Geraden.
    Beim Zurückblättern denselben Bogen rückwärts. */
