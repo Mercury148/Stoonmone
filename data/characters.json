@@ -964,7 +964,7 @@
       "factions": ["shades"],
       "keywords": ["Noble","Soldier","Risen"],
       "synergies": ["Summoning","Psychopomp"],
-      "health": [1,0,1,0,1,0,0],
+      "health": [1,0,1,0,1,0,0,0],
       "image": "portraits/negroli.webp",
       "card": "images/Negroli_front.webp",
       "cardBack": "images/Negroli_back.webp"
