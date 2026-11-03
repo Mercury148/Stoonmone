@@ -1480,9 +1480,10 @@ function openCardView(c) {
     el("p", { class: "summoned-label", text: label }),
     ...links.map((s) => el("button", { class: "summoned-portrait", type: "button", title: s.name, "aria-label": `${s.name}: open card`, onclick: () => openSummoner(s.id) }, portrait(s, "big")))
   ) : null;
+  // Die Zeile gibt es immer (ohne Verweis leer), damit alle Karten auf dem Handy gleich groß an derselben Stelle stehen
   const summonedLine = links.length ? el("p", { class: "summoned-line" }, `${label} `,
     ...links.flatMap((s, i) => [i ? ", " : null, el("button", { class: "link", type: "button", text: s.name, onclick: () => openSummoner(s.id) })])
-  ) : null;
+  ) : el("p", { class: "summoned-line", "aria-hidden": "true" });
 
   // Im laufenden Spiel: über der Karte Moonstones abgeben (links) und aufnehmen (rechts), dazwischen die Anzahl.
   // Nur für Modelle, die gerade im Spiel sind; die Grafik auf dem Portrait dahinter wird sofort mit aktualisiert.
@@ -1544,8 +1545,13 @@ function fitCardView() {
   const dlg = $("#detail");
   dlg.style.width = "";
   if (!dlg.open || !dlg.classList.contains("card-view")) return;
+  // Die "Summoned by"-Zeile hat eine feste Höhe, Umbrüche laufen unter das Fenster (style.css). Nur wenn sie dort
+  // aus dem Bild ragen würden (sehr kleine Handys), wird die Karte kleiner. Das Fenster bleibt mittig: es rückt dabei
+  // nur um die halbe Verkleinerung hoch, deshalb zählt dieser Überstand doppelt.
+  const lastLink = dlg.querySelector(".summoned-line .link:last-child");
   for (let i = 0; i < 3; i++) {
-    const over = dlg.getBoundingClientRect().height - (innerHeight - 16);
+    const over = Math.max(dlg.getBoundingClientRect().height - (innerHeight - 16),
+      lastLink && lastLink.offsetParent ? 2 * (lastLink.getBoundingClientRect().bottom - (innerHeight - 8)) : 0);
     if (over <= 0) return;
     dlg.style.width = `${dlg.getBoundingClientRect().width - over / 1.4}px`;
   }

@@ -1177,18 +1177,20 @@ dialog.card-view * { touch-action: pinch-zoom; }
 /* Beschworene Charaktere: "Summoned by" mit Verweis auf die beschwörenden Modelle (siehe openCardView).
    Feste helle Farben: die Kartenansicht liegt immer auf dunklem Grund, auch im hellen Modus.
    Schmale oder hohe Fenster (Handy, Tablet hochkant): Namen als Links unter Close. Die Karte wird dafür etwas
-   kleiner, damit die zusätzliche Zeile noch auf den Bildschirm passt. */
-dialog.card-view.has-summoner { --rows-summoned: 2rem; }
+   kleiner, damit die zusätzliche Zeile noch auf den Bildschirm passt.
+   Die Zeile ist bei jeder Karte da (ohne Verweis leer): so sind alle Karten gleich groß und stehen an derselben Stelle. */
+dialog.card-view { --rows-summoned: 2rem; }
 dialog.card-view.has-stones { --rows-stones: 1.5rem; }   /* Knopfzeile über der Karte */
 .summoned-side { display: none; }
 .summoned-line { margin: -0.25rem 0 0; color: #c9cbe0; font-size: 1rem; text-align: center; user-select: none; -webkit-user-select: none; }
-.summoned-line { line-height: 1.6; }
+/* feste Höhe: bricht die Zeile um (viele Namen), läuft die zweite Zeile in den freien Rand darunter, statt die Karte zu verschieben */
+.summoned-line { height: 1.6em; overflow: visible; line-height: 1.6; }
 /* ohne seitlichen Abstand, sonst steht vor dem Komma eine Lücke; oben/unten etwas mehr Fläche zum Antippen */
 .summoned-line .link { min-height: 0; padding: 0.2rem 0; color: #e0bf6a; text-underline-offset: 0.15em; }
 /* Breite Fenster (Computer, Tablet quer): rechts neben der Karte ist genug Platz, dort stehen die Porträts.
    Ab Seitenverhältnis 1:1 bleiben neben der Karte immer mindestens 9rem frei (Kartenbreite siehe dialog.card-view). */
 @media (min-width: 720px) and (min-aspect-ratio: 1/1) {
-  dialog.card-view.has-summoner { --rows-summoned: 0rem; }   /* steht neben der Karte, nicht darunter */
+  dialog.card-view { --rows-summoned: 0rem; }   /* steht neben der Karte, nicht darunter */
   .summoned-line { display: none; }
   .summoned-side { position: absolute; top: 0; left: calc(100% + 1.5rem); display: grid; justify-items: center; gap: 0.75rem; user-select: none; -webkit-user-select: none; }
 }
