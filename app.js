@@ -543,10 +543,14 @@ function createFilterPanel(container, onChange, { onEnter, note } = {}) {
       return state.synergies.has(tag);
     },
     // Hat der Charakter die gewählten Synergie-Begriffe selbst als Keyword (statt nur als Synergie)?
+    // "Summoning" ist bei niemandem ein Keyword: dort stehen die Beschwörer oben, die Beschworenen (eigenes "summonedBy",
+    // Verwandlungen wie Striga Anya ausgenommen) darunter.
     isPrimary(c) {
       if (!state.synergies.size) return false;
       const picked = [...state.synergies];
-      return state.all ? picked.every((k) => c.keywords.includes(k)) : picked.some((k) => c.keywords.includes(k));
+      const summoned = (c.summonedBy || []).some((id) => ![].concat(c.transformsInto || []).includes(id));
+      const has = (k) => c.keywords.includes(k) || (k === "Summoning" && !summoned && (c.synergies || []).includes(k));
+      return state.all ? picked.every(has) : picked.some(has);
     },
     // Ist gerade eine Suche oder ein Filter aktiv?
     isFiltering() {
