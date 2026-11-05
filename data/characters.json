@@ -1227,7 +1227,7 @@
       "name": "Streatham",
       "factions": ["commonwealth","leshavult"],
       "keywords": ["Cultist","Rogue","Human"],
-      "synergies": ["Giant","Healing","Drops or Steals Moonstone","Moves Friends"],
+      "synergies": ["Giant","Healing","Drops or Steals Moonstone","Moves Friends","Summoning"],
       "health": [1,1,0,0,1,0,0,0],
       "image": "portraits/streatham.webp",
       "card": "images/Streatham_front.webp",

@@ -1198,8 +1198,10 @@ function renderCards() {
   animateTiles($("#cards"), renderCardsNow);
 }
 function renderCardsNow() {
-  // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen
-  const list = compendiumPanel.list().filter((c) => c.compendium !== false);
+  // Charaktere mit "compendium": false (die beschworene Kopie eines normalen Charakters) bleiben im Kompendium verborgen,
+  // außer beim Synergie-Filter "Summoning": dort stehen sie bei den Beschworenen (unter dem Trennstrich)
+  const showSummons = compendiumPanel.isPicked("Summoning");
+  const list = compendiumPanel.list().filter((c) => c.compendium !== false || showSummons);
   compendiumPanel.showCount(list.length, data.characters.filter((c) => c.compendium !== false).length);
 
   if (list.length === 0) {
