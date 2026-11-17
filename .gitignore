@@ -1,2 +1,4 @@
 # Rohmaterial für den Schreibtisch-Hintergrund (Fotos, PDF, Vorschaubilder); die fertigen Bilder liegen in images/backdrop/
 sketches/
+# Persönliche Claude-Code-Einstellungen (nicht ins Repo)
+.claude/settings.local.json

@@ -100,6 +100,31 @@
       <div id="cards" class="cards"></div>
     </section>
 
+    <!-- ===== Seite 1b: eigene Sammlung (welche Modelle man besitzt; gespeichert im Gerät) ===== -->
+    <section id="view-collection" aria-label="Collection" hidden>
+      <div class="page-head">
+        <h2 id="collection-title">My Collection</h2>
+        <span id="collection-count" class="badge big"></span>
+      </div>
+      <!-- Teilen wie bei den Troupes; "View shared" öffnet die Sammlung eines anderen nur zum Ansehen -->
+      <div class="collection-share own-only">
+        <button id="collection-export" class="ghost icon-btn" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M5 14v5h14v-5"/></svg><span>Share</span></button>
+        <button id="collection-view" class="ghost icon-btn" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>View shared</span></button>
+        <button id="collection-import" class="ghost icon-btn" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 14v5h14v-5"/></svg><span>Import</span></button>
+      </div>
+      <!-- Nur beim Ansehen einer geteilten Sammlung: nichts davon wird gespeichert -->
+      <div id="collection-viewing" class="note collection-viewing" hidden>
+        <span>You are looking at a shared collection. Your own collection is not changed.</span>
+        <button id="collection-view-close" type="button">Back to my collection</button>
+      </div>
+      <!-- Suche, Fraktion und Synergien wie im Kompendium (eigener Zustand, von app.js eingebaut) -->
+      <div id="collection-filters"></div>
+      <p class="hint tile-tip" id="collection-tip">Tap a model to mark it as collected. Press and hold (or right-click) to look at its card.</p>
+      <!-- Zwei Gruppen (von app.js gebaut): oben die gesammelten Modelle, darunter die übrigen -->
+      <div id="collection-tiles"></div>
+      <p class="hint collection-note own-only">Your collection is saved on this device. Use the synergies <strong>Collected</strong> and <strong>Not collected</strong> in the troupe builder to filter by it. The troupe backup (Troupes tab) includes your collection.</p>
+    </section>
+
     <!-- ===== Seite 2: Übersicht über alle Troupen ===== -->
     <section id="view-troupes" aria-label="Troupes" hidden>
       <div class="page-head">
@@ -206,14 +231,15 @@
       </div>
     </section>
 
-    <!-- ===== Seite 5: Regeln (Suche und aufklappbare Abschnitte kommen aus app.js, Inhalt aus data/rules.json) ===== -->
-    <section id="view-rules" aria-label="Rules" hidden>
+    <!-- ===== Seite 5: Regeln und FAQs auf einer Seite, oben umschaltbar ===== -->
+    <!-- Suche und aufklappbare Abschnitte kommen aus app.js, Inhalt aus data/rules.json bzw. data/faq.json -->
+    <section id="view-rules" aria-label="Rules and FAQs" hidden>
+      <div class="guide-switch" role="group" aria-label="Rules or FAQs">
+        <button id="guide-show-rules" type="button" data-guide="rules" aria-pressed="true">Rules</button>
+        <button id="guide-show-faqs" type="button" data-guide="faqs" aria-pressed="false">FAQs</button>
+      </div>
       <div id="rules-guide"></div>
-    </section>
-
-    <!-- ===== Seite 6: FAQs (Inhalt aus data/faq.json) ===== -->
-    <section id="view-faqs" aria-label="FAQs" hidden>
-      <div id="faqs-guide"></div>
+      <div id="faqs-guide" hidden></div>
     </section>
 
     <footer class="site-foot">
@@ -225,8 +251,8 @@
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button role="tab" id="tab-compendium" data-tab="compendium" aria-selected="true" type="button">Compendium</button>
     <button role="tab" id="tab-troupes" data-tab="troupes" aria-selected="false" type="button">Troupes</button>
-    <button role="tab" id="tab-rules" data-tab="rules" aria-selected="false" type="button">Rules</button>
-    <button role="tab" id="tab-faqs" data-tab="faqs" aria-selected="false" type="button">FAQs</button>
+    <button role="tab" id="tab-collection" data-tab="collection" aria-selected="false" type="button">Collection</button>
+    <button role="tab" id="tab-rules" data-tab="rules" aria-selected="false" type="button">Rules &amp; FAQs</button>
   </nav>
 
   <!-- Detailansicht eines Charakters -->
@@ -272,6 +298,89 @@
     </div>
   </dialog>
 
+  <!-- Sammlung teilen: wie "Export troupe", dazu ein Name, damit der Empfänger weiß, wessen Sammlung es ist -->
+  <dialog id="collection-export-dialog" aria-label="Share collection">
+    <h3 class="section-label">Share collection</h3>
+    <p class="hint" id="collection-export-summary"></p>
+    <input id="collection-export-name" type="text" maxlength="30" autocomplete="off" placeholder="Your name (optional)" aria-label="Your name (optional)">
+    <p class="hint">The other person only sees your models. Their own collection is not changed.</p>
+    <div class="dialog-stack">
+      <button id="collection-export-share" type="button">Share…</button>
+      <button id="collection-export-link" class="ghost" type="button">Copy link</button>
+      <button id="collection-export-code" class="ghost" type="button">Copy code</button>
+    </div>
+    <div class="dialog-actions">
+      <button id="collection-export-close" class="ghost" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Sammlung importieren: ersetzt die eigene (z. B. auf einem neuen Gerät), vorher kommt eine Warnung -->
+  <dialog id="collection-import-dialog" aria-label="Import collection">
+    <h3 class="section-label">Import collection</h3>
+    <p class="hint">Paste a collection code or link, e.g. to move your collection to a new device. It <strong>replaces</strong> your current collection.</p>
+    <textarea id="collection-import-code" rows="4" placeholder="Paste code or link here" aria-label="Collection code or link to import"></textarea>
+    <div class="dialog-actions">
+      <button id="collection-import-ok" type="button">Import</button>
+      <button id="collection-import-cancel" class="ghost" type="button">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- Geteilte Sammlung nur ansehen: wird nicht gespeichert, die eigene bleibt unverändert -->
+  <dialog id="collection-view-dialog" aria-label="View a shared collection">
+    <h3 class="section-label">View a shared collection</h3>
+    <p class="hint">Paste a collection code or link. You only look at it: your own collection is not changed.</p>
+    <textarea id="collection-view-code" rows="4" placeholder="Paste code or link here" aria-label="Collection code or link to view"></textarea>
+    <div class="dialog-actions">
+      <button id="collection-view-ok" type="button">View</button>
+      <button id="collection-view-cancel" class="ghost" type="button">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- Warnung vor dem Import: die aktuelle Sammlung wird überschrieben -->
+  <dialog id="collection-replace-dialog" aria-label="Replace your collection?">
+    <h3 class="section-label">Replace your collection?</h3>
+    <p class="note warn-note" id="collection-replace-text"></p>
+    <div class="dialog-actions">
+      <button id="collection-replace-ok" class="danger-solid" type="button">Overwrite my collection</button>
+      <button id="collection-replace-cancel" class="ghost" type="button">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- Neuigkeiten als Zeitung ("The Tauber Afternoon Post"): erscheint einmal pro Ausgabe bei Nutzern, die die App schon kannten.
+       Ausgabe und Ablauf: NEWS_ID und maybeShowNews in app.js. Beim nächsten Update hier Schlagzeile und Artikel austauschen,
+       die Nummer erhöhen und einen NEUEN Preis wählen: jede Ausgabe kostet einen anderen kleinen Haushaltsgegenstand.
+       Bisherige Ausgaben (nicht wiederholen):
+         Vol. II · No. 1  (Collection, Nov. 2026)  Price: One Silver Teaspoon
+       Ideen für kommende Ausgaben: a brass candlestick, an ornamental butter knife, a soup ladle, Mama Gible's ear trumpet,
+         a thimble, a darned left sock, half a teapot lid, a jar of pickled onions, a cuckoo clock's cuckoo, a slightly used doily -->
+  <dialog id="news-dialog" class="newspaper" aria-labelledby="news-masthead">
+    <div class="paper">
+      <div class="paper-ears" aria-hidden="true"><span>Vol. II · No. 1</span><span class="paper-extra">Extra!</span><span class="paper-price">Price: One Silver Teaspoon</span></div>
+      <h2 class="paper-masthead" id="news-masthead"><small>The</small> Tauber Afternoon Post</h2>
+      <p class="paper-dateline"><span id="news-date"></span><span aria-hidden="true">✦</span><span>Printed below the Tower of Grommel</span></p>
+      <h3 class="paper-headline">Collectors Rejoice!</h3>
+      <p class="paper-deck">The Guide opens a ledger for every citizen of Tauber you can call your own</p>
+      <div class="paper-columns">
+        <article>
+          <h4>A Ledger of One's Own</h4>
+          <p>A brand new <strong>Collection</strong> tab lets troupe leaders tick off every model on their shelf. Owned figures march proudly to the top, and the troupe builder can now sort the collected from the merely coveted.</p>
+        </article>
+        <article>
+          <h4>Neighbours May Peek</h4>
+          <p>Collections can be <strong>shared</strong> by link. Friends may look but not touch: a shared collection never alters their own. Moving house to a new device? <strong>Import</strong> carries everything along.</p>
+        </article>
+        <article>
+          <h4>Rules &amp; FAQs Finally Wed</h4>
+          <p>After a long courtship, the Rules and the FAQs now share a single tab. A modest switch at the top lets readers wander between them.</p>
+        </article>
+      </div>
+      <div class="paper-actions">
+        <button id="news-later" type="button">Look later</button>
+        <button id="news-show" type="button">What's new?</button>
+      </div>
+    </div>
+  </dialog>
+
   <dialog id="opp-add-dialog" aria-label="Add opponent">
     <h3 class="section-label" id="opp-add-title">Add opponent</h3>
     <p class="hint" id="opp-add-hint">Give the new opponent a name first.</p>
@@ -303,6 +412,8 @@
     </label>
     <!-- Nur auf Seiten mit Rundgang sichtbar (siehe openSettings in app.js) -->
     <button id="settings-replay" class="ghost icon-btn settings-replay" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 4v6h6M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg><span>Replay tutorials</span></button>
+    <!-- Die letzte Ausgabe der Zeitung (Neuigkeiten) noch einmal lesen -->
+    <button id="settings-news" class="ghost icon-btn settings-replay" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2M7.5 9h6M7.5 12.5h6M7.5 16h4"/></svg><span>What's new</span></button>
     <div class="dialog-actions">
       <button id="settings-close" class="ghost" type="button">Close</button>
     </div>

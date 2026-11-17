@@ -8,7 +8,7 @@
 // CACHE_NAME erhöhen, wenn sich die Liste DATEIEN ändert oder vorhandene Bilder ersetzt wurden:
 // dann wird der alte Speicher gelöscht, sonst zeigen Geräte beim ersten Öffnen noch das alte Bild.
 
-const CACHE_NAME = "TTG-v0.9.5";   // 0.9.5: richtige Rückseite für Zorya
+const CACHE_NAME = "TTG-v0.9.6";   // 0.9.6: Schrift für die Zier-Initialen der Zeitung
 const DATEIEN = [
   "./",
   "index.html",
@@ -74,6 +74,7 @@ const DATEIEN = [
     "data/faq.json",
     "fonts/cormorant-garamond-latin-wght-normal.woff2",
     "fonts/cormorant-garamond-latin-wght-italic.woff2",
+    "fonts/cinzel-decorative-latin-700.woff2",
 ];
 
 self.addEventListener("install", (event) => {

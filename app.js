@@ -38,6 +38,11 @@ const STORAGE_KEY = "ttg-troupes-v1";     // alle gespeicherten Troupen
 // Frühere Versionen mit nur einer Troupe (wird übernommen, falls vorhanden)
 const OLD_STORAGE_KEYS = [];
 const MAX_TROUPES = 30;                        // so viele Troupen lassen sich speichern
+const COLLECTION_KEY = "ttg-collection-v1";    // IDs der Modelle, die man besitzt (Reiter "Collection")
+// Zwei feste Begriffe im Synergies-Filter, die aus der eigenen Sammlung kommen (nicht aus characters.json)
+const TAG_COLLECTED = "Collected";
+const TAG_MISSING = "Not collected";
+const COLLECTION_TAGS = [TAG_COLLECTED, TAG_MISSING];
 
 
 /* ---------- 2. Zustand ---------- */
@@ -52,8 +57,12 @@ let troupes = [];
 // Die Troupe, die gerade im Editor offen ist (dasselbe Objekt wie in der Liste), sonst null
 let current = null;
 
-// Zwei getrennte Filter-Bereiche: einer im Kompendium, einer im Editor
+// Die eigene Sammlung: Charakter-IDs der Modelle, die man besitzt
+let collection = new Set();
+
+// Getrennte Filter-Bereiche: Kompendium, Sammlung, Editor (und Gegnerwahl im Spiel)
 let compendiumPanel;
+let collectionPanel;
 let editorPanel;
 
 
@@ -228,6 +237,40 @@ function loadTroupes() {
     .filter((t, _, all) => t.ids.length > 0 || all.length > 1 || t.name !== "Meine Troupe");
 }
 
+// Sammlung speichern und laden (nur bekannte IDs, jede höchstens einmal)
+function saveCollection() {
+  try { localStorage.setItem(COLLECTION_KEY, JSON.stringify({ v: 1, ids: [...collection] })); } catch { /* ignorieren */ }
+}
+function cleanCollectionIds(ids) {
+  return Array.isArray(ids) ? ids.filter((id) => typeof id === "string" && characterById.has(id)) : [];
+}
+function loadCollection() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(COLLECTION_KEY)); } catch { /* ignorieren */ }
+  collection = new Set(cleanCollectionIds(saved && saved.ids));
+  // Verwandlungs-Paare angleichen (ältere Speicherstände konnten nur eine Form enthalten)
+  for (const id of [...collection]) for (const other of linkedIds(id)) collection.add(other);
+}
+// Charaktere, die über "transformsInto" verbunden sind (z. B. Anya Bartol ↔ Striga Anya), sind dasselbe Modell:
+// sie werden immer gemeinsam gesammelt. Liefert die ID selbst und alle (auch über Umwege) verbundenen IDs.
+function linkedIds(id) {
+  const seen = new Set([id]);
+  const queue = [id];
+  while (queue.length) {
+    const c = characterById.get(queue.shift());
+    for (const next of (c && c.transformsInto) || []) {
+      if (characterById.has(next) && !seen.has(next)) { seen.add(next); queue.push(next); }
+    }
+  }
+  // Auch rückwärts: wer in seine Form verwandelt, gehört dazu
+  for (const c of data.characters) {
+    if (!seen.has(c.id) && (c.transformsInto || []).some((t) => seen.has(t))) {
+      for (const other of linkedIds(c.id)) seen.add(other);
+    }
+  }
+  return seen;
+}
+
 // Gespeicherte oder importierte Daten nie blind glauben: nur bekannte IDs behalten.
 function sanitize(saved) {
   const ids = Array.isArray(saved.ids) ? saved.ids.filter((id) => characterById.has(id) && !isSummoned(characterById.get(id))) : [];
@@ -276,6 +319,51 @@ function decodeTroupe(code) {
   const obj = JSON.parse(new TextDecoder().decode(bytes));
   if (obj.v !== 1) throw new Error("Unbekanntes Format");
   return { name: obj.n, format: obj.f, ids: obj.ids };
+}
+
+
+// Sammlung als kurzer Text zum Teilen: TTGC1.<Charaktere>.<Name>, je Charakter 4 Zeichen (idCode wie bei den Troupes).
+// Von Verwandlungs-Paaren steht nur eine Form im Code, die andere ergibt sich daraus (linkedIds).
+const COLLECTION_PREFIX = "TTGC1.";
+function encodeCollection(ids, name) {
+  const done = new Set();
+  const codes = [];
+  for (const id of [...ids].sort()) {
+    if (done.has(id)) continue;
+    for (const other of linkedIds(id)) done.add(other);
+    codes.push(idCode(id));
+  }
+  return `${COLLECTION_PREFIX}${codes.join("")}.${encodeURIComponent(name || "")}`;
+}
+// Liefert { name, ids (Set, mit Verwandlungs-Partnern), unknown (Anzahl unbekannter Einträge) }; wirft bei unlesbarem Code
+function decodeCollection(code) {
+  code = code.trim();
+  if (!code.startsWith(COLLECTION_PREFIX)) throw new Error("Unbekanntes Format");
+  const rest = code.slice(COLLECTION_PREFIX.length);
+  const dot = rest.indexOf(".");
+  const chars = dot < 0 ? rest : rest.slice(0, dot);
+  if (chars.length % 4 !== 0 || !/^[0-9a-z]*$/.test(chars)) throw new Error("Unbekanntes Format");
+  const ids = new Set();
+  let unknown = 0;
+  for (let i = 0; i < chars.length; i += 4) {
+    const id = idByCode.get(chars.slice(i, i + 4));
+    if (!id) { unknown++; continue; }
+    for (const other of linkedIds(id)) ids.add(other);
+  }
+  let name = "";
+  try { name = dot < 0 ? "" : decodeURIComponent(rest.slice(dot + 1)); } catch { /* Name unlesbar: ohne Namen */ }
+  return { name: name.trim().slice(0, 30), ids, unknown };
+}
+// Code aus einem eingefügten Text holen: der Code selbst oder ein Link mit #c=<Code>
+function extractCollectionCode(text) {
+  text = String(text).trim();
+  const match = text.match(/#c=(\S+)/);
+  if (!match) return text;
+  try { return decodeURIComponent(match[1]); } catch { return match[1]; }
+}
+const isCollectionCode = (text) => extractCollectionCode(text).startsWith(COLLECTION_PREFIX);
+function collectionShareUrl(name) {
+  return `${location.origin}${location.pathname}#c=${encodeURIComponent(encodeCollection(collection, name))}`;
 }
 
 
@@ -345,7 +433,9 @@ function factionBadge(faction) {
 // onChange wird aufgerufen, wenn sich ein Filter ändert. getList liefert die gefilterten Charaktere.
 // onEnter (optional): wird bei Enter im Suchfeld zuerst gefragt; gibt es true zurück, ist Enter damit erledigt
 // note: optionaler Hinweis links in der Zeile unter der Box (bleibt sichtbar, auch ohne Filter)
-function createFilterPanel(container, onChange, { onEnter, note } = {}) {
+// collectionTags (Standard: an): "Collected" und "Not collected" stehen als erste Begriffe im Synergies-Feld
+// owned: welche Sammlung dafür zählt (Standard: die eigene; die Collection-Seite zeigt evtl. eine geteilte fremde)
+function createFilterPanel(container, onChange, { onEnter, note, collectionTags = true, owned = () => collection } = {}) {
   const state = { query: "", factions: new Set(), synergies: new Set(), all: false };   // all: false = ODER, true = UND   // "Synergies" = Keywords und Synergien in einem Filter
   let allowed = null;   // optional: Fraktionen, die noch möglich sind (abgedunkelt, wenn nicht)
 
@@ -384,8 +474,21 @@ function createFilterPanel(container, onChange, { onEnter, note } = {}) {
   container.replaceChildren(el("div", { class: "filters" }, box, meta));
 
   // Keywords und Synergien werden zusammengeführt (jeder Begriff nur einmal)
-  const allSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))].sort((a, b) => a.localeCompare(b, "en"));
+  const dataSynergies = [...new Set(data.characters.flatMap((c) => [...c.keywords, ...(c.synergies || [])]))]
+    .filter((tag) => !COLLECTION_TAGS.includes(tag))
+    .sort((a, b) => a.localeCompare(b, "en"));
+  // Sammlungs-Begriffe zuerst (eigene Farbe, siehe .chip.chip-own in style.css), danach die Begriffe aus den Daten
+  const ownTags = collectionTags ? COLLECTION_TAGS : [];
+  const allSynergies = [...ownTags, ...dataSynergies];
   synWrap.hidden = allSynergies.length === 0;   // ohne Synergien in den Daten wird der Filter nicht angezeigt
+  // Begriffe eines Charakters: Keywords, Synergien und (falls an) ob er in der Sammlung ist
+  const tagsOf = (c) => {
+    const tags = new Set([...c.keywords, ...(c.synergies || [])]);
+    if (collectionTags) tags.add(owned().has(c.id) ? TAG_COLLECTED : TAG_MISSING);
+    return tags;
+  };
+  // Für die Gruppierung "erst Keyword, dann Synergie" zählen die Sammlungs-Begriffe nicht
+  const pickedData = () => [...state.synergies].filter((k) => !COLLECTION_TAGS.includes(k));
 
   // Fraktionssymbole: mehrere können gleichzeitig gewählt sein (ODER-Verknüpfung)
   // Die Knöpfe werden nur einmal gebaut und danach nur aktualisiert, damit das Leuchten flüssig übergehen kann
@@ -423,7 +526,7 @@ function createFilterPanel(container, onChange, { onEnter, note } = {}) {
     synChips.replaceChildren(
       ...allSynergies.map((tag) =>
         el("button", {
-          class: "chip",
+          class: ownTags.includes(tag) ? "chip chip-own" : "chip",
           type: "button",
           "aria-pressed": String(state.synergies.has(tag)),
           text: tag,
@@ -522,7 +625,7 @@ function createFilterPanel(container, onChange, { onEnter, note } = {}) {
         // Innerhalb jeder Gruppe genügt ebenfalls eines davon. Ist nur eine Gruppe gewählt, gilt nur diese.
         // Gezeigt wird, wer mindestens einen der gewählten Begriffe als Keyword oder Synergie hat
         if (state.synergies.size) {
-          const tags = new Set([...c.keywords, ...(c.synergies || [])]);
+          const tags = tagsOf(c);
           const picked = [...state.synergies];
           if (!(state.all ? picked.every((k) => tags.has(k)) : picked.some((k) => tags.has(k)))) return false;
         }
@@ -546,8 +649,8 @@ function createFilterPanel(container, onChange, { onEnter, note } = {}) {
     // "Summoning" ist bei niemandem ein Keyword: dort stehen die Beschwörer oben, die Beschworenen (eigenes "summonedBy",
     // Verwandlungen wie Striga Anya ausgenommen) darunter.
     isPrimary(c) {
-      if (!state.synergies.size) return false;
-      const picked = [...state.synergies];
+      const picked = pickedData();   // ohne "Collected" / "Not collected"
+      if (!picked.length) return false;
       const summoned = (c.summonedBy || []).some((id) => ![].concat(c.transformsInto || []).includes(id));
       const has = (k) => c.keywords.includes(k) || (k === "Summoning" && !summoned && (c.synergies || []).includes(k));
       return state.all ? picked.every(has) : picked.some(has);
@@ -785,6 +888,7 @@ function showImportStep(step) {
 
 // Zeigt, was importiert würde, und wartet auf "Add troupe".
 function openImportPreview(code) {
+  if (isCollectionCode(code)) return openSharedCollection(code);   // Sammlungs-Code im Troupe-Import: Sammlung ansehen
   if (troupes.length >= MAX_TROUPES) {
     return toast(`You can save at most ${MAX_TROUPES} troupes. Delete one first.`);
   }
@@ -841,11 +945,13 @@ function confirmImport() {
 }
 
 // Öffnet die Vorschau, wenn die Seite über einen geteilten Link (…/#t=Code) aufgerufen wurde.
+// …/#c=Code: die geteilte Sammlung eines anderen ansehen (die eigene bleibt unverändert).
 function checkIncomingLink() {
   const hash = location.hash;
-  if (!hash.startsWith("#t=")) return;
+  if (!hash.startsWith("#t=") && !hash.startsWith("#c=")) return;
   history.replaceState(null, "", location.pathname + location.search);
-  openImportPreview(hash);
+  if (hash.startsWith("#c=")) openSharedCollection(hash);
+  else openImportPreview(hash);
 }
 
 // Text in die Zwischenablage kopieren (mit Ausweichlösung für ältere Browser)
@@ -893,7 +999,7 @@ async function saveFile(filename, blob) {
 const BACKUP_TYPE = "ttg-backup";
 
 async function exportBackup() {
-  if (!troupes.length) return toast("There are no troupes to back up yet.");
+  if (!troupes.length && !collection.size) return toast("There are no troupes or collected models to back up yet.");
   const now = new Date();
   const pad = (n) => String(n).padStart(2, "0");
   const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
@@ -902,6 +1008,7 @@ async function exportBackup() {
     v: 1,
     exported: now.toISOString(),
     troupes: troupes.map(({ name, format, ids }) => ({ name, format, ids })),
+    collection: [...collection],   // die eigene Sammlung (ältere Backups haben das Feld nicht)
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   if (await saveFile(`ttg-troupes-${stamp}.json`, blob)) toast("Backup created.");
@@ -916,8 +1023,17 @@ async function importBackup(file) {
   } catch {
     return toast("The file could not be read.");
   }
-  if (!obj || obj.type !== BACKUP_TYPE || !Array.isArray(obj.troupes)) {
+  if (!obj || obj.type !== BACKUP_TYPE || !(Array.isArray(obj.troupes) || Array.isArray(obj.collection))) {
     return toast("This is not a TTG backup file.");
+  }
+  if (!Array.isArray(obj.troupes)) obj.troupes = [];
+  // Sammlung: wird mit der vorhandenen zusammengeführt (es wird nichts entfernt)
+  const newlyCollected = [...new Set(cleanCollectionIds(obj.collection).flatMap((id) => [...linkedIds(id)]))].filter((id) => !collection.has(id));
+  if (newlyCollected.length) {
+    for (const id of newlyCollected) collection.add(id);
+    saveCollection();
+    collectionDirty = true;
+    if (collectionPanel) renderCollectionNow();
   }
   const keyOf = (t) => `${t.format}|${t.ids.join(",")}|${t.name}`;
   const have = new Set(troupes.map(keyOf));
@@ -937,6 +1053,7 @@ async function importBackup(file) {
   const parts = [`${added} troupe${added === 1 ? "" : "s"} restored`];
   if (same) parts.push(`${same} already there`);
   if (full) parts.push(`${full} skipped (limit ${MAX_TROUPES})`);
+  if (newlyCollected.length) parts.push(`${newlyCollected.length} model${newlyCollected.length === 1 ? "" : "s"} added to your collection`);
   let message = parts.join(", ") + ".";
   if (dropped) message += ` ${dropped} unknown model${dropped === 1 ? "" : "s"} left out.`;
   toast(message);
@@ -1240,6 +1357,120 @@ function renderCardsNow() {
   } else {
     $("#cards").replaceChildren(...list.map(cardEl));
   }
+}
+
+// --- Sammlung: welche Modelle man besitzt ---
+// Gezeigt werden dieselben Charaktere wie im Kompendium, ganz unabhängig von Fraktionen. Ein Tipp hakt ab, langes Drücken zeigt die Karte.
+let collectionDirty = false;   // Sammlung geändert: Kompendium beim nächsten Öffnen neu zeichnen (dort kann nach "Collected" gefiltert sein)
+const collectable = () => data.characters.filter((c) => c.compendium !== false);
+
+function collectionTileList() {
+  return collectionPanel.list().filter((c) => c.compendium !== false);
+}
+function renderCollection() {
+  animateTiles($("#collection-tiles"), renderCollectionNow);
+}
+// Geteilte Sammlung eines anderen (über Link oder Code): wird nur angezeigt, nie gespeichert,
+// und die eigene Sammlung bleibt unverändert. null = die eigene Sammlung wird gezeigt.
+let viewedCollection = null;   // { name, ids: Set }
+const shownCollection = () => (viewedCollection ? viewedCollection.ids : collection);
+
+function renderCollectionNow() {
+  const all = collectable();
+  const list = collectionTileList();
+  const owned = shownCollection();
+  const viewing = Boolean(viewedCollection);
+  collectionPanel.showCount(list.length, all.length);
+  $("#collection-count").textContent = `${all.filter((c) => owned.has(c.id)).length} of ${all.length} collected`;
+  // Kopfzeile, Hinweis und Knöpfe je nachdem, wessen Sammlung gezeigt wird
+  $("#collection-title").textContent = !viewing ? "My Collection" : viewedCollection.name ? `${viewedCollection.name}'s Collection` : "Shared Collection";
+  $("#collection-viewing").hidden = !viewing;
+  $("#view-collection").classList.toggle("is-viewing", viewing);
+  $("#collection-tip").textContent = viewing
+    ? "Tap a model to look at its card."
+    : "Tap a model to mark it as collected. Press and hold (or right-click) to look at its card.";
+
+  if (list.length === 0) {
+    $("#collection-tiles").replaceChildren(el("p", { class: "empty", text: "No character matches these filters." }));
+    return;
+  }
+  // Wie im Troupe-Builder: die gesammelten Modelle stehen oben in einer eigenen Gruppe.
+  // Beim Abhaken gleitet die Kachel dorthin (animateTiles erkennt sie über data-char wieder).
+  // Fremde Sammlung: nur ansehen, ein Tipp öffnet die Karte.
+  const tile = (c) => {
+    const has = owned.has(c.id);
+    const t = tileFor(c, has, (e) => (viewing ? openDetail(c.id, e.currentTarget) : toggleCollected(c.id)), has ? "" : "missing");
+    t.setAttribute("aria-label", `${c.name}: ${has ? "collected" : "not collected"}`);
+    return t;
+  };
+  const group = (title, items) => items.length ? [
+    el("h3", { class: "section-label" }, title, " ", el("span", { class: "badge", text: String(items.length) })),
+    el("div", { class: "tiles" }, ...items.map(tile)),
+  ] : [];
+  $("#collection-tiles").replaceChildren(
+    ...group("Collected", list.filter((c) => owned.has(c.id))),
+    ...group("Not collected", list.filter((c) => !owned.has(c.id)))
+  );
+}
+
+// Geteilte Sammlung öffnen (Link oder eingefügter Code). Gibt false zurück, wenn der Code nicht lesbar ist.
+function openSharedCollection(text) {
+  let shared;
+  try { shared = decodeCollection(extractCollectionCode(text)); } catch { toast("The code could not be read."); return false; }
+  viewedCollection = { name: shared.name, ids: shared.ids };
+  collectionPanel.clear();
+  for (const d of document.querySelectorAll("dialog[open]")) d.close();
+  showView("collection");
+  const who = shared.name || "Shared collection";
+  toast(`${who}: ${shared.ids.size} model${shared.ids.size === 1 ? "" : "s"}. Your own collection is unchanged.` +
+    (shared.unknown ? ` ${shared.unknown} unknown entr${shared.unknown === 1 ? "y" : "ies"} left out.` : ""));
+  return true;
+}
+// Import auf ein anderes Gerät: die gelesene Sammlung ersetzt die eigene, aber erst nach einer Warnung.
+let pendingReplace = null;   // { name, ids: Set }
+function askReplaceCollection(shared) {
+  pendingReplace = shared;
+  const mine = collectable().filter((c) => collection.has(c.id)).length;
+  const theirs = collectable().filter((c) => shared.ids.has(c.id)).length;
+  const from = shared.name ? ` from ${shared.name}` : "";
+  $("#collection-replace-text").replaceChildren(
+    el("strong", { text: "Your current collection will be overwritten." }), " ",
+    `It now has ${mine} model${mine === 1 ? "" : "s"}; afterwards it will have the ${theirs} model${theirs === 1 ? "" : "s"}${from}. This cannot be undone.`
+  );
+  $("#collection-replace-dialog").showModal();
+}
+function confirmReplaceCollection() {
+  if (!pendingReplace) return;
+  collection = new Set(pendingReplace.ids);
+  pendingReplace = null;
+  viewedCollection = null;
+  for (const d of document.querySelectorAll("dialog[open]")) d.close();
+  saveCollection();
+  collectionDirty = true;
+  collectionPanel.clear();
+  showView("collection");
+  const n = collectable().filter((c) => collection.has(c.id)).length;
+  toast(`Collection imported: ${n} model${n === 1 ? "" : "s"}.`);
+}
+function closeSharedCollection() {
+  viewedCollection = null;
+  collectionPanel.clear();
+  renderCollectionNow();
+  window.scrollTo(0, 0);
+}
+function collectionChanged() {
+  saveCollection();
+  collectionDirty = true;
+  renderCollection();
+}
+// Verwandlungs-Paare (linkedIds) wechseln immer gemeinsam die Gruppe
+function toggleCollected(id) {
+  const owned = !collection.has(id);
+  for (const other of linkedIds(id)) {
+    if (owned) collection.add(other);
+    else collection.delete(other);
+  }
+  collectionChanged();
 }
 
 // --- Troupen-Übersicht ---
@@ -3082,7 +3313,7 @@ let lastTab = "compendium";
 // Seitenwechsel über die untere Leiste: die neue Seite ist sofort voll da (kein Einblenden, das wirkt wie Warten)
 // und gleitet nur ein kleines Stück aus der Richtung des Tabs herein (Tab weiter rechts: von rechts, sonst von links).
 // Teile mit fest am Rand stehenden Knöpfen (Plus, Import) gleiten nicht mit, denn ein Verschieben würde diese Knöpfe kurz mitnehmen.
-const TAB_ORDER = ["compendium", "troupes", "rules", "faqs"];
+const TAB_ORDER = ["compendium", "troupes", "collection", "rules"];
 const FIXED_BUTTONS = ".add-btn, #import-open";
 function animateViewChange(from, to) {
   if (!TAB_ORDER.includes(from) || !TAB_ORDER.includes(to) || from === to) return;
@@ -3101,18 +3332,32 @@ function currentView() {
   return open ? open.id.slice(5) : null;
 }
 
+// Rules und FAQs teilen sich eine Seite; oben wird umgeschaltet. Gemerkt wird, was zuletzt offen war.
+let guidePage = "rules";
+function showGuidePage(page) {
+  guidePage = page === "faqs" ? "faqs" : "rules";
+  $("#rules-guide").hidden = guidePage !== "rules";
+  $("#faqs-guide").hidden = guidePage !== "faqs";
+  for (const b of document.querySelectorAll(".guide-switch [data-guide]")) b.setAttribute("aria-pressed", String(b.dataset.guide === guidePage));
+  openGuide(guidePage);
+}
+
 function showView(name) {
+  if (name === "faqs") { guidePage = "faqs"; name = "rules"; }   // alte Ansicht "faqs" = Rules-Seite mit FAQs
   const before = currentView();
   if (activeTour) activeTour.viewChanged(name);   // Rundgang wartet nach einer Aktion: auf neuer Seite unterbrechen
   if (name !== "editor") for (const tip of document.querySelectorAll(".play-hint")) tip.remove();   // Tipp zum Play-Knopf gehört nur zum Editor
   $("#start-game").classList.remove("tip-pulse");
   $("#view-compendium").hidden = name !== "compendium";
+  $("#view-collection").hidden = name !== "collection";
   $("#view-troupes").hidden = name !== "troupes";
   $("#view-editor").hidden = name !== "editor";
   $("#view-game").hidden = name !== "game";
   $("#view-rules").hidden = name !== "rules";
-  $("#view-faqs").hidden = name !== "faqs";
-  if (name === "rules" || name === "faqs") openGuide(name);
+  if (name === "rules") showGuidePage(guidePage);
+  if (name === "collection" && collectionPanel) renderCollectionNow();
+  // Sammlung inzwischen geändert: das Kompendium kann nach "Collected" gefiltert sein
+  if (name === "compendium" && collectionDirty && compendiumPanel) { collectionDirty = false; renderCardsNow(); }
   document.body.classList.toggle("editing", name === "editor" || name === "game");
   // Spielansicht: immer dunkel (Nacht), mit eigenem Hintergrund
   document.body.classList.toggle("in-game", name === "game");
@@ -3277,7 +3522,17 @@ function wireEvents() {
       const name = tab.dataset.tab;
       showView(name);
       if (name === "troupes") { renderTroupes(); setTimeout(startTroupesTour, 400); }   // erster Besuch: kurzer Rundgang
+      if (name === "collection") setTimeout(startCollectionTour, 400);
       if (name === "compendium") setTimeout(startWelcomeTour, 400);   // unterbrochener Willkommens-Rundgang geht hier weiter
+    });
+  }
+
+  // Rules / FAQs umschalten (oben auf der Rules-Seite)
+  for (const b of document.querySelectorAll(".guide-switch [data-guide]")) {
+    b.addEventListener("click", () => {
+      if (b.dataset.guide === guidePage) return;
+      showGuidePage(b.dataset.guide);
+      window.scrollTo(0, 0);
     });
   }
 
@@ -3358,6 +3613,73 @@ function wireEvents() {
     if (await copyText(encodeTroupe(current), "Troupe code successfully copied to clipboard.")) exportDialog.close();
   });
 
+  // Sammlung teilen: Fenster mit Name (wird im Gerät gemerkt), Teilen, Link kopieren, Code kopieren
+  const colExport = $("#collection-export-dialog");
+  const shareName = () => $("#collection-export-name").value.trim().slice(0, 30);
+  $("#collection-export").addEventListener("click", () => {
+    if (!collection.size) return toast("Mark some models as collected first.");
+    const n = collectable().filter((c) => collection.has(c.id)).length;
+    $("#collection-export-summary").textContent = `My collection · ${n} model${n === 1 ? "" : "s"}`;
+    $("#collection-export-name").value = settings.shareName || "";
+    $("#collection-export-share").hidden = typeof navigator.share !== "function";
+    colExport.showModal();
+  });
+  $("#collection-export-name").addEventListener("change", () => { settings.shareName = shareName(); saveSettings(); });
+  $("#collection-export-close").addEventListener("click", () => colExport.close());
+  colExport.addEventListener("click", (e) => { if (e.target === colExport) colExport.close(); });
+  $("#collection-export-share").addEventListener("click", async () => {
+    const name = shareName();
+    try {
+      await navigator.share({
+        title: name ? `${name}'s collection` : "My collection",
+        text: `${name ? `${name}'s` : "My"} Moonstone collection in the Tauber Tourist Guide`,
+        url: collectionShareUrl(name),
+      });
+      colExport.close();
+    } catch (err) {
+      if (!err || err.name !== "AbortError") toast("Sharing did not work. Try copying the link instead.");
+    }
+  });
+  $("#collection-export-link").addEventListener("click", async () => {
+    if (await copyText(collectionShareUrl(shareName()), "Link copied to clipboard.")) colExport.close();
+  });
+  $("#collection-export-code").addEventListener("click", async () => {
+    if (await copyText(encodeCollection(collection, shareName()), "Collection code copied to clipboard.")) colExport.close();
+  });
+
+  // Zwei getrennte Fenster zum Einfügen eines Codes oder Links:
+  // "Import" ersetzt die eigene Sammlung (nach einer Warnung), "View shared" zeigt eine fremde nur an.
+  const checkPasted = (text) => {
+    if (!text.trim()) { toast("Please paste a code or link first."); return false; }
+    if (!isCollectionCode(text)) { toast(/TTG2\.|#t=/.test(text) ? "This is a troupe code. Import it on the Troupes tab." : "This is not a collection code."); return false; }
+    return true;
+  };
+  const pasteDialog = (name, onOk) => {
+    const dialog = $(`#collection-${name}-dialog`);
+    const field = $(`#collection-${name}-code`);
+    $(`#collection-${name}`).addEventListener("click", () => { field.value = ""; dialog.showModal(); });
+    $(`#collection-${name}-cancel`).addEventListener("click", () => dialog.close());
+    dialog.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
+    $(`#collection-${name}-ok`).addEventListener("click", () => { if (checkPasted(field.value)) onOk(field.value); });
+    field.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); $(`#collection-${name}-ok`).click(); }
+    });
+  };
+  pasteDialog("view", (text) => openSharedCollection(text));
+  pasteDialog("import", (text) => {
+    let shared;
+    try { shared = decodeCollection(extractCollectionCode(text)); } catch { return toast("The code could not be read."); }
+    askReplaceCollection(shared);
+  });
+  $("#collection-view-close").addEventListener("click", closeSharedCollection);
+
+  // Warnung vor dem Import: "Overwrite my collection" ersetzt die eigene Sammlung
+  const replaceDialog = $("#collection-replace-dialog");
+  $("#collection-replace-ok").addEventListener("click", confirmReplaceCollection);
+  $("#collection-replace-cancel").addEventListener("click", () => replaceDialog.close());
+  replaceDialog.addEventListener("click", (e) => { if (e.target === replaceDialog) replaceDialog.close(); });
+  replaceDialog.addEventListener("close", () => { pendingReplace = null; });
+
   // Import: Knopf in der Übersicht öffnet ein kleines Fenster zum Einfügen, danach folgt die Vorschau
   const importDialog = $("#import-dialog");
   $("#import-open").addEventListener("click", () => {
@@ -3426,11 +3748,13 @@ function checkData() {
 }
 
 async function boot() {
+  returningUser = hadPriorData();   // vor allem anderen: danach schreibt die App selbst Einträge
   loadSettings();
   applyTheme();
   updateWakeLock();
   wireEvents();
   wireSettings();
+  wireNews();
   scatterStars();
 
   try {
@@ -3469,17 +3793,22 @@ async function boot() {
   }
 
   loadTroupes();
+  loadCollection();
   compendiumPanel = createFilterPanel($("#compendium-filters"), renderCards, {
     note: el("p", { class: "filter-note" }, "Find news, models and gameplay accessories at ",
       el("a", { href: "https://www.moonstonethegame.com", target: "_blank", rel: "noopener", text: "moonstonethegame.com" }))
   });
+  collectionPanel = createFilterPanel($("#collection-filters"), renderCollection, { owned: shownCollection });
   editorPanel = createFilterPanel($("#editor-filters"), renderTiles, { onEnter: addSingleHit });
-  foePanel = createFilterPanel($("#game-foe-filters"), renderGame);
+  foePanel = createFilterPanel($("#game-foe-filters"), renderGame, { collectionTags: false });   // für die Gegner ist die eigene Sammlung egal
   renderCards();
+  renderCollectionNow();
   renderTroupes();
 
   // Geteilter Link (…/#t=Code): Vorschau zum Importieren öffnen
+  const viaLink = /^#[tc]=/.test(location.hash);   // geteilter Link: erst der, die Zeitung kommt beim nächsten Mal
   checkIncomingLink();
+  if (!viaLink) setTimeout(maybeShowNews, 500);   // Neuigkeiten für Nutzer, die die App schon kannten (vor dem Rundgang)
   setTimeout(startWelcomeTour, 600);   // allererstes Öffnen: kurzer Rundgang durch die Reiter
   window.addEventListener("hashchange", checkIncomingLink);
 
@@ -3520,7 +3849,7 @@ new MutationObserver(fitAllText).observe(document.body, { childList: true, subtr
 window.addEventListener("resize", fitAllText);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { document.querySelectorAll(FIT_SELECTOR).forEach((n) => delete n.dataset.fit); fitAllText(); });
 
-// Wischen zwischen den Seiten (Handy): nach links = nächster Reiter (Compendium → Troupes → Rules → FAQs), nach rechts = vorheriger.
+// Wischen zwischen den Seiten (Handy): nach links = nächster Reiter (Compendium → Troupes → Collection → Rules & FAQs), nach rechts = vorheriger.
 // Nur auf diesen vier Seiten und ohne geöffnetes Fenster; nicht in Eingabefeldern und nicht in Bereichen, die selbst seitlich scrollen.
 // Zügig und mindestens 60 px weit; die Richtung legt die Deadzone weiter unten fest.
 {
@@ -3573,7 +3902,7 @@ function setTipOff(key) { try { localStorage.setItem(key, "1"); } catch { /* ign
 const PLAY_HINT_KEY = "ttg-hint-play-v1";
 const TOUR_KEY = "ttg-hint-game-tour-v1";
 // alle Tipps und Rundgänge (für "Skip all"); die Konstanten weiter unten werden erst beim Klick gelesen
-const ALL_TIP_KEYS = ["ttg-hint-flip-v1", "ttg-hint-play-v1", "ttg-hint-game-tour-v1", "ttg-hint-welcome-v1", "ttg-hint-troupes-tour-v1", "ttg-hint-editor-tour-v1", "ttg-hint-setup-tour-v1"];
+const ALL_TIP_KEYS = ["ttg-hint-flip-v1", "ttg-hint-play-v1", "ttg-hint-game-tour-v1", "ttg-hint-welcome-v1", "ttg-hint-troupes-tour-v1", "ttg-hint-collection-tour-v1", "ttg-hint-news-2026-11-v1", "ttg-hint-editor-tour-v1", "ttg-hint-setup-tour-v1"];
 const isPhoneLayout = () => window.matchMedia && window.matchMedia("(max-width: 719.98px)").matches;
 
 // Handy: Sprechblase über dem runden Play-Knopf, sobald die Troupe zum ersten Mal vollständig ist
@@ -3600,6 +3929,7 @@ function showPlayHint() {
 function pageTutorials(view) {
   if (view === "compendium") return { keys: [WELCOME_KEY, HINT_KEY], start: startWelcomeTour };   // Rundgang und Umdreh-Tipp der Karten
   if (view === "troupes") return { keys: [TROUPES_TOUR_KEY], start: startTroupesTour };
+  if (view === "collection") return { keys: [COLLECTION_TOUR_KEY], start: startCollectionTour };
   return null;
 }
 function replayTutorials() {
@@ -3628,8 +3958,10 @@ function startWelcomeTour() {
       text: () => [el("strong", { text: "Compendium:" }), " here you'll find every character. Filter them by faction, keyword or synergy, and open a character to see the card and its signature move."] },
     { target: () => $("#tab-troupes"),
       text: () => [el("strong", { text: "Troupes:" }), " build your troupes here and take them into a game."] },
-    { target: () => [$("#tab-rules"), $("#tab-faqs")],
-      text: () => [el("strong", { text: "Rules and FAQs:" }), " everything you need to play a game of Moonstone, with a search."] },
+    { target: () => $("#tab-collection"),
+      text: () => [el("strong", { text: "Collection:" }), " mark the models you own. In the troupe builder you can then filter by ", el("strong", { text: "Collected" }), "."] },
+    { target: () => $("#tab-rules"),
+      text: () => [el("strong", { text: "Rules and FAQs:" }), " everything you need to play a game of Moonstone, with a search. Switch between rules and FAQs at the top."] },
   ], { once: true });
 }
 
@@ -3643,6 +3975,81 @@ function startTroupesTour() {
     { target: () => [$("#backup-export"), $("#backup-import")],
       text: () => [el("strong", { text: "Back up all troupes" }), " saves them to a file, ", el("strong", { text: "Restore from file" }), " loads them back, e.g. on a new device."] },
   ], { once: true });
+}
+
+// Collection beim ersten Besuch: abhaken, nach "Collected" filtern, teilen/ansehen/importieren.
+// Nicht beim Ansehen einer fremden Sammlung (dort gibt es weder Abhaken noch die Knöpfe).
+const COLLECTION_TOUR_KEY = "ttg-hint-collection-tour-v1";
+function startCollectionTour() {
+  if (currentView() !== "collection" || viewedCollection || document.querySelector("dialog[open]")) return;
+  runTour(COLLECTION_TOUR_KEY, [
+    { target: () => $("#collection-tiles .tile"),
+      text: () => ["Tap a model to mark it as ", el("strong", { text: "collected" }), ". Collected models move to the top. Press and hold (or right-click) to see its card."] },
+    { target: () => $("#collection-filters .filter-box"),
+      text: () => ["Filter by faction or synergy. ", el("strong", { text: "Collected" }), " and ", el("strong", { text: "Not collected" }), " are also in the troupe builder, e.g. to show only the soldiers you own."] },
+    { target: () => [$("#collection-export"), $("#collection-view"), $("#collection-import")],
+      text: () => [el("strong", { text: "Share" }), " sends your collection as a link. ", el("strong", { text: "View shared" }), " shows someone else's collection without changing yours. ",
+        el("strong", { text: "Import" }), " replaces your collection, e.g. on a new device."] },
+  ], { once: true });
+}
+
+/* ---------- Neuigkeiten: "The Tauber Afternoon Post" ---------- */
+// Wer die App schon kannte, bekommt einmal pro Ausgabe die Zeitung (index.html, #news-dialog) zu sehen.
+// "What's new?" startet einen kurzen Rundgang nur durch das Neue; "Look later" zeigt die Zeitung beim nächsten Öffnen wieder.
+// Neue Nutzer sehen sie nicht: ihr Willkommens-Rundgang enthält schon alles.
+// Bei einem neuen Update: NEWS_ID und NEWS_TOUR_KEY ändern, Artikel in index.html und die Schritte in startNewsTour anpassen.
+const NEWS_ID = "2026-11-collection";
+const NEWS_KEY = "ttg-news-seen";
+const NEWS_TOUR_KEY = "ttg-hint-news-2026-11-v1";
+let returningUser = false;   // beim Start gesetzt: gab es schon Daten dieser App im Gerät?
+
+function hadPriorData() {
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("ttg-") && k !== NEWS_KEY) return true;
+    }
+  } catch { /* ignorieren */ }
+  return false;
+}
+function newsSeen() { try { return localStorage.getItem(NEWS_KEY) === NEWS_ID; } catch { return true; } }
+function markNewsSeen() { try { localStorage.setItem(NEWS_KEY, NEWS_ID); } catch { /* ignorieren */ } }
+
+function openNews() {
+  const dialog = $("#news-dialog");
+  if (dialog.open) return;
+  $("#news-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  dialog.showModal();
+  dialog.scrollTop = 0;
+}
+// Beim Start: nur bei Nutzern, die die App schon kannten, und nur auf einer der vier Hauptseiten
+function maybeShowNews() {
+  if (newsSeen()) return;
+  if (!returningUser) { markNewsSeen(); return; }   // neue Nutzer: der Willkommens-Rundgang zeigt schon alles
+  if (!TAB_ORDER.includes(currentView()) || document.querySelector("dialog[open]") || activeTour) return;   // ein andermal
+  openNews();
+}
+function startNewsTour() {
+  runTour(NEWS_TOUR_KEY, [
+    { target: () => $("#tab-collection"),
+      text: () => [el("strong", { text: "New: Collection." }), " Mark the models you own, share your collection or import it on another device. Open it to take a short tour."] },
+    { target: () => $("#tab-rules"),
+      text: () => [el("strong", { text: "Rules & FAQs" }), " now share one tab. Switch between them at the top of the page."] },
+  ], { once: true });
+}
+function wireNews() {
+  const dialog = $("#news-dialog");
+  $("#news-later").addEventListener("click", () => dialog.close());   // nicht als gelesen merken: kommt beim nächsten Öffnen wieder
+  $("#news-show").addEventListener("click", () => {
+    markNewsSeen();
+    dialog.close();
+    // Auch beim erneuten Lesen (Settings → What's new) läuft der Rundgang wieder
+    try { localStorage.removeItem(NEWS_TOUR_KEY); localStorage.removeItem(`${NEWS_TOUR_KEY}-at`); } catch { /* ignorieren */ }
+    tipsShown.delete(NEWS_TOUR_KEY);
+    if (!TAB_ORDER.includes(currentView())) showView(lastTab);   // die Reiter müssen zu sehen sein
+    setTimeout(startNewsTour, 350);
+  });
+  $("#settings-news").addEventListener("click", () => { $("#settings-dialog").close(); openNews(); });
 }
 
 // Troupe Builder beim ersten Öffnen: Format, Modelle hinzufügen, teilen

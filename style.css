@@ -4,6 +4,8 @@
    (normal 460 statt 400, 575 statt 500, 690 statt 600; 700 ist das Maximum der Schrift) */
 @font-face { font-family: "Cormorant Garamond"; font-style: normal; font-weight: 300 700; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-wght-normal.woff2") format("woff2-variations"), url("fonts/cormorant-garamond-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "Cormorant Garamond"; font-style: italic; font-weight: 300 700; font-display: swap; size-adjust: 125%; src: url("fonts/cormorant-garamond-latin-wght-italic.woff2") format("woff2-variations"), url("fonts/cormorant-garamond-latin-wght-italic.woff2") format("woff2"); }
+/* Verzierte Großbuchstaben nur für die roten Initialen der Zeitung (ebenfalls SIL Open Font License, siehe fonts/OFL.txt) */
+@font-face { font-family: "Cinzel Decorative"; font-style: normal; font-weight: 700; font-display: swap; src: url("fonts/cinzel-decorative-latin-700.woff2") format("woff2"); }
 
 /* ==========================================================
    Tauber Tourist Guide: Gestaltung
@@ -24,6 +26,7 @@
   --accent-fg: #ffffff;
   --accent-soft: #f0e3bd;
   --danger: #a3262a;
+  --danger-fg: #ffffff;   /* Schrift auf rotem Knopf */
   /* Schatten unter allen Flächen der App (hebt sie vom Hintergrund ab): Farbe, naher und weicher Anteil */
   --shadow-rgb: 20 16 10;
   --shadow-near: 0.12;
@@ -61,6 +64,7 @@
     --accent-fg: #1a1608;
     --accent-soft: #3a3322;
     --danger: #ff8a8d;
+    --danger-fg: #2a0b0c;
     --shadow-rgb: 0 0 0;
     --shadow-near: 0.5;
     --shadow-far: 0.5;
@@ -80,6 +84,7 @@
   --accent-fg: #1a1608;
   --accent-soft: #3a3322;
   --danger: #ff8a8d;
+  --danger-fg: #2a0b0c;
   --shadow-rgb: 0 0 0;
   --shadow-near: 0.5;
   --shadow-far: 0.5;
@@ -737,7 +742,10 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .icon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; }
 .icon-btn .ico { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .export-btn { margin-top: 0.75rem; }
-#import-dialog, #export-dialog, #settings-dialog { width: min(92vw, 28rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#import-dialog, #export-dialog, #settings-dialog,
+#collection-export-dialog, #collection-import-dialog, #collection-view-dialog, #collection-replace-dialog { width: min(92vw, 28rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#collection-import-dialog textarea, #collection-view-dialog textarea { width: 100%; box-sizing: border-box; font-size: 16px; margin-top: 0.6rem; }
+:is(#collection-export-dialog, #collection-import-dialog, #collection-view-dialog, #collection-replace-dialog) .section-label { margin-top: 0; }
 #settings-dialog .section-label { margin-top: 0; }
 #settings-dialog { cursor: default; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }   /* nur Beschriftungen: nicht markierbar */
 #import-dialog textarea { width: 100%; box-sizing: border-box; font-size: 16px; margin-top: 0.6rem; }   /* mindestens 16px, sonst zoomt iOS beim Antippen hinein */
@@ -2387,3 +2395,137 @@ html.touring, html.touring body { overflow: hidden; }
 .intro-box .rule-gallery.described { align-items: start; }
 .intro-box .rule-gallery.described figure { align-items: start; }
 .intro-box .rule-gallery.described figcaption { padding-top: 0.35rem; }
+/* ---------- Collection: eigene Sammlung ---------- */
+#view-collection { padding-bottom: 1rem; }
+#view-collection .page-head { flex-wrap: wrap; }
+.collection-note { margin-top: 1rem; }
+/* Geteilte Sammlung ansehen: Hinweis mit Zurück-Knopf; eigene Knöpfe (Teilen usw.) ausblenden */
+.collection-viewing { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin: 0 0 0.75rem; }
+.collection-viewing span { flex: 1 1 14rem; }
+#view-collection.is-viewing .own-only { display: none; }
+/* Teilen / Importieren: zwei Knöpfe unter der Überschrift */
+.collection-share { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: -0.25rem 0 1rem; }
+.collection-share button { flex: 1 1 0; min-width: 0; padding-inline: 0.4rem; white-space: nowrap; font-size: clamp(0.85rem, 3.8vw, 1rem); }
+/* Schmale Handys: ohne Symbole, damit alle drei Knöpfe in eine Zeile passen */
+@media (max-width: 419.98px) { .collection-share .ico { display: none; } }
+.collection-share button:hover { border-color: var(--muted); }
+/* Warnung vor dem Überschreiben der Sammlung */
+.warn-note { background: color-mix(in srgb, var(--danger) 14%, var(--surface)); border: 1px solid var(--danger); }
+button.danger-solid { background: var(--danger); color: var(--danger-fg); }
+#collection-export-name { width: 100%; margin: 0.5rem 0 0; }
+/* Gruppen "Collected" (oben) und "Not collected" */
+#collection-tiles .section-label { margin: 1rem 0 0.5rem; }
+#collection-tiles .section-label:first-child { margin-top: 0.25rem; }
+/* Nicht gesammelte Modelle: blasser, damit die gesammelten (mit Haken und Akzentrahmen) herausstechen */
+.tile.missing .pcard { opacity: 0.5; filter: grayscale(0.6); transition: opacity 0.2s, filter 0.2s; }
+@media (hover: hover) { .tile.missing:hover .pcard { opacity: 0.8; filter: none; } }
+/* Sammlungs-Begriffe im Synergies-Feld: gestrichelter Akzentrahmen, damit sie sich von Keywords abheben */
+.chip.chip-own { border: 1px dashed var(--accent); }
+.chip.chip-own[aria-pressed="true"] { border-style: solid; }
+
+/* ---------- Rules / FAQs: Umschalter oben auf der Rules-Seite ---------- */
+.guide-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem;
+  max-width: 24rem;
+  margin: 0 auto 0.5rem;
+  padding: 0.25rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 99px;
+}
+.guide-switch button {
+  min-height: 40px;
+  padding: 0.35rem 1rem;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 99px;
+  transition: background 0.2s, color 0.2s;
+}
+.guide-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); }
+
+/* ---------- Neuigkeiten: "The Tauber Afternoon Post" ----------
+   Eine Zeitungsseite aus altem Papier. Sieht in Hell und Dunkel gleich aus (es ist ja Papier). */
+dialog.newspaper {
+  --paper: #efe5cc;
+  --paper-edge: #d9c9a3;
+  --ink: #2a2118;
+  --ink-soft: #5a4c3a;
+  width: min(92vw, 36rem);
+  max-height: 88vh;
+  padding: 0;
+  overflow-y: auto;
+  background: var(--paper);
+  color: var(--ink);
+  border: 0;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 0.25), 0 18px 50px rgb(0 0 0 / 0.45);
+  transform: rotate(-0.6deg);   /* leicht schief hingelegt */
+}
+dialog.newspaper[open] { animation: paper-in 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); }
+@keyframes paper-in { from { opacity: 0; transform: translateY(24px) rotate(-3deg) scale(0.96); } to { opacity: 1; transform: rotate(-0.6deg); } }
+@media (prefers-reduced-motion: reduce) { dialog.newspaper[open] { animation: none; } }
+dialog.newspaper::backdrop { background: rgba(8, 9, 16, 0.72); }
+.paper {
+  padding: 1rem 1.15rem 1.15rem;
+  /* vergilbte Ränder und leichte Flecken */
+  background:
+    radial-gradient(ellipse at 15% 10%, rgb(255 255 255 / 0.35), transparent 45%),
+    radial-gradient(ellipse at 85% 90%, rgb(150 110 50 / 0.12), transparent 50%),
+    radial-gradient(circle at 70% 25%, rgb(150 110 50 / 0.07), transparent 12%);
+  box-shadow: inset 0 0 40px var(--paper-edge);
+  font-family: var(--font-body);
+}
+.paper-ears { display: flex; white-space: nowrap; justify-content: space-between; align-items: center; gap: 0.5rem; font-size: clamp(0.6rem, 2.6vw, 0.72rem); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+/* Preis rechts oben: darf auf schmalen Handys in zwei Zeilen umbrechen */
+.paper-price { white-space: normal; text-align: right; max-width: 40%; line-height: 1.25; }
+.paper-ears > span:first-child { flex: 0 1 auto; }
+.paper-extra { padding: 0.05rem 0.5rem; border: 1px solid var(--ink); font-weight: 700; color: var(--ink); transform: rotate(-4deg); }
+.paper-masthead {
+  margin: 0.35rem 0 0;
+  padding: 0.4rem 0 0.3rem;
+  border-top: 3px double var(--ink);
+  border-bottom: 1px solid var(--ink);
+  font: 700 clamp(1.2rem, 5.6vw, 2.35rem)/1 var(--font-display);
+  letter-spacing: 0.01em;
+  text-align: center;
+  white-space: nowrap;
+}
+.paper-masthead small { display: block; margin-bottom: 0.1rem; font-size: 0.42em; font-style: italic; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; }
+.paper-dateline { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.15rem 0.5rem; margin: 0; padding: 0.25rem 0; border-bottom: 3px double var(--ink); font-size: 0.8rem; font-style: italic; color: var(--ink-soft); text-align: center; }
+.paper-headline { margin: 0.7rem 0 0; font: 700 clamp(1.7rem, 8vw, 2.4rem)/1.05 var(--font-display); text-align: center; text-transform: uppercase; letter-spacing: 0.02em; }
+.paper-deck { margin: 0.35rem auto 0.7rem; max-width: 26rem; font-size: 1.02rem; font-style: italic; line-height: 1.3; text-align: center; color: var(--ink-soft); }
+.paper-columns { display: grid; gap: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--ink); }
+.paper-columns article + article { padding-top: 0.6rem; border-top: 1px dashed var(--ink-soft); }
+.paper-columns h4 { margin: 0 0 0.2rem; font: 700 1.08rem/1.15 var(--font-display); }
+.paper-columns p { margin: 0; font-size: 0.98rem; line-height: 1.35; }
+/* Erster Buchstabe jeder Spalte: rote, verzierte (aber gut lesbare) Initiale wie in alten Briefen,
+   in einem Zierfeld mit doppeltem Rahmen und fein gepunktetem Grund */
+.paper-columns p::first-letter {
+  float: left;
+  margin: 0.14em 0.4rem 0 0;
+  padding: 0.1em 0.16em 0.02em;
+  font: 700 2.75em/0.9 "Cinzel Decorative", var(--font-display);
+  color: var(--rubric);
+  border: 3px double var(--rubric);
+  background:
+    radial-gradient(circle, rgb(163 22 26 / 0.16) 0.9px, transparent 1.3px) 0 0 / 5px 5px,
+    #f7eedb;
+  text-shadow: 1px 1px 0 rgb(90 20 15 / 0.25);
+}
+dialog.newspaper { --rubric: #a3161a; }   /* Rot der alten Schreiber ("Rubrik") */
+/* Knöpfe bleiben unten sichtbar, auch wenn die Zeitung auf dem Handy gescrollt werden muss */
+.paper-actions { position: sticky; bottom: 0; display: flex; gap: 0.6rem; margin: 1rem -1.15rem -1.15rem; padding: 0.8rem 1.15rem 1.15rem; border-top: 3px double var(--ink); background: var(--paper); }
+@media (min-width: 560px) {
+  .paper { padding: 1.25rem 1.5rem 1.4rem; }
+  .paper-columns { grid-template-columns: repeat(3, 1fr); gap: 0 1rem; }
+  .paper-columns article + article { padding: 0 0 0 1rem; border-top: 0; border-left: 1px solid var(--ink-soft); }
+  .paper-actions { margin: 1.2rem -1.5rem -1.4rem; padding: 0.9rem 1.5rem 1.4rem; }
+}
+.paper-actions button { flex: 1 1 0; min-width: 0; min-height: 46px; padding-inline: 0.5rem; border-radius: 2px; font-size: clamp(0.95rem, 4.4vw, 1.05rem); letter-spacing: 0.02em; white-space: nowrap; }
+#news-later { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+#news-show { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); }
+#news-later:hover { background: rgb(42 33 24 / 0.07); }
+#news-show:hover { background: #3d3022; }
+.paper-actions button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
