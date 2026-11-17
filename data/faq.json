@@ -899,6 +899,22 @@
     },
     {
      "t": "group",
+     "title": "The Goblin King",
+     "blocks": [
+      {
+       "t": "group",
+       "title": "If a character Jogged earlier in the turn, then is reactivated with 'Rule the Roost', do they get to Jog again?",
+       "blocks": [
+        {
+         "t": "p",
+         "x": "No, as Jogs are once per turn not once per activation."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "t": "group",
      "title": "Gotchgut",
      "blocks": [
       {
