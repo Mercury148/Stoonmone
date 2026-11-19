@@ -2529,3 +2529,10 @@ dialog.newspaper { --rubric: #a3161a; }   /* Rot der alten Schreiber ("Rubrik") 
 #news-later:hover { background: rgb(42 33 24 / 0.07); }
 #news-show:hover { background: #3d3022; }
 .paper-actions button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Archiv der Zeitung (Settings → Past issues) */
+#archive-dialog { width: min(92vw, 28rem); padding: 1rem 1.1rem 1.1rem; box-sizing: border-box; }
+#archive-dialog .section-label { margin-top: 0; }
+.archive-item { display: grid; justify-items: start; gap: 0.15rem; min-height: 56px; padding: 0.6rem 0.9rem; text-align: left; }
+.archive-title { font: 700 1.05rem/1.2 var(--font-display); color: var(--fg); }
+.paper-issue[hidden], #news-show[hidden] { display: none; }

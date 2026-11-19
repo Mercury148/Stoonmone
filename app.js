@@ -3995,7 +3995,8 @@ function startCollectionTour() {
 
 /* ---------- Neuigkeiten: "The Tauber Afternoon Post" ---------- */
 // Wer die App schon kannte, bekommt einmal pro Ausgabe die Zeitung (index.html, #news-dialog) zu sehen.
-// "What's new?" startet einen kurzen Rundgang nur durch das Neue; "Look later" zeigt die Zeitung beim nächsten Öffnen wieder.
+// "What's new?" startet einen kurzen Rundgang nur durch das Neue. Einmal gesehen, erscheint die Zeitung nicht mehr von selbst
+// (egal wie sie geschlossen wurde); nachlesen geht über Settings → What's new.
 // Neue Nutzer sehen sie nicht: ihr Willkommens-Rundgang enthält schon alles.
 // Bei einem neuen Update: NEWS_ID und NEWS_TOUR_KEY ändern, Artikel in index.html und die Schritte in startNewsTour anpassen.
 const NEWS_ID = "2026-11-collection";
@@ -4015,12 +4016,32 @@ function hadPriorData() {
 function newsSeen() { try { return localStorage.getItem(NEWS_KEY) === NEWS_ID; } catch { return true; } }
 function markNewsSeen() { try { localStorage.setItem(NEWS_KEY, NEWS_ID); } catch { /* ignorieren */ } }
 
-function openNews() {
+// Zeitung öffnen: ohne Angabe die neueste Ausgabe (mit dem heutigen Datum), sonst die gewählte aus dem Archiv (mit ihrem Erscheinungsdatum)
+const newsIssues = () => [...document.querySelectorAll("#news-dialog .paper-issue")];
+const issueDate = (issue) => new Date(`${issue.dataset.date}T12:00:00`);
+function openNews(id = NEWS_ID) {
   const dialog = $("#news-dialog");
   if (dialog.open) return;
-  $("#news-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+  const issues = newsIssues();
+  const shown = issues.find((x) => x.dataset.issue === id) || issues[0];
+  const latest = shown === issues[0];
+  for (const issue of issues) issue.hidden = issue !== shown;
+  const date = latest ? new Date() : issueDate(shown);
+  shown.querySelector(".news-date").textContent = date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: latest ? undefined : "numeric" });
+  // Der Rundgang durch das Neue passt nur zur neuesten Ausgabe; bei alten Ausgaben gibt es nur "Close"
+  $("#news-show").hidden = !latest;
+  $("#news-later").textContent = latest ? "Look later" : "Close";
   dialog.showModal();
   dialog.scrollTop = 0;
+}
+// Archiv (Settings → Past issues): alle Ausgaben mit Schlagzeile und Datum, neueste zuerst
+function openArchive() {
+  $("#archive-list").replaceChildren(...newsIssues().map((issue) =>
+    el("button", { class: "ghost archive-item", type: "button", onclick: () => { $("#archive-dialog").close(); openNews(issue.dataset.issue); $("#news-dialog").dataset.fromArchive = "1"; } },
+      el("span", { class: "archive-title", text: issue.querySelector(".paper-headline").textContent }),
+      el("span", { class: "hint", text: `${issueDate(issue).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })} · ${issue.querySelector(".paper-ears span").textContent}` })
+    )));
+  $("#archive-dialog").showModal();
 }
 // Beim Start: nur bei Nutzern, die die App schon kannten, und nur auf einer der vier Hauptseiten
 function maybeShowNews() {
@@ -4028,6 +4049,7 @@ function maybeShowNews() {
   if (!returningUser) { markNewsSeen(); return; }   // neue Nutzer: der Willkommens-Rundgang zeigt schon alles
   if (!TAB_ORDER.includes(currentView()) || document.querySelector("dialog[open]") || activeTour) return;   // ein andermal
   openNews();
+  markNewsSeen();   // gesehen ist gesehen: beim nächsten Öffnen der App nicht noch einmal zeigen
 }
 function startNewsTour() {
   runTour(NEWS_TOUR_KEY, [
@@ -4039,8 +4061,9 @@ function startNewsTour() {
 }
 function wireNews() {
   const dialog = $("#news-dialog");
-  $("#news-later").addEventListener("click", () => dialog.close());   // nicht als gelesen merken: kommt beim nächsten Öffnen wieder
+  $("#news-later").addEventListener("click", () => dialog.close());   // schließt nur; als gelesen gemerkt ist sie schon beim Anzeigen
   $("#news-show").addEventListener("click", () => {
+    delete dialog.dataset.fromArchive;   // nach "What's new?" läuft der Rundgang, nicht zurück ins Archiv
     markNewsSeen();
     dialog.close();
     // Auch beim erneuten Lesen (Settings → What's new) läuft der Rundgang wieder
@@ -4050,6 +4073,10 @@ function wireNews() {
     setTimeout(startNewsTour, 350);
   });
   $("#settings-news").addEventListener("click", () => { $("#settings-dialog").close(); openNews(); });
+  $("#settings-archive").addEventListener("click", () => { $("#settings-dialog").close(); openArchive(); });
+  $("#archive-close").addEventListener("click", () => $("#archive-dialog").close());
+  // Aus dem Archiv geöffnete Ausgabe zugeklappt: zurück zur Liste
+  dialog.addEventListener("close", () => { if (dialog.dataset.fromArchive) { delete dialog.dataset.fromArchive; openArchive(); } });
 }
 
 // Troupe Builder beim ersten Öffnen: Format, Modelle hinzufügen, teilen

@@ -355,9 +355,12 @@
          a thimble, a darned left sock, half a teapot lid, a jar of pickled onions, a cuckoo clock's cuckoo, a slightly used doily -->
   <dialog id="news-dialog" class="newspaper" aria-labelledby="news-masthead">
     <div class="paper">
+      <!-- Jede Ausgabe in einem eigenen <section class="paper-issue">, die NEUESTE ZUERST. data-issue = Kennung (NEWS_ID in app.js),
+           data-date = Erscheinungsdatum fürs Archiv (Settings → Past issues). Alte Ausgaben bleiben einfach darunter stehen. -->
+      <section class="paper-issue" data-issue="2026-11-collection" data-date="2026-11-18">
       <div class="paper-ears" aria-hidden="true"><span>Vol. II · No. 1</span><span class="paper-extra">Extra!</span><span class="paper-price">Price: One Silver Teaspoon</span></div>
       <h2 class="paper-masthead" id="news-masthead"><small>The</small> Tauber Afternoon Post</h2>
-      <p class="paper-dateline"><span id="news-date"></span><span aria-hidden="true">✦</span><span>Printed below the Tower of Grommel</span></p>
+      <p class="paper-dateline"><span class="news-date"></span><span aria-hidden="true">✦</span><span>Printed below the Tower of Grommel</span></p>
       <h3 class="paper-headline">Collectors Rejoice!</h3>
       <p class="paper-deck">The Guide opens a ledger for every citizen of Tauber you can call your own</p>
       <div class="paper-columns">
@@ -374,6 +377,7 @@
           <p>After a long courtship, the Rules and the FAQs now share a single tab. A modest switch at the top lets readers wander between them.</p>
         </article>
       </div>
+      </section>
       <div class="paper-actions">
         <button id="news-later" type="button">Look later</button>
         <button id="news-show" type="button">What's new?</button>
@@ -414,8 +418,20 @@
     <button id="settings-replay" class="ghost icon-btn settings-replay" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 4v6h6M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg><span>Replay tutorials</span></button>
     <!-- Die letzte Ausgabe der Zeitung (Neuigkeiten) noch einmal lesen -->
     <button id="settings-news" class="ghost icon-btn settings-replay" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2M7.5 9h6M7.5 12.5h6M7.5 16h4"/></svg><span>What's new</span></button>
+    <!-- Archiv: alle bisherigen Ausgaben (Changelog), Liste wird aus den .paper-issue in #news-dialog gebaut -->
+    <button id="settings-archive" class="ghost icon-btn settings-replay" type="button"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v12h14V8M10 12h4"/></svg><span>Past issues</span></button>
     <div class="dialog-actions">
       <button id="settings-close" class="ghost" type="button">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Archiv der Zeitung: Liste aller Ausgaben (gefüllt von app.js) -->
+  <dialog id="archive-dialog" aria-label="Past issues">
+    <h3 class="section-label">Past issues</h3>
+    <p class="hint">Every update of the Guide, newest first.</p>
+    <div id="archive-list" class="dialog-stack"></div>
+    <div class="dialog-actions">
+      <button id="archive-close" class="ghost" type="button">Close</button>
     </div>
   </dialog>
 
