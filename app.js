@@ -120,14 +120,30 @@ document.addEventListener("click", (e) => {
     parts: parts.map((p) => p.animate([{ opacity: fromOpacity }, { opacity: opening ? 1 : 0 }], { ...timing, fill: "forwards" })),
   };
   detailsAnims.set(box, anim);
-  anim.box.onfinish = () => {
-    if (detailsAnims.get(box) !== anim) return;
-    detailsAnims.delete(box);
-    box.style.overflow = "";
-    anim.parts.forEach((a) => a.cancel());
-    if (!opening) { box.open = false; box.classList.remove("closing"); }
-  };
+  anim.box.onfinish = () => finishDetails(box);
+  // Sicherheitsnetz: manche Browser (v. a. Safari) melden das Ende nicht, wenn der Abschnitt währenddessen ausgeblendet wird
+  // (Suche, Wechsel Rules/FAQs, anderer Reiter). Dann blieb er "halb zu": unsichtbar, aber mit voller Höhe.
+  setTimeout(() => { if (detailsAnims.get(box) === anim) finishDetails(box); }, duration + 80);
 });
+
+// Laufende Auf-/Zuklapp-Animation sofort zu Ende bringen: Zuklappen wird abgeschlossen, Aufklappen bleibt offen
+function finishDetails(box) {
+  const anim = detailsAnims.get(box);
+  if (!anim) return;
+  detailsAnims.delete(box);
+  anim.box.cancel();
+  anim.parts.forEach((a) => a.cancel());
+  box.style.overflow = "";
+  if (box.classList.contains("closing")) { box.open = false; box.classList.remove("closing"); }
+}
+
+// Abschnitt per Programm auf- oder zuklappen (Suche, "Collapse all", Verweise): vorher eine laufende Animation beenden,
+// damit sie danach nichts mehr umstellt
+function setDetailsOpen(box, open) {
+  finishDetails(box);
+  box.classList.remove("closing");
+  box.open = open;
+}
 
 function initials(name) {
   return name.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
@@ -670,7 +686,7 @@ function createFilterPanel(container, onChange, { onEnter, note, collectionTags 
       search.value = "";
         renderSynergies();
       renderFactions();
-      synBox.open = false;
+      setDetailsOpen(synBox, false);
     },
     // Nach dem Hinzufügen aus einer Suche: Suchfeld wieder auswählen, der Text ist markiert und wird beim Weitertippen ersetzt.
     // Ohne Suchtext passiert nichts (sonst springt beim Antippen der Kacheln auf dem Handy die Tastatur auf).
@@ -3024,7 +3040,7 @@ function createGuide(container, config) {
   const updateCollapse = () => { collapse.classList.toggle("is-off", !list.querySelector("details[open]")); };
   list.addEventListener("toggle", updateCollapse, true);   // toggle steigt nicht auf, deshalb beim Abfangen lauschen
   collapse.addEventListener("click", () => {
-    for (const d of list.querySelectorAll("details[open]")) d.open = false;
+    for (const d of list.querySelectorAll("details[open]")) setDetailsOpen(d, false);
     if (openBefore) openBefore = new Set();   // während einer Suche: nach dem Leeren der Suche bleibt alles zu
     updateCollapse();
     const top = container.getBoundingClientRect().top + window.scrollY - 8;
@@ -3114,7 +3130,7 @@ function createGuide(container, config) {
   function visit(group, found) {
     const match = found.every((f) => quality(group.words, f) > 0);
     group.node.hidden = !match;
-    if (match && found.length) group.node.open = true;
+    if (match && found.length && !group.node.open) setDetailsOpen(group.node, true);
     for (const child of group.children) visit(child, found);
     return match;
   }
@@ -3174,7 +3190,7 @@ function createGuide(container, config) {
     if (!terms.length) {
       // Suche leer (oder nur einzelne Buchstaben): alles zeigen, offene Gruppen wie vor der Suche wiederherstellen
       for (const s of sections) visit(s, found);
-      if (openBefore) for (const g of allGroups) g.node.open = openBefore.has(g.node);
+      if (openBefore) for (const g of allGroups) if (g.node.open !== openBefore.has(g.node) || g.node.classList.contains("closing")) setDetailsOpen(g.node, openBefore.has(g.node));
       openBefore = null;
       updateStatus(terms);
       return;
@@ -3194,7 +3210,7 @@ function createGuide(container, config) {
     e.preventDefault();
     const target = document.getElementById(`${config.container.slice(1)}-${link.dataset.goto}`);
     if (!target) return;
-    for (let d = target; d && list.contains(d); d = d.parentElement.closest("details")) d.open = true;
+    for (let d = target; d && list.contains(d); d = d.parentElement.closest("details")) setDetailsOpen(d, true);
     const summary = target.querySelector(":scope > summary");
     summary.scrollIntoView({ block: "start", behavior: reduceMotion() ? "auto" : "smooth" });
     summary.classList.remove("hit-flash");
