@@ -54,6 +54,11 @@ const factionById = new Map();
 // Alle gespeicherten Troupen. Jede hat eine ID, einen Namen und eine Liste von Charakter-IDs.
 let troupes = [];
 
+// Troupe-Übersicht: Bearbeiten-Modus (Kacheln zittern, X zum Löschen) und laufendes Verschieben (siehe renderTroupes)
+let troupeEditMode = false;
+let troupeDrag = null;    // { item, ph, id, offX, offY, x, y, raf } während eine Kachel verschoben wird
+let troupePress = null;   // Kachel gedrückt, Verschieben hat noch nicht begonnen
+
 // Die Troupe, die gerade im Editor offen ist (dasselbe Objekt wie in der Liste), sonst null
 let current = null;
 
@@ -1498,6 +1503,9 @@ function troupeMeta(t) {
 // Neu-Knopf: Solange die Karte "New troupe" im sichtbaren Bereich Platz hat, steht sie als Karte
 // an der Stelle, an der die nächste Troupe erscheinen würde. Sonst gibt es den runden Knopf unten rechts.
 function renderTroupes() {
+  if (troupeDrag) return;   // mitten im Verschieben nicht neu aufbauen (z. B. Größenänderung durch die Adressleiste)
+  if (!troupes.length) setTroupeEditMode(false);
+  $("#troupes-edit").hidden = troupes.length === 0;
   $("#troupes-empty").hidden = troupes.length > 0;
   const add = $("#new-troupe");
   add.disabled = troupes.length >= MAX_TROUPES;
@@ -1508,7 +1516,7 @@ function renderTroupes() {
     const faction = factions[0];
     const dual = factions.length === 2;
     const dualStyle = dual ? `; --h2:${factions[1].hue}; --fac-s2:${factions[1].sat ?? 55}%` : "";
-    return el("div", { class: faction ? `troupe-item has-faction${dual ? " dual" : ""}` : "troupe-item", style: faction ? factionStyle(faction) + dualStyle : null },
+    return el("div", { class: faction ? `troupe-item has-faction${dual ? " dual" : ""}` : "troupe-item", "data-id": t.id, style: faction ? factionStyle(faction) + dualStyle : null },
       el("button", { class: "troupe-card", type: "button", onclick: () => openEditor(t.id) },
         el("span", { class: "troupe-name", text: troupeLabel(t) }),
         el("span", { class: "troupe-meta", text: troupeMeta(t) }),
@@ -1533,6 +1541,179 @@ function renderTroupes() {
   }
 }
 window.addEventListener("resize", () => renderTroupes());
+
+/* ---------- Troupes verschieben und löschen (Bearbeiten-Modus wie auf dem iPhone-Homescreen) ---------- */
+// Touch: Kachel gedrückt halten -> Bearbeiten-Modus (Kacheln zittern, X oben rechts), die Kachel hängt dann am Finger.
+// Im Bearbeiten-Modus genügt kurzes Halten, damit Wischen weiterhin scrollt.
+// Maus: Kachel einfach ziehen (oder gedrückt halten). Beenden: "Done", Esc, Klick neben die Kacheln oder Seitenwechsel.
+const LONG_PRESS_MS = 450;
+const EDIT_HOLD_MS = 160;
+const MOVE_SLOP = 8;        // so weit darf der Finger beim Halten wackeln (px)
+const MOUSE_SLOP = 4;       // ab hier beginnt das Ziehen mit der Maus (px)
+let troupeJustDropped = false;
+
+function setTroupeEditMode(on) {
+  if (troupeEditMode === on) return;
+  troupeEditMode = on;
+  $("#troupe-list").classList.toggle("edit-mode", on);
+  const btn = $("#troupes-edit");
+  btn.textContent = on ? "Done" : "Edit";
+  btn.classList.toggle("ghost", !on);
+  btn.setAttribute("aria-pressed", String(on));
+}
+
+function cancelTroupePress() {
+  if (troupePress) clearTimeout(troupePress.timer);
+  troupePress = null;
+}
+
+// Lage der Kacheln ohne Zittern und laufende Animationen (relativ zur Liste)
+function layoutBox(node) {
+  return { left: node.offsetLeft, top: node.offsetTop, width: node.offsetWidth, height: node.offsetHeight };
+}
+
+function startTroupeDrag(press) {
+  cancelTroupePress();
+  setTroupeEditMode(true);
+  const item = press.item;
+  const r = item.getBoundingClientRect();
+  const ph = el("div", { class: "troupe-placeholder", "aria-hidden": "true" });
+  ph.style.height = `${item.offsetHeight}px`;
+  item.before(ph);
+  item.classList.add("dragging");
+  Object.assign(item.style, { position: "fixed", left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px`, zIndex: "50" });
+  troupeDrag = { item, ph, id: press.id, offX: press.x - r.left, offY: press.y - r.top, x: press.x, y: press.y, raf: 0 };
+  if (press.touch && navigator.vibrate) navigator.vibrate(12);
+  moveTroupeDrag(press.x, press.y);
+  const scrollStep = () => {
+    if (!troupeDrag) return;
+    const tabs = document.querySelector(".tabs");
+    const bottom = tabs ? tabs.getBoundingClientRect().top : window.innerHeight;
+    const zone = 70;
+    const y = troupeDrag.y;
+    let speed = 0;
+    if (y < zone) speed = -Math.ceil((zone - y) / 5);
+    else if (y > bottom - zone) speed = Math.ceil((y - (bottom - zone)) / 5);
+    if (speed) {
+      const before = window.scrollY;
+      window.scrollBy(0, Math.max(-18, Math.min(18, speed)));
+      if (window.scrollY !== before) placeTroupePlaceholder(troupeDrag.x, troupeDrag.y);
+    }
+    troupeDrag.raf = requestAnimationFrame(scrollStep);
+  };
+  troupeDrag.raf = requestAnimationFrame(scrollStep);
+}
+
+function moveTroupeDrag(x, y) {
+  const d = troupeDrag;
+  d.x = x; d.y = y;
+  d.item.style.left = `${x - d.offX}px`;
+  d.item.style.top = `${y - d.offY}px`;
+  placeTroupePlaceholder(x, y);
+}
+
+// Liegt der Zeiger über einer anderen Kachel, rückt die Lücke an deren Platz; die übrigen Kacheln gleiten nach (FLIP).
+function placeTroupePlaceholder(x, y) {
+  const d = troupeDrag;
+  const list = $("#troupe-list");
+  const origin = list.getBoundingClientRect();
+  const px = x - origin.left, py = y - origin.top;
+  const others = [...list.querySelectorAll(".troupe-item:not(.dragging)")];
+  const target = others.find((node) => {
+    const b = layoutBox(node);
+    return px >= b.left && px <= b.left + b.width && py >= b.top && py <= b.top + b.height;
+  });
+  if (!target) return;
+  const before = new Map(others.map((node) => [node, layoutBox(node)]));
+  const phFirst = d.ph.compareDocumentPosition(target) & Node.DOCUMENT_POSITION_FOLLOWING;
+  if (phFirst) target.after(d.ph); else target.before(d.ph);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  for (const [node, b] of before) {
+    const now = layoutBox(node);
+    const dx = b.left - now.left, dy = b.top - now.top;
+    if (!dx && !dy) continue;
+    node.animate([{ translate: `${dx}px ${dy}px` }, { translate: "0 0" }], { duration: 200, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
+  }
+}
+
+function endTroupeDrag() {
+  const d = troupeDrag;
+  if (!d) return;
+  cancelAnimationFrame(d.raf);
+  troupeDrag = null;
+  // Der Klick, den der Browser nach dem Loslassen schickt, soll den Bearbeiten-Modus nicht gleich wieder beenden
+  troupeJustDropped = true;
+  setTimeout(() => { troupeJustDropped = false; }, 0);
+  const from = d.item.getBoundingClientRect();
+  d.ph.replaceWith(d.item);
+  d.item.classList.remove("dragging");
+  for (const prop of ["position", "left", "top", "width", "height", "z-index"]) d.item.style.removeProperty(prop);
+  const to = d.item.getBoundingClientRect();
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    d.item.animate([{ translate: `${from.left - to.left}px ${from.top - to.top}px`, scale: "1.04" }, { translate: "0 0", scale: "1" }],
+      { duration: 180, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)" });
+  }
+  // Neue Reihenfolge übernehmen und speichern
+  const order = [...$("#troupe-list").querySelectorAll(".troupe-item")].map((node) => node.dataset.id);
+  const old = troupes.map((t) => t.id).join();
+  troupes.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+  if (troupes.map((t) => t.id).join() !== old) saveTroupes();
+}
+
+(function setupTroupeReorder() {
+  const list = $("#troupe-list");
+
+  list.addEventListener("pointerdown", (e) => {
+    if (e.button !== 0 || troupeDrag || troupePress) return;
+    const item = e.target.closest(".troupe-item");
+    if (!item || e.target.closest(".troupe-delete")) return;
+    const touch = e.pointerType !== "mouse";
+    const press = troupePress = { item, id: e.pointerId, touch, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, timer: 0 };
+    const wait = touch && troupeEditMode ? EDIT_HOLD_MS : LONG_PRESS_MS;
+    press.timer = setTimeout(() => { if (troupePress === press) startTroupeDrag(press); }, wait);
+  });
+
+  window.addEventListener("pointermove", (e) => {
+    if (troupeDrag) {
+      if (e.pointerId === troupeDrag.id) moveTroupeDrag(e.clientX, e.clientY);
+      return;
+    }
+    const p = troupePress;
+    if (!p || e.pointerId !== p.id) return;
+    p.x = e.clientX; p.y = e.clientY;
+    const dist = Math.hypot(p.x - p.sx, p.y - p.sy);
+    if (p.touch) { if (dist > MOVE_SLOP) cancelTroupePress(); }   // Finger bewegt sich: scrollen statt verschieben
+    else if (dist > MOUSE_SLOP) startTroupeDrag(p);
+  });
+
+  const release = (e) => {
+    if (troupeDrag && e.pointerId === troupeDrag.id) endTroupeDrag();
+    else if (troupePress && e.pointerId === troupePress.id) cancelTroupePress();
+  };
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
+
+  // Während des Verschiebens nicht scrollen (geht nur mit einem nicht-passiven touchmove)
+  list.addEventListener("touchmove", (e) => { if (troupeDrag) e.preventDefault(); }, { passive: false });
+  // Langes Drücken soll kein Kontextmenü und kein Ziehen von Bildern auslösen
+  list.addEventListener("contextmenu", (e) => { if (e.target.closest(".troupe-item")) e.preventDefault(); });
+  list.addEventListener("dragstart", (e) => e.preventDefault());
+
+  // Im Bearbeiten-Modus öffnet ein Tipp auf die Kachel nicht den Editor
+  list.addEventListener("click", (e) => {
+    if (troupeEditMode && e.target.closest(".troupe-card")) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+
+  $("#troupes-edit").addEventListener("click", () => setTroupeEditMode(!troupeEditMode));
+  // Tipp neben die Kacheln beendet den Bearbeiten-Modus
+  document.addEventListener("click", (e) => {
+    if (!troupeEditMode || troupeJustDropped || e.target.closest(".troupe-item, #troupes-edit")) return;
+    setTroupeEditMode(false);
+  }, true);   // vor den Knöpfen prüfen: das X ersetzt beim Klick seinen Inhalt, das Ziel hinge danach nicht mehr in der Kachel
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && troupeEditMode && !document.querySelector("dialog[open]")) setTroupeEditMode(false);
+  });
+})();
 
 // --- Editor ---
 
@@ -3370,6 +3551,7 @@ function showView(name) {
   $("#view-editor").hidden = name !== "editor";
   $("#view-game").hidden = name !== "game";
   $("#view-rules").hidden = name !== "rules";
+  if (name !== "troupes") setTroupeEditMode(false);
   if (name === "rules") showGuidePage(guidePage);
   if (name === "collection" && collectionPanel) renderCollectionNow();
   // Sammlung inzwischen geändert: das Kompendium kann nach "Collected" gefiltert sein
@@ -3888,6 +4070,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { do
   // Deadzone mit Richtungs-Sperre: Nach den ersten 12 px Bewegung steht fest, ob gewischt (waagerecht) oder gescrollt (senkrecht) wird.
   // Waagerecht: die Seite scrollt nicht mehr nach oben/unten. Senkrecht: es wird nur gescrollt, ein Seitenwechsel ist ausgeschlossen.
   document.addEventListener("touchmove", (e) => {
+    if (troupeDrag) { start = null; return; }   // eine Troupe-Kachel wird verschoben: kein Seitenwechsel
     if (!start || e.touches.length !== 1) { start = null; return; }
     if (window.visualViewport && window.visualViewport.scale > 1.01) { start = null; return; }   // gezoomt: Wischen verschiebt nur
     const t = e.touches[0];

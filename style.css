@@ -2536,3 +2536,31 @@ dialog.newspaper { --rubric: #a3161a; }   /* Rot der alten Schreiber ("Rubrik") 
 .archive-item { display: grid; justify-items: start; gap: 0.15rem; min-height: 56px; padding: 0.6rem 0.9rem; text-align: left; }
 .archive-title { font: 700 1.05rem/1.2 var(--font-display); color: var(--fg); }
 .paper-issue[hidden], #news-show[hidden] { display: none; }
+/* ---------- Troupes verschieben: Bearbeiten-Modus wie auf dem iPhone-Homescreen ----------
+   Gedrückt halten (Touch) oder ziehen (Maus): die Kacheln zittern, oben rechts erscheint das X zum Löschen. */
+.troupe-list { position: relative; }   /* Bezug für offsetLeft/offsetTop beim Verschieben */
+.troupe-item { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.troupe-item img { -webkit-user-drag: none; }
+.troupe-delete { opacity: 0; scale: 0.4; visibility: hidden; transition: opacity 0.18s ease, scale 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s linear 0.22s; }
+.troupe-list.edit-mode .troupe-delete { opacity: 1; scale: 1; visibility: visible; transition-delay: 0s; }
+.troupe-list.edit-mode .troupe-item { cursor: grab; }
+.troupe-list.edit-mode .troupe-card { cursor: inherit; }
+.troupe-list.edit-mode .troupe-item:not(.dragging) { animation: troupe-jiggle 0.3s ease-in-out infinite; }
+.troupe-list.edit-mode .troupe-item:nth-child(2n):not(.dragging) { animation-duration: 0.27s; animation-delay: -0.11s; animation-direction: reverse; }
+.troupe-list.edit-mode .troupe-item:nth-child(3n):not(.dragging) { animation-duration: 0.33s; animation-delay: -0.2s; }
+@keyframes troupe-jiggle {
+  0%, 100% { rotate: -0.55deg; translate: 0 0.5px; }
+  50%      { rotate: 0.55deg;  translate: 0 -0.5px; }
+}
+.troupe-item.dragging {
+  cursor: grabbing;
+  scale: 1.04;
+  border-radius: var(--radius);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 0.35);
+  opacity: 0.96;
+}
+.troupe-placeholder { border: 2px dashed var(--line); border-radius: var(--radius); }
+@media (prefers-reduced-motion: reduce) {
+  .troupe-list.edit-mode .troupe-item:not(.dragging) { animation: none; }
+  .troupe-delete { transition: none; }
+}
